@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[scripts]
+server = "uvicorn app.main:app --reload --port 8000"
+fmt_fix = "ruff format ./app/"
+requirements = "pip3 freeze > requirements.txt"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+sqlalchemy = "*"
+pymysql = "*"
+pydantic = "*"
+strawberry-graphql = {extras = ["fastapi"], version = "*"}
+asyncmy = "*"
+
+[dev-packages]
+ruff = "*"
+pre-commit = "*"
+rich = "*"
+typer = "*"
+libcst = "*"
+alembic = "*"
+
+[requires]
+python_version = "3.11"
