@@ -10,12 +10,11 @@ requirements = "pip3 freeze > requirements.txt"
 
 [packages]
 fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
 pymysql = "*"
 pydantic = "*"
-strawberry-graphql = {extras = ["fastapi"], version = "*"}
 asyncmy = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 ruff = "*"

@@ -1,11 +1,11 @@
-FROM --platform=linux/amd64 public.ecr.aws/docker/library/python:3.11.7-slim as base
-WORKDIR /usr/app
+FROM --platform=linux/amd64 public.ecr.aws/docker/library/python:3.11.7-alpine as base
+WORKDIR /usr/src/app
 
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir -r requirements.txt
-
-FROM --platform=linux/amd64 public.ecr.aws/sam/build-python3.11:latest
 
 
 EXPOSE 8000/tcp

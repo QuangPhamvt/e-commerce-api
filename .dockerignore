@@ -1,0 +1,5 @@
+.git
+.github
+.ruff_cache
+ruff.toml
+.pre-commit-config.yaml
