@@ -43,7 +43,10 @@
    ```bash
    pipenv run server
    ```
-
+7. IF YOU USE DOCKER
+   ```bash
+   docker-compose up --build
+   ```
 
 ---
 
@@ -64,22 +67,6 @@
 ## 📖 **Information**
 ### Package
 ```
-    [packages]
-    fastapi = "*"
-    uvicorn = {extras = ["standard"], version = "*"}
-    pymysql = "*"
-    pydantic = "*"
-    strawberry-graphql = {extras = ["fastapi"], version = "*"}
-    asyncmy = "*"
-    sqlalchemy = {extras = ["asyncio"], version = "*"}
-
-    [dev-packages]
-    ruff = "*"
-    pre-commit = "*"
-    rich = "*"
-    typer = "*"
-    libcst = "*"
-    alembic = "*"
 ```
 
 ## ❔ **How to push**
