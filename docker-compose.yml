@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  api:
+    image: e-commerce-api
+    container_name: e-commerce-api
+    build: .
+    env_file:
+      -  .env
+    environment:
+      DB_HOST: db
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/builder/app/src/
+    networks:
+      - e-commerce-api
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0.35
+    container_name: mysql
+    ports:
+      - 3306:3306
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - e-commerce-api:/var/lib/mysql
+    networks:
+      - e-commerce-api
+volumes:
+  e-commerce-api:
+networks:
+  e-commerce-api:

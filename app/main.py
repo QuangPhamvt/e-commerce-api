@@ -1,20 +1,34 @@
-from typing import Union
-
 from fastapi import FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-app = FastAPI()
+from .database import engine_local, models
+from .routers import items, users
+from .middlewares import db_session_middleware, log_middleware
+
+from .configs.constants import DOCUMENTATIONS
+
+
+app = FastAPI(**DOCUMENTATIONS)
+
+
+@app.on_event("startup")
+async def init_models():
+    print("starting server")
+    async with engine_local.begin() as connection:
+        await connection.run_sync(models.Base.metadata.drop_all)
+        await connection.run_sync(models.Base.metadata.create_all)
+
+
+app.add_middleware(BaseHTTPMiddleware, dispatch=db_session_middleware)
+app.add_middleware(BaseHTTPMiddleware, dispatch=log_middleware)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+
+
+app.include_router(users.router)
+app.include_router(items.router)
 
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
-@app.get("/users/me")
-def read_user_me():
-    return {"user_id": "the current user"}
+async def read_root():
+    return {"msg": "Hello World"}

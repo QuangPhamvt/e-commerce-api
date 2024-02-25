@@ -6,7 +6,6 @@ name = "pypi"
 [scripts]
 server = "uvicorn app.main:app --reload --port 8000"
 fmt_fix = "ruff format ./app/"
-requirements = "pip3 freeze > requirements.txt"
 
 [packages]
 fastapi = "*"
@@ -15,6 +14,8 @@ pydantic = "*"
 asyncmy = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
 uvicorn = {extras = ["standard"], version = "*"}
+python-dotenv = "*"
+cryptography = "*"
 
 [dev-packages]
 ruff = "*"
