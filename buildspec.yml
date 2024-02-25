@@ -11,6 +11,18 @@ phases:
       - echo Building the Docker image...
       - echo Operation  Architecture
       - docker version | grep 'OS/Arch'
+      - rm -rf .env
+      - touch .env
+      - >
+        if [ -f .env ]; then
+          echo "File environments exist."
+          echo "DB_USERNAME=$DB_USERNAME" >> .env
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+          echo "DB_HOST=$DB_HOST" >> .env
+          echo "DB_NAME=$DB_NAME" >> .env
+          else
+          echo "Have exist file environments"
+        fi
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
   post_build:

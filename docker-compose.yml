@@ -6,8 +6,6 @@ services:
     build: .
     env_file:
       -  .env
-    environment:
-      DB_HOST: db
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
       - .:/builder/app/src/
@@ -16,8 +14,8 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
-  db:
+      - database
+  database:
     image: mysql:8.0.35
     container_name: mysql
     ports:
