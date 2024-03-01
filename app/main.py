@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .database import engine_local, models
+from app.database import Base
+
+from .database import engine_local
 from .routers import items, users
 from .middlewares import db_session_middleware, log_middleware
 
@@ -16,8 +18,9 @@ app = FastAPI(**DOCUMENTATIONS)
 async def init_models():
     print("starting server")
     async with engine_local.begin() as connection:
-        await connection.run_sync(models.Base.metadata.drop_all)
-        await connection.run_sync(models.Base.metadata.create_all)
+        # turn on to reset the database
+        # await connection.run_sync(Base.metadata.drop_all)
+        await connection.run_sync(Base.metadata.create_all)
 
 
 app.add_middleware(BaseHTTPMiddleware, dispatch=db_session_middleware)
