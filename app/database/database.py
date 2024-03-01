@@ -16,8 +16,7 @@ url_create = URL.create(
     database=config["DB_NAME"],
 )
 
-print(url_create)
-engine_local = create_async_engine(url_create)
+engine_local = create_async_engine(url_create, echo=True)
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine_local)
 
 
