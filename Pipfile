@@ -10,12 +10,15 @@ fmt_fix = "ruff format ./app/"
 [packages]
 fastapi = "*"
 pymysql = "*"
-pydantic = "*"
 asyncmy = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
-uvicorn = {extras = ["standard"], version = "*"}
+uvicorn = "*"
 python-dotenv = "*"
 cryptography = "*"
+bcrypt = "*"
+pydantic = {extras = ["email"], version = "*"}
+resend = "*"
+pyjwt = "*"
 
 [dev-packages]
 ruff = "*"

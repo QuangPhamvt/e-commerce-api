@@ -30,3 +30,5 @@ DOCUMENTATIONS: dict = {
         {"name": ADMIN},
     ],
 }
+
+DEFAULT_ROLE_NAME = "User"

@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy import String, Uuid, Table, Column, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.database.models import User
+
 
 # AUTHORIZATION
 
@@ -22,16 +24,19 @@ class Role(Base):
 
     __tablename__ = "Role"
 
-    id: Mapped[int] = mapped_column(Uuid, primary_key=True)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)
 
     permission: Mapped[List["Permission"]] = relationship(
         secondary=role_permission, back_populates="role"
     )
 
-    def __init__(self, id: int):
+    users: Mapped[User] = relationship("User", back_populates="role")
+
+    def __init__(self, id: str, name: str):
         print("Role model")
         self.id = id
+        self.name = name
 
     def __repr__(self):
         return f"<Role {self.name}>"
@@ -40,6 +45,9 @@ class Role(Base):
 # PERMISSION TABLE
 class Permission(Base):
     """
+
+
+
     Permission model
     """
 

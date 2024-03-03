@@ -2,6 +2,8 @@ from datetime import datetime
 from sqlalchemy import DateTime, String, Uuid, Text, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.database.models.Notification import UserNotification
+
 
 from ..database import Base
 from .Authorization import Role
@@ -24,11 +26,21 @@ class User(Base):
     create_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.today())
     update_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
-    role: Mapped[Role] = relationship("Role", back_populates="user")
+    role: Mapped[Role] = relationship("Role", back_populates="users")
 
-    def __init__(self, id: str):
+    user_notifications: Mapped[UserNotification] = relationship(
+        "UserNotification", back_populates="user"
+    )
+
+    def __init__(
+        self, id: str, email: str, hash_password: str, role_id: str, is_active: str
+    ):
         print("User model")
         self.id = id
+        self.email = email
+        self.hash_password = hash_password
+        self.role_id = role_id
+        self.is_active = is_active
 
     def __repr__(self):
         return f"<User {self.email}>"

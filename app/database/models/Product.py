@@ -99,7 +99,7 @@ class Tag(Base):
     name: Mapped[str] = mapped_column(String(50), unique=True)
 
     products: Mapped[List["Product"]] = relationship(
-        secondary=product_tag, back_populates="tag"
+        secondary=product_tag, back_populates="tags"
     )
 
     def __init__(self, id: str):
