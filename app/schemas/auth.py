@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 
@@ -11,4 +12,4 @@ class UserSignUpParam(AuthBase):
 
 
 class VerifyPayload(BaseModel):
-    user_id: str
+    user_id: UUID

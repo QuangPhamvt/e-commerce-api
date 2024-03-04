@@ -1,3 +1,4 @@
+from uuid import UUID
 from app.database import Base
 from typing import List
 from sqlalchemy import String, Uuid, Table, Column, ForeignKey
@@ -24,8 +25,8 @@ class Role(Base):
 
     __tablename__ = "Role"
 
-    id: Mapped[str] = mapped_column(Uuid, primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True)
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    name: Mapped[str] = mapped_column("name", String(50), unique=True)
 
     permission: Mapped[List["Permission"]] = relationship(
         secondary=role_permission, back_populates="role"
@@ -33,7 +34,7 @@ class Role(Base):
 
     users: Mapped[User] = relationship("User", back_populates="role")
 
-    def __init__(self, id: str, name: str):
+    def __init__(self, id: UUID, name: str):
         print("Role model")
         self.id = id
         self.name = name
@@ -53,17 +54,19 @@ class Permission(Base):
 
     __tablename__ = "Permission"
 
-    id: Mapped[int] = mapped_column(Uuid, primary_key=True)
-    path: Mapped[str] = mapped_column(String(50))
-    method: Mapped[str] = mapped_column(String(50))
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    path: Mapped[str] = mapped_column("path", String(50))
+    method: Mapped[str] = mapped_column("method", String(50))
 
     role: Mapped[List["Role"]] = relationship(
         secondary=role_permission, back_populates="permission"
     )
 
-    def __init__(self, id: int):
+    def __init__(self, id: UUID, path: str, method: str):
         print("Permission model")
         self.id = id
+        self.path = path
+        self.method = method
 
     def __repr__(self):
         return f"<Permission {self.path}>"

@@ -4,10 +4,18 @@ VERSION: str = "0.0.1"
 DOCS_URL: str = "/docs"
 ROOT_PATH: str = "/api/v1"
 
-USERS: str = "users"
-ITEMS: str = "items"
-CUSTOM: str = "custom"
-ADMIN: str = "admin"
+
+AUTH: str = "Auth"
+AUTH_PREFIX: str = "/auth"
+AUTH_PATH: dict = {
+    "SIGN_UP": "/signup",
+    "VERIFY": "/verify",
+}
+
+USERS: str = "User"
+ITEMS: str = "Item"
+CUSTOM: str = "Custom"
+ADMIN: str = "Admin"
 
 DB_PORT: int = 3306
 
@@ -18,6 +26,9 @@ DOCUMENTATIONS: dict = {
     "docs_url": DOCS_URL,
     "root_path": ROOT_PATH,
     "openapi_tags": [
+        {
+            "name": AUTH,
+        },
         {
             "name": USERS,
         },

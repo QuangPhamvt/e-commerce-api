@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float
+from uuid import UUID
+from sqlalchemy import String, Float, Uuid
+from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 
@@ -10,11 +12,12 @@ class ExchangeRate(Base):
 
     __tablename__ = "ExchangeRate"
 
-    id = Column(Integer, primary_key=True)
-    currency = Column(String(20))
-    rate = Column(Float)
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    currency: Mapped[str] = mapped_column("currency", String(20))
+    rate: Mapped[float] = mapped_column("rate", Float)
 
-    def __init__(self, currency=None, rate=None):
+    def __init__(self, id: UUID, currency: str, rate: float):
+        self.id = id
         self.currency = currency
         self.rate = rate
 

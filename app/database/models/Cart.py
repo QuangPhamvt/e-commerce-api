@@ -1,5 +1,6 @@
+from uuid import UUID
 from datetime import datetime
-from sqlalchemy import DateTime, ForeignKey, Uuid
+from sqlalchemy import DateTime, ForeignKey, Integer, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 from .User import User
@@ -14,21 +15,24 @@ class Cart(Base):
 
     __tablename__ = "Cart"
 
-    id: Mapped[str] = mapped_column("id", Uuid, primary_key=True)
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
         "user_id", Uuid, ForeignKey(User.id), nullable=False
     )
-    product_id: Mapped[str] = mapped_column(
+    product_id: Mapped[UUID] = mapped_column(
         "product_id", Uuid, ForeignKey(Product.id), nullable=False
     )
-    quantity: Mapped[int] = mapped_column("quantity", nullable=False)
+    quantity: Mapped[int] = mapped_column("quantity", Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         "created_at", DateTime, default=datetime.now()
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
 
-    def __init__(self, user_id: str):
+    def __init__(self, user_id: UUID, product_id: UUID, quantity: int):
         self.user_id = user_id
+        self.product_id = product_id
+        self.quantity = quantity
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"<Cart {self.id}>"

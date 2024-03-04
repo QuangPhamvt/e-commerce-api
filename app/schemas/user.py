@@ -1,5 +1,6 @@
+from uuid import UUID
 from datetime import datetime
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
@@ -12,7 +13,7 @@ class GetUserByEmailParam(UserBase):
 
 class CreateUserParam(UserBase):
     password: str
-    role_id: UUID4
+    role_id: UUID
 
 
 class UserResponse(UserBase):

@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -22,17 +23,21 @@ class Notification(Base):
 
     __tablename__ = "Notification"
 
-    id: Mapped[str] = mapped_column(Uuid, primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str] = mapped_column(String(255))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    title: Mapped[str] = mapped_column("title", String(255))
+    content: Mapped[str] = mapped_column("content", String(255))
+    created_at: Mapped[datetime] = mapped_column(
+        "created_at", DateTime, default=datetime.now()
+    )
 
-    def __init__(self, message=None, user_id=None):
-        self.message = message
-        self.user_id = user_id
+    def __init__(self, id: UUID, title: str, content: str):
+        self.id = id
+        self.title = title
+        self.content = content
+        self.created_at = datetime.now()
 
     def __repr__(self):
-        return "<Notification %r>" % (self.message)
+        return "<Notification %r>" % (self.id)
 
 
 class UserNotification(Base):
@@ -42,16 +47,22 @@ class UserNotification(Base):
 
     __tablename__ = "UserNotification"
 
-    id: Mapped[str] = mapped_column(Uuid, primary_key=True)
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
-    user_id: Mapped[User] = mapped_column(Uuid, ForeignKey("User.id"))
+    user_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("User.id"))
     content: Mapped[str] = mapped_column(Text(255))
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
 
     user: Mapped[User] = relationship("User", back_populates="user_notifications")
 
-    def __init__(self, user_id):
+    def __init__(
+        self, id: UUID, title: str, user_id: UUID, content: str, is_read: bool
+    ):
+        self.id = id
+        self.title = title
         self.user_id = user_id
+        self.content = content
+        self.is_read = is_read
 
     def __repr__(self):
         return "<UserNotification %r>" % (self.user_id)

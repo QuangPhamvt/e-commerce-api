@@ -9,10 +9,14 @@ config = dotenv_values(".env")
 
 class Helper:
     @staticmethod
-    def hash_password(*, password: str) -> str:
-        bytes = password.encode("utf-8")
+    def hash_password(*, password: str) -> bytes:
+        """
+        Hash password using bcrypt
+        """
+        _byte: bytes = password.encode("utf-8")
         salt = bcrypt.gensalt()
-        return bcrypt.hashpw(bytes, salt=salt)
+        hash = bcrypt.hashpw(_byte, salt=salt)
+        return hash
 
     @staticmethod
     def verify_email(*, send_from: str, send_to: str, token: str):
@@ -30,19 +34,19 @@ class Helper:
 
     @staticmethod
     def create_verify_token(user_id: str):
+        key: str = config["VERIFY_EMAIL_SECRET"] or "secret"
         token = jwt.encode(
             {"user_id": user_id},
-            key=config["VERIFY_EMAIL_SECRET"],
+            key,
             algorithm="HS256",
         )
         return token
 
     @staticmethod
     def verify_token(token: str):
+        key = config["VERIFY_EMAIL_SECRET"] or "key"
         try:
-            decode = jwt.decode(
-                jwt=token, key=config["VERIFY_EMAIL_SECRET"], algorithms="HS256"
-            )
+            decode = jwt.decode(jwt=token, key=key, algorithms=["HS256"])
         except jwt.PyJWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token"
