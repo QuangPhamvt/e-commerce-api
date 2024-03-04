@@ -1,17 +1,18 @@
+from uuid import UUID
 from sqlalchemy import select, update
 from app.database.models import User
-from app.schemas.auth import UserSignUpParam, VerifyPayload
-from app.schemas.user import CreateUserParam
+from app.schemas.auth import VerifyPayload
+from app.schemas.user import CreateUserParam, UserResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 
 
 async def get_user_by_email(
-    user: UserSignUpParam,
+    email: str,
     db: AsyncSession,
 ) -> User | None:
-    data_user = await db.execute(select(User).where(User.email == user.email))
+    data_user = await db.execute(select(User).where(User.email == email))
     return data_user.scalars().first()
 
 
@@ -37,3 +38,15 @@ async def verify_user(db: AsyncSession, payload: VerifyPayload):
     await db.execute(update(User).where(User.id == user_id).values(is_active=True))
 
     await db.commit()
+
+
+async def update_refresh_token(db: AsyncSession, id: UUID, refresh_token: str):
+    await db.execute(
+        update(User).where(User.id == id).values(refresh_token=refresh_token)
+    )
+    await db.commit()
+
+
+async def get_user_by_id(db: AsyncSession, id: UUID) -> UserResponse:
+    data_user = await db.execute(select(User).where(User.id == id))
+    return data_user.scalars().first()

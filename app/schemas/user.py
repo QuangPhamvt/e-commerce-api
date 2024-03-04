@@ -17,9 +17,9 @@ class CreateUserParam(UserBase):
 
 
 class UserResponse(UserBase):
-    id: str
+    id: UUID
     role_id: str
     refresh_token: str | None = None
     is_active: bool
-    created_at: datetime
+    created_at: datetime | None = None
     updated_at: datetime | None = None

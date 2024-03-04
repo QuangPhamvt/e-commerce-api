@@ -1,3 +1,8 @@
+from dotenv import dotenv_values
+
+
+config = dotenv_values(".env")
+
 TITLE: str = "E-Commerce API"
 SUMMARY: str = "This is a simple API for E-Commerce"
 VERSION: str = "0.0.1"
@@ -10,6 +15,10 @@ AUTH_PREFIX: str = "/auth"
 AUTH_PATH: dict = {
     "SIGN_UP": "/signup",
     "VERIFY": "/verify",
+    "SIGN_IN": "/sign-in",
+    "LOG_OUT": "/logout",
+    "REFRESH": "/refresh",
+    "GET_ME": "/me",
 }
 
 USERS: str = "User"
@@ -43,3 +52,9 @@ DOCUMENTATIONS: dict = {
 }
 
 DEFAULT_ROLE_NAME = "User"
+
+# Token
+ACCESS_TOKEN_SECRET = config["ACCESS_TOKEN_SECRET"]
+ACCESS_TOKEN_EXPIRE = config["ACCESS_TOKEN_EXPIRE"]
+REFRESH_TOKEN_SECRET = config["REFRESH_TOKEN_SECRET"]
+REFRESH_TOKEN_EXPIRE = config["REFRESH_TOKEN_EXPIRE"]

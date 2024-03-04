@@ -19,7 +19,7 @@ class SignUp:
         get_user_by_email = user_crud.get_user_by_email
         create_user = user_crud.create_user
 
-        exist_user = await get_user_by_email(user=user, db=db)
+        exist_user = await get_user_by_email(email=user.email, db=db)
         if exist_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Email has been used!"
