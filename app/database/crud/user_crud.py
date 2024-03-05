@@ -3,7 +3,6 @@ from uuid import UUID
 from sqlalchemy import select, update
 from app.database.models import User
 from app.database.models.User import ResetPassword
-from app.schemas.auth import VerifyPayload
 from app.schemas.user import CreateUserParam
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.helper import helper
@@ -34,11 +33,8 @@ async def create_user(user: CreateUserParam, db: AsyncSession) -> User:
     return db_user
 
 
-async def verify_user(db: AsyncSession, payload: VerifyPayload):
-    user_id = payload.user_id
-    print(f"From CRUD: user_id: {user_id}, type: {type(user_id)}")
+async def verify_user(db: AsyncSession, user_id: UUID):
     await db.execute(update(User).where(User.id == user_id).values(is_active=True))
-
     await db.commit()
 
 

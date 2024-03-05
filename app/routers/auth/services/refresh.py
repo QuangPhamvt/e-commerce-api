@@ -10,15 +10,19 @@ class Refresh:
     async def refresh(self, request: Request, response: Response, db: AsyncSession):
         payload = await self.__is_valid_token(request=request, db=db)
         if payload:
-            new_access_token = helper.create_access_token(user_data=payload)
-            new_refresh_token = helper.create_refresh_token(user_data=payload)
+            new_access_token = helper.create_access_token(user=payload)
+            new_refresh_token = helper.create_refresh_token(user=payload)
             response.set_cookie("access_token", new_access_token, secure=True)
             response.set_cookie("refresh_token", new_refresh_token, secure=True)
             user_id = payload.id
             await user_crud.update_refresh_token(
                 db=db, id=user_id, refresh_token=new_refresh_token
             )
-            return {"message": "Refresh Succeed!"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid refresh token. Please re-login!",
+            )
 
     @staticmethod
     async def __is_valid_token(request: Request, db: AsyncSession):
@@ -32,6 +36,6 @@ class Refresh:
             if user and user.refresh_token == refresh_token:
                 return payload
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid refresh token. Please re-login!",
         )

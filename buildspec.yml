@@ -20,6 +20,15 @@ phases:
           echo "DB_PASSWORD=$DB_PASSWORD" >> .env
           echo "DB_HOST=$DB_HOST" >> .env
           echo "DB_NAME=$DB_NAME" >> .env
+          echo "RESEND_KEY=$RESEND_KEY" >> .env
+          echo "VERIFY_PATH=$VERIFY_PATH" >> .env
+          echo "RESEND_SENDER=$RESEND_SENDER" >> .env
+          echo "VERIFY_EMAIL_SECRET=$VERIFY_EMAIL_SECRET" >> .env
+          echo "VERIFY_EMAIL_EXPIRE=$VERIFY_EMAIL_EXPIRE" >> .env
+          echo "ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET" >> .env
+          echo "ACCESS_TOKEN_EXPIRE=$ACCESS_TOKEN_EXPIRE" >> .env
+          echo "REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET" >> .env
+          echo "REFRESH_TOKEN_EXPIRE=$REFRESH_TOKEN_EXPIRE" >> .env
           else
           echo "Have exist file environments"
         fi
