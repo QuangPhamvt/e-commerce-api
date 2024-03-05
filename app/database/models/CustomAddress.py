@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,8 +14,8 @@ class CustomerAddress(Base):
 
     __tablename__ = "CustomerAddresses"
 
-    id: Mapped[str] = mapped_column("id", Uuid, primary_key=True)
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
         "user_id", Uuid, ForeignKey(User.id), nullable=False
     )
     fullname: Mapped[str] = mapped_column("fullname", String(50), nullable=False)
@@ -32,8 +33,26 @@ class CustomerAddress(Base):
 
     user: Mapped[User] = relationship()
 
-    def __init__(self, user_id: str):
+    def __init__(
+        self,
+        id: UUID,
+        user_id: UUID,
+        fullname: str,
+        phone_number: str,
+        province: str,
+        district: str,
+        street: str,
+        is_default: bool,
+    ):
+        self.id = id
         self.user_id = user_id
+        self.fullname = fullname
+        self.phone_number = phone_number
+        self.province = province
+        self.district = district
+        self.street = street
+        self.is_default = is_default
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"<CustomerAddress {self.id}>"

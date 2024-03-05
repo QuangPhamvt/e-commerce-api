@@ -11,8 +11,7 @@ from .ExchangeRate import ExchangeRate
 from .Bill import Bill, BillDetail
 from .Promotion import Promotion
 from .DeliveryDetail import DeliveryDetail
-from .Notification import Notification
-from .UserNotification import UserNotification
+from .Notification import Notification, UserNotification
 
 
 __all__ = [

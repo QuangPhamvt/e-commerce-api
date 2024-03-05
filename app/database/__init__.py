@@ -9,8 +9,7 @@ from .models.Cart import Cart
 from .models.CustomAddress import CustomerAddress
 from .models.Voucher import Voucher
 from .models.Product import Product, Tag, Category
-from .models.Notification import Notification
-from .models.UserNotification import UserNotification
+from .models.Notification import Notification, UserNotification
 from .models.Bill import Bill, BillDetail
 from .models.DeliveryDetail import DeliveryDetail
 from .models.Promotion import Promotion

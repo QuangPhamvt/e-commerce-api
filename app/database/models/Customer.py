@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
@@ -13,8 +14,8 @@ class Bio(Base):
 
     __tablename__ = "Bio"
 
-    id: Mapped[str] = mapped_column("id", Uuid, primary_key=True)
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
         "user_id", Uuid, ForeignKey(User.id), nullable=False
     )
     username: Mapped[str] = mapped_column("username", String(50))
@@ -25,8 +26,15 @@ class Bio(Base):
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
 
-    def __init__(self, user_id: str):
+    def __init__(
+        self, id: UUID, user_id: UUID, username: str, fullname: str, phone_number: str
+    ):
+        self.id = id
         self.user_id = user_id
+        self.username = username
+        self.fullname = fullname
+        self.phone_number = phone_number
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"<Bio {self.id}>"

@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from sqlalchemy import String, Text, DateTime, ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,8 +14,8 @@ class DeliveryDetail(Base):
 
     __tablename__ = "DeliveryDetail"
 
-    id: Mapped[str] = mapped_column("id", Uuid, primary_key=True)
-    bill_id: Mapped[str] = mapped_column(
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    bill_id: Mapped[UUID] = mapped_column(
         "bill_id", Uuid, ForeignKey(Bill.id), nullable=False
     )
     description: Mapped[str] = mapped_column("description", Text, nullable=False)
@@ -28,8 +29,12 @@ class DeliveryDetail(Base):
 
     bill: Mapped[Bill] = relationship()
 
-    def __init__(self, user_id):
-        self.user_id = user_id
+    def __init__(self, id: UUID, bill_id: UUID, description: str, status: str):
+        self.id = id
+        self.bill_id = bill_id
+        self.description = description
+        self.status = status
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"<DeliveryAddress {self.id}>"

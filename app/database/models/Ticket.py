@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 from sqlalchemy import DateTime, ForeignKey, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -13,8 +14,8 @@ class Ticket(Base):
 
     __tablename__ = "Ticket"
 
-    id: Mapped[str] = mapped_column("id", Uuid, primary_key=True)
-    user_id: Mapped[str] = mapped_column(
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(
         "user_id", Uuid, ForeignKey(User.id), nullable=False
     )
     title: Mapped[str] = mapped_column("title", String(255), nullable=False)
@@ -27,8 +28,14 @@ class Ticket(Base):
 
     user: Mapped[User] = relationship()
 
-    def __init__(self, user_id: str):
+    def __init__(self, id: UUID, user_id: UUID, title: str, content: str, status: str):
+        print("Ticket model")
+        self.id = id
         self.user_id = user_id
+        self.title = title
+        self.content = content
+        self.status = status
+        self.created_at = datetime.now()
 
     def __repr__(self):
         return f"<Ticket {self.id}>"
