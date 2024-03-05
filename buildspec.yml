@@ -29,6 +29,7 @@ phases:
           echo "ACCESS_TOKEN_EXPIRE=$ACCESS_TOKEN_EXPIRE" >> .env
           echo "REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET" >> .env
           echo "REFRESH_TOKEN_EXPIRE=$REFRESH_TOKEN_EXPIRE" >> .env
+          echo "FORGOT_CODE_EXPIRE=600" >> .env
           else
           echo "Have exist file environments"
         fi
