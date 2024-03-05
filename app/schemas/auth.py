@@ -15,12 +15,7 @@ class UserSignInParam(AuthBase):
     pass
 
 
-class AccessTokenPayload(BaseModel):
-    id: UUID
-    role_id: UUID
-
-
-class RefreshTokenPayload(BaseModel):
+class TokenPayload(BaseModel):
     id: UUID
     role_id: UUID
 

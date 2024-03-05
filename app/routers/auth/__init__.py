@@ -12,6 +12,8 @@ SIGN_IN = AUTH_PATH["SIGN_IN"]
 LOG_OUT = AUTH_PATH["LOG_OUT"]
 REFRESH = AUTH_PATH["REFRESH"]
 GET_ME = AUTH_PATH["GET_ME"]
+FORGOT = AUTH_PATH["FORGOT"]
+RESET = AUTH_PATH["RESET"]
 
 router = APIRouter(prefix=AUTH_PREFIX, tags=[AUTH])
 
@@ -49,4 +51,18 @@ async def refresh(
 
 @router.get(GET_ME)
 async def get_me(request: Request, db: AsyncSession = Depends(get_db)):
-    return await AuthService.get_me(request=request, db=db)
+    return await AuthService().get_me(request=request, db=db)
+
+
+@router.post(FORGOT)
+async def forgot(email: str, db: AsyncSession = Depends(get_db)):
+    return await AuthService().forgot_password(email=email, db=db)
+
+
+@router.post(RESET)
+async def reset(
+    email: str, verify_code: str, new_password: str, db: AsyncSession = Depends(get_db)
+):
+    return await AuthService().reset_password(
+        email=email, verify_code=verify_code, new_password=new_password, db=db
+    )

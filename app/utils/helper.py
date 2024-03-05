@@ -4,14 +4,8 @@ from dotenv import dotenv_values
 from fastapi import HTTPException, status
 import resend
 import jwt
-from app.configs.constants import (
-    ACCESS_TOKEN_EXPIRE,
-    ACCESS_TOKEN_SECRET,
-    REFRESH_TOKEN_EXPIRE,
-    REFRESH_TOKEN_SECRET,
-)
 
-from app.schemas.auth import AccessTokenPayload, RefreshTokenPayload
+from app.schemas.auth import TokenPayload
 
 config = dotenv_values(".env")
 salt = bcrypt.gensalt()
@@ -49,6 +43,17 @@ class Helper:
         return email
 
     @staticmethod
+    def forgot_email(*, send_from: str, send_to: str, code: str):
+        resend.api_key = config["RESEND_KEY"]
+        params = {
+            "from": send_from,
+            "to": send_to,
+            "subject": "Reset your password",
+            "html": f"Your verification code is  {code}",
+        }
+        resend.Emails.send(params=params)
+
+    @staticmethod
     def create_verify_token(user_id: str):
         key: str = config["VERIFY_EMAIL_SECRET"] or "secret"
         token = jwt.encode(
@@ -73,10 +78,11 @@ class Helper:
     def __expire_time(seconds: int):
         return datetime.now(timezone.utc) + timedelta(seconds=seconds)
 
-    def create_access_token(self, user_data: AccessTokenPayload):
-        seconds = int(ACCESS_TOKEN_EXPIRE)
+    def create_access_token(self, user_data: TokenPayload):
+        seconds = config["ACCESS_TOKEN_EXPIRE"] or 600
+        seconds = int(seconds)
         expire = self.__expire_time(seconds=seconds)
-        key = ACCESS_TOKEN_SECRET
+        key = config["ACCESS_TOKEN_SECRET"] or "secret"
         id = str(user_data.id)
         role_id = str(user_data.role_id)
         payload = {"id": id, "role_id": role_id, "exp": expire}
@@ -87,10 +93,11 @@ class Helper:
         )
         return token
 
-    def create_refresh_token(self, user_data: RefreshTokenPayload):
-        seconds = int(REFRESH_TOKEN_EXPIRE)
+    def create_refresh_token(self, user_data: TokenPayload):
+        seconds = config["REFRESH_TOKEN_EXPIRE"] or 600
+        seconds = int(seconds)
         expire = self.__expire_time(seconds)
-        key = REFRESH_TOKEN_SECRET
+        key = config["REFRESH_TOKEN_SECRET"] or "secret"
         id = str(user_data.id)
         role_id = str(user_data.role_id)
         payload = {"id": id, "role_id": role_id, "exp": expire}
@@ -103,7 +110,7 @@ class Helper:
 
     @staticmethod
     def verify_refresh_token(token: str):
-        secret = REFRESH_TOKEN_SECRET
+        secret = config["REFRESH_TOKEN_SECRET"] or "secret"
         try:
             decode = jwt.decode(jwt=token, key=secret, algorithms=["HS256"])
         except jwt.PyJWTError:

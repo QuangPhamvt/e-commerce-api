@@ -56,15 +56,15 @@ class ResetPassword(Base):
 
     __tablename__ = "ResetPassword"
 
-    user_id: Mapped[Uuid] = mapped_column(Uuid, ForeignKey("User.id"), primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(Uuid, ForeignKey("User.id"), primary_key=True)
     code: Mapped[str] = mapped_column(String(8))
     expire_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     create_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.today())
     update_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
-    def __init__(self, id: Uuid, code: str, expire_at: datetime):
+    def __init__(self, user_id: UUID, code: str, expire_at: datetime):
         print("ResetPassword model")
-        self.id = id
+        self.user_id = user_id
         self.code = code
         self.expire_at = expire_at
         self.create_at = datetime.now()

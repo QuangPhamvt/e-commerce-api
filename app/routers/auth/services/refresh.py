@@ -2,9 +2,7 @@ from uuid import UUID
 from fastapi import HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud import user_crud
-from app.schemas.auth import RefreshTokenPayload
-from app.schemas.user import UserResponse
-
+from app.schemas.auth import TokenPayload
 from app.utils.helper import helper
 
 
@@ -29,8 +27,8 @@ class Refresh:
             decode = helper.verify_refresh_token(token=refresh_token)
             user_id = UUID(decode["id"])
             role_id = UUID(decode["role_id"])
-            user: UserResponse = await user_crud.get_user_by_id(db=db, id=user_id)
-            payload = RefreshTokenPayload(id=user_id, role_id=role_id)
+            user = await user_crud.get_user_by_id(db=db, id=user_id)
+            payload = TokenPayload(id=user_id, role_id=role_id)
             if user and user.refresh_token == refresh_token:
                 return payload
         raise HTTPException(

@@ -19,6 +19,8 @@ AUTH_PATH: dict = {
     "LOG_OUT": "/logout",
     "REFRESH": "/refresh",
     "GET_ME": "/me",
+    "FORGOT": "/forgot",
+    "RESET": "/reset",
 }
 
 USERS: str = "User"
@@ -58,3 +60,6 @@ ACCESS_TOKEN_SECRET = config["ACCESS_TOKEN_SECRET"]
 ACCESS_TOKEN_EXPIRE = config["ACCESS_TOKEN_EXPIRE"]
 REFRESH_TOKEN_SECRET = config["REFRESH_TOKEN_SECRET"]
 REFRESH_TOKEN_EXPIRE = config["REFRESH_TOKEN_EXPIRE"]
+
+# Forgot Password
+FORGOT_CODE_EXPIRE = config["FORGOT_CODE_EXPIRE"]
