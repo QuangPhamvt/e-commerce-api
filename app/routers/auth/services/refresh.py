@@ -12,8 +12,20 @@ class Refresh:
         if payload:
             new_access_token = helper.create_access_token(user=payload)
             new_refresh_token = helper.create_refresh_token(user=payload)
-            response.set_cookie("access_token", new_access_token, secure=True)
-            response.set_cookie("refresh_token", new_refresh_token, secure=True)
+            response.set_cookie(
+                "access_token",
+                new_access_token,
+                secure=True,
+                max_age=99999999,
+                expires=99999999,
+            )
+            response.set_cookie(
+                "refresh_token",
+                new_refresh_token,
+                secure=True,
+                max_age=99999999,
+                expires=99999999,
+            )
             user_id = payload.id
             await user_crud.update_refresh_token(
                 db=db, id=user_id, refresh_token=new_refresh_token
