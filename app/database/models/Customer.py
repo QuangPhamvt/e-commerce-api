@@ -38,3 +38,11 @@ class Bio(Base):
 
     def __repr__(self):
         return f"<Bio {self.id}>"
+
+    def asdict(self):
+        return {
+        'bio_id': self.id,
+        'username': self.username,
+        'fullname': self.fullname,
+        'phone_number': self.phone_number
+        }    

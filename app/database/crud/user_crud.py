@@ -1,12 +1,14 @@
 from datetime import datetime
 from uuid import UUID
+from sqlalchemy.orm import defer
 from sqlalchemy import select, update
-from app.database.models import User
+from app.database.models import User, Bio, CustomerAddress, Role
 from app.database.models.User import ResetPassword
 from app.schemas.user import CreateUserParam
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
+from app.database.crud import customer_address_crud
 
 
 async def get_user_by_email(
@@ -83,3 +85,25 @@ async def reset_password(id: UUID, hash_password: bytes, db: AsyncSession):
         update(User).where(User.id == id).values(hash_password=hash_password)
     )
     await db.commit()
+
+async def get_list_users(db: AsyncSession):
+    list_users = await db.execute(
+        select(User, Bio, Role.name)
+        .options(
+            defer(User.hash_password), 
+            defer(User.refresh_token), 
+            defer(Bio.user_id), 
+            defer(Bio.created_at))
+        .join(Bio, Bio.user_id == User.id)
+        .join(Role, Role.id == User.role_id))
+    
+    results = [
+        {
+            **data_user.User.asdict(),
+            **data_user.Bio.asdict(),
+            'role': data_user.name,
+            'adresses': await customer_address_crud.get_user_addresses(db = db, user_id = data_user.User.id)
+        } for data_user in list_users.mappings()
+    ]
+
+    return results
