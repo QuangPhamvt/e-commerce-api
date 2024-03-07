@@ -84,8 +84,11 @@ async def sign_in(
 
 
 @router.delete(LOG_OUT)
-async def logout(db: AsyncSession = Depends(get_db)):
-    pass
+async def logout(
+    request: Request, response: Response, db: AsyncSession = Depends(get_db)
+):
+    print(1)
+    return await AuthService().logout(request=request, response=response, db=db)
 
 
 # ********** REFRESH **********
