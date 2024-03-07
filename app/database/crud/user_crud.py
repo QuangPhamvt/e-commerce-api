@@ -38,7 +38,7 @@ async def verify_user(db: AsyncSession, user_id: UUID):
     await db.commit()
 
 
-async def update_refresh_token(id: UUID, refresh_token: str, db: AsyncSession):
+async def update_refresh_token(id: UUID, refresh_token: str | None, db: AsyncSession):
     await db.execute(
         update(User).where(User.id == id).values(refresh_token=refresh_token)
     )
