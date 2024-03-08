@@ -15,6 +15,8 @@ app = FastAPI(**DOCUMENTATIONS)
 
 origins = [
     "http://localhost:3000",
+    "http://lunas-local:3000",
+    "http://admin.lunas-local:3000",
     "https:dev.customafk.com",
     "https:dev.admin.customafk.com",
 ]
