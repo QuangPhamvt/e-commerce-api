@@ -47,6 +47,15 @@ class User(Base):
     def __repr__(self):
         return f"<User {self.email}>"
 
+    def asdict(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'role_id': self.role_id,
+            'is_active': self.is_active,
+            'create_at': self.create_at,
+        }
+
 
 # RESET PASSWORD TABLE
 class ResetPassword(Base):
