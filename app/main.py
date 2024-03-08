@@ -6,7 +6,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.database import Base
 
 from .database import engine_local
-from .routers import roles, auth, admin
+from .routers import roles, auth, user
 from .middlewares import db_session_middleware, log_middleware
 from .configs.constants import DOCUMENTATIONS
 
@@ -43,7 +43,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(roles.router)
-app.include_router(admin.router)
+app.include_router(user.router)
 
 
 @app.get("/")
