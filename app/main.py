@@ -17,8 +17,8 @@ origins = [
     "http://localhost:3000",
     "http://lunas-local.com:3000",
     "http://admin.lunas-local.com:3000",
-    "https:dev.customafk.com",
-    "https:dev.admin.customafk.com",
+    "https://dev.customafk.com",
+    "https://dev.admin.customafk.com",
 ]
 
 
