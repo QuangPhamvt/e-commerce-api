@@ -16,8 +16,17 @@ url_create = URL.create(
     database=config["DB_NAME"],
 )
 
-engine_local = create_async_engine(url_create, echo=True)
-SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine_local)
+engine_local = create_async_engine(
+    url_create,
+    echo=True,
+    pool_size=50,
+    max_overflow=10,
+)
+SessionLocal = async_sessionmaker(
+    bind=engine_local,
+    autocommit=False,
+    autoflush=False,
+)
 
 
 class Base(AsyncAttrs, DeclarativeBase):

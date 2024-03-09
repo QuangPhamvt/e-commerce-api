@@ -1,6 +1,6 @@
-from app.database.crud import user_crud, customer_address_crud
+from app.database.crud import user_crud
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
+
 
 class GetList:
     @staticmethod

@@ -10,8 +10,10 @@ async def db_session_middleware(request: Request, call_next):
     """
     response = Response("Internal server error", status_code=500)
     try:
+        print("Opening database session")
         request.state.db = SessionLocal()
         response = await call_next(request)
     finally:
-        request.state.db.close()
+        await request.state.db.close()
+        print("Closing database session")
     return response
