@@ -49,11 +49,11 @@ class User(Base):
 
     def asdict(self):
         return {
-            'id': self.id,
-            'email': self.email,
-            'role_id': self.role_id,
-            'is_active': self.is_active,
-            'create_at': self.create_at,
+            "id": self.id,
+            "email": self.email,
+            "role_id": self.role_id,
+            "is_active": self.is_active,
+            "create_at": self.create_at,
         }
 
 

@@ -41,8 +41,8 @@ class Bio(Base):
 
     def asdict(self):
         return {
-        'bio_id': self.id,
-        'username': self.username,
-        'fullname': self.fullname,
-        'phone_number': self.phone_number
-        }    
+            "bio_id": self.id,
+            "username": self.username,
+            "fullname": self.fullname,
+            "phone_number": self.phone_number,
+        }

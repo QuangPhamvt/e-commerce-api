@@ -19,6 +19,7 @@ bcrypt = "*"
 pydantic = {extras = ["email"], version = "*"}
 resend = "*"
 pyjwt = "*"
+greenlet = "*"
 
 [dev-packages]
 ruff = "*"
