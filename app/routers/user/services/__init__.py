@@ -1,7 +1,7 @@
 from .get_list_users import GetList
+from .create_demo_user import CreateDemoUser
 
-
-class UserService(GetList):
+class UserService(GetList, CreateDemoUser):
     pass
 
 

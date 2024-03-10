@@ -84,3 +84,7 @@ REFRESH_TOKEN_EXPIRE = config["REFRESH_TOKEN_EXPIRE"]
 
 # Forgot Password
 FORGOT_CODE_EXPIRE = config["FORGOT_CODE_EXPIRE"]
+
+# ********** Create demo user **********
+PHONE_NUMBER = '1234'
+USERNAME = 'ABC@@'
