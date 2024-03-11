@@ -154,12 +154,14 @@ class Helper:
 
     @staticmethod
     def correct_fullname(first_name: str, last_name: str):
-        #Remove spaces at the beginning and at the end of the string:
+        """
+        Check and correct user fullname: 
+            + remove redundant spaces
+            + capitalize the first letter  
+        """
         fullname = first_name.lower().strip() + ' ' + last_name.lower().strip()
-        #Remove redundant spaces between 2 words:
         while(fullname.find("  ") != -1):
             fullname = fullname.replace("  ", " ")
-        #Upper first char each word:
         fullname = fullname.title()
         return fullname
 

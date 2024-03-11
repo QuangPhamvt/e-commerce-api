@@ -19,6 +19,16 @@ AUTH_PATH: dict = {
 }
 # ===========================
 
+# ********** User **********
+USER: str = "User"
+USER_PREFIX: str = "/users"
+USER_PATH: dict = {
+    "GET_LIST_USERS": "/",
+    "CREATE_DEMO_USER": "/"
+}
+# ===========================
+
+
 
 DB_PORT: int = 3306
 
