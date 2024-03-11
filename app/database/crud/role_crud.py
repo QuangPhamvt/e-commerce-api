@@ -11,9 +11,13 @@ async def get_role_by_name(db: AsyncSession, role_name: str) -> models.Role | No
     result = await db.execute(select(models.Role).where(models.Role.name == role_name))
     return result.scalars().first()
 
+
 async def get_role_id_by_name(db: AsyncSession, role_name: str) -> UUID | None:
-    result = await db.execute(select(models.Role.id).where(models.Role.name == role_name))
+    result = await db.execute(
+        select(models.Role.id).where(models.Role.name == role_name)
+    )
     return result.scalars().first()
+
 
 async def create_role(db: AsyncSession, role: CreateRoleParam) -> models.Role:
     role_id = generate_uuid()
