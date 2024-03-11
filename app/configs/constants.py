@@ -22,12 +22,23 @@ AUTH_PATH: dict = {
 # ********** User **********
 USER: str = "User"
 USER_PREFIX: str = "/users"
-USER_PATH: dict = {
-    "GET_LIST_USERS": "/",
-    "CREATE_DEMO_USER": "/"
-}
+USER_PATH: dict = {"GET_LIST_USERS": "/", "CREATE_DEMO_USER": "/"}
 # ===========================
 
+# ********** Role **********
+# ===========================
+
+# ********** Product **********
+PRODUCT: str = "Product"
+PRODUCT_PREFIX: str = "/products"
+PRODUCT_PATH: dict = {
+    "GET_LIST_PRODUCTS": "/",
+    "CREATE_PRODUCT": "/",
+    "GET_PRODUCT": "/{product_id}",
+    "UPDATE_PRODUCT": "/{product_id}",
+    "DELETE_PRODUCT": "/{product_id}",
+}
+# ===========================
 
 
 DB_PORT: int = 3306
@@ -55,6 +66,15 @@ You can use this API to manage roles.
 
 - **Create Role**: Create a new role.
 
+## Product:
+
+You can use this API to manage products.
+- **Get List Products**: Get list of products.
+- **Create Product**: Create a new product.
+- **Get Product**: Get a product by id.
+- **Update Product**: Update a product by id.
+- **Delete Product**: Delete a product by id.
+
 """
 SUMMARY: str = "This is a simple API for E-Commerce"
 VERSION: str = "0.0.1"
@@ -81,6 +101,11 @@ DOCUMENTATIONS: dict = {
             "description": "Auth endpoints usefull for user authentication.",
         },
         {"name": "Role", "description": "Role endpoints usefull for role management."},
+        {"name": "User", "description": "User endpoints usefull for user management."},
+        {
+            "name": "Product",
+            "description": "Product endpoints usefull for product management.",
+        },
     ],
 }
 
@@ -96,5 +121,10 @@ REFRESH_TOKEN_EXPIRE = config["REFRESH_TOKEN_EXPIRE"]
 FORGOT_CODE_EXPIRE = config["FORGOT_CODE_EXPIRE"]
 
 # ********** Create demo user **********
-PHONE_NUMBER = '1234'
-USERNAME = 'ABC@@'
+PHONE_NUMBER = "1234"
+USERNAME = "ABC@@"
+
+# ********** S3 **********
+
+AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]

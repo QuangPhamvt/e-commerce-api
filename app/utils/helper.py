@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import uuid
 import bcrypt
+import re
 from dotenv import dotenv_values
 from fastapi import HTTPException, status
 import resend
@@ -155,15 +156,39 @@ class Helper:
     @staticmethod
     def correct_fullname(first_name: str, last_name: str):
         """
-        Check and correct user fullname: 
+        Check and correct user fullname:
             + remove redundant spaces
-            + capitalize the first letter  
+            + capitalize the first letter
         """
-        fullname = first_name.lower().strip() + ' ' + last_name.lower().strip()
-        while(fullname.find("  ") != -1):
+        fullname = first_name.lower().strip() + " " + last_name.lower().strip()
+        while fullname.find("  ") != -1:
             fullname = fullname.replace("  ", " ")
         fullname = fullname.title()
         return fullname
+
+    @staticmethod
+    def slugify(title: str):
+        """
+        Convert title to slug
+        """
+        slug = title.lower().strip()
+
+        slug = re.sub(r"/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi", "a", slug)
+        slug = re.sub(r"/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi", "e", slug)
+        slug = re.sub(r"/i|í|ì|ỉ|ĩ|ị/gi", "i", slug)
+        slug = re.sub(r"/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi", "o", slug)
+        slug = re.sub(r"/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi", "u", slug)
+        slug = re.sub(r"/ý|ỳ|ỷ|ỹ|ỵ/gi", "y", slug)
+        slug = re.sub(r"/đ/gi", "d", slug)
+        slug = re.sub(
+            r"/\`|\~|\!|\@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi",
+            "",
+            slug,
+        )
+        slug = re.sub(r"[^\w\s-]", "", slug)
+        slug = re.sub(r"[\s_-]+", "-", slug)
+        slug = re.sub(r"^-+|-+$", "", slug)
+        return slug
 
 
 helper: Helper = Helper()
