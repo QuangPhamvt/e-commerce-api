@@ -101,6 +101,7 @@ class Category(Base):
 
     id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
     name: Mapped[str] = mapped_column("name", String(50), unique=True)
+    slug: Mapped[str] = mapped_column("slug", String(50), unique=True, nullable=True)
     parent_id: Mapped[UUID] = mapped_column("parent_id", Uuid, nullable=True)
     description: Mapped[str] = mapped_column("description", Text(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -112,16 +113,34 @@ class Category(Base):
         "Product", back_populates="category"
     )
 
-    def __init__(self, id: UUID, name: str, parent_id: UUID, description: str):
+    def __init__(
+        self,
+        id: UUID,
+        name: str,
+        parent_id: UUID | None,
+        description: str,
+        slug: str | None,
+    ):
         print("Category model")
+        if parent_id:
+            self.parent_id = parent_id
+        if slug:
+            self.slug = slug
         self.id = id
         self.name = name
-        self.parent_id = parent_id
         self.description = description
         self.created_at = datetime.today()
 
     def __repr__(self):
         return f"<Category {self.name}>"
+
+    def asdict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "slug": self.slug,
+            "description": self.description,
+        }
 
 
 # TAG TABLE

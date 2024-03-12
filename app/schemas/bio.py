@@ -2,14 +2,17 @@ from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
+
 class BioBase(BaseModel):
     user_id: UUID
     username: str
     fullname: str
     phone_number: str | None = None
 
+
 class CreateBioParam(BioBase):
     pass
+
 
 class Bio(BioBase):
     id: UUID
