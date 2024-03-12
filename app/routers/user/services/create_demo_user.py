@@ -67,5 +67,4 @@ class CreateDemoUser:
             username=USERNAME,
             phone_number=PHONE_NUMBER,
         )
-        new_bio = await bio_crud.create_bio(db=db, user_data=new_bio_param)
-        return new_bio
+        await bio_crud.create_bio(db=db, user_data=new_bio_param)

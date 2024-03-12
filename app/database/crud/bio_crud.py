@@ -15,5 +15,3 @@ async def create_bio(db: AsyncSession, user_data: CreateBioParam) -> Bio:
     )
     db.add(db_bio)
     await db.commit()
-    await db.refresh(db_bio)
-    return db_bio

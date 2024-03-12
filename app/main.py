@@ -9,7 +9,7 @@ from app.database import Base
 from app.dependencies import get_current_username
 
 from .database import engine_local
-from .routers import roles, auth, user, product
+from .routers import roles, auth, user, product, category
 from .middlewares import db_session_middleware, log_middleware
 from .configs.constants import DOCUMENTATIONS
 
@@ -50,6 +50,7 @@ app.include_router(auth.router)
 app.include_router(roles.router)
 app.include_router(user.router)
 app.include_router(product.router)
+app.include_router(category.router)
 
 
 @app.get("/")

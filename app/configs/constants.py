@@ -40,6 +40,9 @@ PRODUCT_PATH: dict = {
 }
 # ===========================
 
+# ********** Category **********
+CATEGORY: str = "Category"
+CATEGORY_PREFIX: str = "/categories"
 
 DB_PORT: int = 3306
 
