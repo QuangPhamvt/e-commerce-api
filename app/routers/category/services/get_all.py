@@ -8,8 +8,7 @@ class GetAll:
     @staticmethod
     async def get_all(current: int, limit: int, db: AsyncSession):
         offset = (current - 1) * limit
-        total_category = await category_crud.get_all(db=db)
-        total_items = len(total_category)
+        total_items = await category_crud.count_category(db=db) or 0
         total_pages = ceil(total_items / limit)
         list_category = await category_crud.get_all_with_paginate(
             offset=offset, limit=limit, db=db

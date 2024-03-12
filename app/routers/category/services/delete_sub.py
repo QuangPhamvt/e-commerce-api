@@ -13,7 +13,6 @@ class DeleteSub:
         is_valid_id = await category_crud.get_category_by_id_and_parent_id(
             id=id, parent_id=parent_id, db=db
         )
-        print(f"parentId: {parent_id}, id: {id}")
         if not is_valid_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,5 +1,6 @@
 from uuid import UUID
 from sqlalchemy import delete, select, update
+from sqlalchemy.sql.expression import func
 from app.database.models.Product import Category
 from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -66,12 +67,14 @@ async def update_category(id: UUID, category: UpdateCategoryParam, db: AsyncSess
     await db.commit()
 
 
-async def get_all(db: AsyncSession):
+async def count_category(db: AsyncSession):
     none_id = None
-    list_category = await db.execute(
-        select(Category).where(Category.parent_id == none_id)
+    count = await db.execute(
+        select(func.count(Category.id))
+        .where(Category.parent_id == none_id)
+        .order_by(None)
     )
-    return list_category.scalars().all()
+    return count.scalar()
 
 
 async def get_all_with_paginate(offset: int, limit: int, db: AsyncSession):
