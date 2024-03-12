@@ -88,7 +88,6 @@ DOCUMENTATIONS: dict = {
     "summary": SUMMARY,
     "version": VERSION,
     "description": DESCRIPTION,
-    "docs_url": DOCS_URL,
     "root_path": ROOT_PATH,
     "contact": {
         "name": "CustomAFK",
