@@ -11,7 +11,8 @@ class Create:
         is_exist_name = await role_crud.get_role_by_name(db=db, role_name=role.name)
         if is_exist_name:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Name has been used!"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Name has been used!",
             )
         await role_crud.create_role(db=db, role=role)
         return {"message": "Create role succeed!"}

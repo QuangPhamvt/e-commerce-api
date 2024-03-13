@@ -1,4 +1,3 @@
-from enum import Enum
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
@@ -28,6 +27,7 @@ class UserResponse(UserBase):
     is_active: bool
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
 
 class CreateDemoUserParam(UserBase):
     password: str

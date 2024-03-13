@@ -11,6 +11,7 @@ async def get_role_by_name(db: AsyncSession, role_name: str) -> Role | None:
     result = await db.execute(select(Role).where(Role.name == role_name))
     return result.scalars().first()
 
+
 async def get_role_id_by_name(db: AsyncSession, role_name: str) -> UUID | None:
     result = await db.execute(select(Role.id).where(Role.name == role_name))
     return result.scalars().first()

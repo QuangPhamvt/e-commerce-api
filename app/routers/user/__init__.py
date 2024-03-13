@@ -10,15 +10,16 @@ GET_LIST_USERS = USER_PATH["GET_LIST_USERS"]
 CREATE_DEMO_USER = USER_PATH["CREATE_DEMO_USER"]
 
 router = APIRouter(
-    prefix=USER_PREFIX, 
+    prefix=USER_PREFIX,
     tags=[USER],
     responses={
         400: {
             "model": ResBadRequest,
             "description": "Description when error occurs",
         },
-    },    
+    },
 )
+
 
 # ********** Get List Users **********
 @router.get(
@@ -46,5 +47,7 @@ async def get_list_users(db: AsyncSession = Depends(get_db)):
         },
     },
 )
-async def create_demo_user(user: CreateDemoUserParam, db: AsyncSession = Depends(get_db)):
+async def create_demo_user(
+    user: CreateDemoUserParam, db: AsyncSession = Depends(get_db)
+):
     return await UserService().create_demo_user(user=user, db=db)

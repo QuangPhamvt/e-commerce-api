@@ -87,7 +87,6 @@ async def sign_in(
 async def logout(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ):
-    print(1)
     return await AuthService().logout(request=request, response=response, db=db)
 
 

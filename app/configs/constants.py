@@ -22,11 +22,10 @@ AUTH_PATH: dict = {
 # ********** User **********
 USER: str = "User"
 USER_PREFIX: str = "/users"
-USER_PATH: dict = {
-    "GET_LIST_USERS": "/",
-    "CREATE_DEMO_USER": "/"
-}
+USER_PATH: dict = {"GET_LIST_USERS": "/", "CREATE_DEMO_USER": "/"}
 # ===========================
+CATEGORY: str = "Category"
+CATEGORY_PREFIX: str = "/categories"
 
 # ********** Role **********
 ROLE: str = "Role"
@@ -112,5 +111,5 @@ REFRESH_TOKEN_EXPIRE = config["REFRESH_TOKEN_EXPIRE"]
 FORGOT_CODE_EXPIRE = config["FORGOT_CODE_EXPIRE"]
 
 # ********** Create demo user **********
-PHONE_NUMBER = '1234'
-USERNAME = 'ABC@@'
+PHONE_NUMBER = "1234"
+USERNAME = "ABC@@"

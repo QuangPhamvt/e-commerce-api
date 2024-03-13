@@ -30,8 +30,8 @@ router = APIRouter(
     responses={
         200: {
             "description": "Create role succeed!",
-        }
-    }             
+        },
+    },    
 )
 async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db)):
     return await RoleService().create(role=role, db=db)
@@ -43,8 +43,8 @@ async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db))
     responses={
         200: {
             "description": "Get list roles succeed!",
-        }
-    }        
+        },
+    },
 )
 async def get_list_roles(db: AsyncSession = Depends(get_db)):
     return await RoleService().get_all(db=db)
@@ -56,8 +56,8 @@ async def get_list_roles(db: AsyncSession = Depends(get_db)):
     responses={
         200: {
             "description": "Delete role succeed!",
-        }
-    }          
+        },
+    },        
 )
 async def delete_role(id: str, db: AsyncSession = Depends(get_db)):
     return await RoleService().delete(id=id, db=db)
@@ -69,8 +69,8 @@ async def delete_role(id: str, db: AsyncSession = Depends(get_db)):
     responses={
         200: {
             "description": "Update role succeed!",
-        }
-    }  
+        },
+    },
 )
 async def update_role(
     id: str, 

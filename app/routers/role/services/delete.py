@@ -12,7 +12,7 @@ class Delete:
         if not is_valid_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Id not found!"
+                detail="Id not found!",
             )
         await role_crud.delete_role_by_id(role_id=role_id, db=db)
         return {"message": "Delete Role succeed!"}
