@@ -1,7 +1,7 @@
 import boto3
 
 
-def delete_object_s3(bucket_name: str, object_name: str):
+async def delete_object_s3(bucket_name: str, object_name: str):
     """
     Delete object from S3 bucket
 
@@ -11,6 +11,5 @@ def delete_object_s3(bucket_name: str, object_name: str):
     """
 
     s3_client = boto3.client("s3")
-    response = s3_client.delete_object(Bucket=bucket_name, Key=object_name)
-    print(response)
-    pass
+    response = await s3_client.delete_object(Bucket=bucket_name, Key=object_name)
+    return response
