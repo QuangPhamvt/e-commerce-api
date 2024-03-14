@@ -5,33 +5,40 @@ from app.configs.constants import CATEGORY, CATEGORY_PREFIX
 from app.dependencies import get_db
 from app.routers.category.services import CategoryService
 from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
+from app.schemas.responses import Res201Resquest
 
 
 router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
 
 
+# ********** CATEGORY **********
 @router.post(
     "",
     description="This endpoint is used to create a category",
     status_code=status.HTTP_201_CREATED,
-    responses={201: {"description": "Create category succeed!"}},
+    responses={
+        201: {"description": "Create category succeed!", "model": Res201Resquest}
+    },
 )
 async def create_category(
     category: CreateCategoryParam, db: AsyncSession = Depends(get_db)
 ):
-    return await CategoryService().create(category=category, db=db)
+    return await CategoryService().create(category, db)
 
 
+# ********** SUB-CATEGORY **********
 @router.post(
     "/{id}",
     description="This endpoint is used to create a sub-category",
     status_code=status.HTTP_201_CREATED,
-    responses={201: {"description": "Create sub-category succeed!"}},
+    responses={
+        201: {"description": "Create sub-category succeed!", "model": Res201Resquest}
+    },
 )
 async def create_sub_category(
     category: CreateCategoryParam, id: str, db: AsyncSession = Depends(get_db)
 ):
-    return await CategoryService().create_sub(category=category, id=id, db=db)
+    return await CategoryService().create_sub(category, id, db)
 
 
 @router.delete(

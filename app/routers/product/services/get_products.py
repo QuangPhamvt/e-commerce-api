@@ -1,7 +1,7 @@
 from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud.product_crud import ProductCRUD
-from app.database.models.Product import Product
+from app.database.models import Product
 from app.configs.S3.get_object import get_object
 
 

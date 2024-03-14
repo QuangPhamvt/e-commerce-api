@@ -14,9 +14,9 @@ class DeleteProductById:
 
         await self.__delete_image_S3(product.image)
         await ProductCRUD(db).delete_by_id(id)
-        return {"message": "Product deleted successfully"}
+        return {"detail": "Product deleted successfully"}
 
     @staticmethod
     async def __delete_image_S3(image: str):
-        await delete_object_s3("customafk-ecommerce-web", image)
+        delete_object_s3("customafk-ecommerce-web", image)
         pass

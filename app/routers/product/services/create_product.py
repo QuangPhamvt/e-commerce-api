@@ -17,28 +17,23 @@ class CreateProduct:
         new_product = ProductCreateCRUD(image=url, **body.model_dump())
         await ProductCRUD(db).create(new_product)
 
-        data = self.__create_presigned_url(
-            bucket_name="customafk-ecommerce-web", slug=slug
-        )
+        data = self.__create_presigned_url("customafk-ecommerce-web", slug)
 
         if data is None:
             raise HTTPException(
-                status_code=status.HTTT_400_BAD_REQUEST,
-                detail="Failed to create presigned URL",
+                status.HTTT_400_BAD_REQUEST, "Failed to create presigned URL"
             )
-        return data
+
+        return {"detail": "Product created successfully", "presigned_url": data}
 
     @staticmethod
     async def __check_product_exist(slug: str, db: AsyncSession):
         product = await ProductCRUD(db).get_product_by_slug(slug)
         if product:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Product already exists!",
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product already exists!")
         pass
 
     @staticmethod
     def __create_presigned_url(bucket_name: str, slug: str):
         url = f"products/{slug}.webp"
-        return put_object(bucket_name, object_name=url)
+        return put_object(bucket_name, url)

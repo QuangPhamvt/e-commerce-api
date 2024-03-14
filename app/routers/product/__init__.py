@@ -6,6 +6,7 @@ from app.configs.constants import PRODUCT, PRODUCT_PREFIX
 from app.dependencies import get_db
 from app.schemas.product import BodyCreateProduct, BodyUpdateProduct, ResCreateProduct
 from app.routers.product.services import ProductService
+from app.schemas.responses import Res201Resquest
 
 
 router = APIRouter(
@@ -63,9 +64,7 @@ async def get_product(product_id: UUID):
     description="This endpoint is used to update a product by id.",
     status_code=200,
     responses={
-        200: {
-            "description": "Update Product Succeed!",
-        },
+        200: {"description": "Update Product Succeed!", "model": Res201Resquest},
     },
 )
 async def update_product(
@@ -80,9 +79,7 @@ async def update_product(
     response_description="This endpoint is used to delete a product by id.",
     status_code=200,
     responses={
-        200: {
-            "description": "Delete Product Succeed!",
-        },
+        200: {"description": "Delete Product Succeed!", "model": Res201Resquest},
     },
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):

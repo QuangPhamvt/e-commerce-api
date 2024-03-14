@@ -1,14 +1,5 @@
-from typing_extensions import TypedDict
 from uuid import UUID
 from pydantic import BaseModel, Field
-
-
-class FieldResCreateProduct(TypedDict):
-    key: str
-    AWSAccessKeyId: str
-    policy: str
-    signature: str
-    pass
 
 
 class ProductBase(BaseModel):
@@ -118,24 +109,15 @@ class BodyCreateProduct(ProductBase):
 
 
 class ResCreateProduct(BaseModel):
-    url: str = Field(
-        title="URL",
-        description="URL of product",
-        examples=[
-            "https://customafk-ecommerce-web.s3.amazonaws.com/products/iphone-13.png"
-        ],
+    detail: str = Field(
+        title="Detail",
+        description="Detail of product",
+        examples=["Product created successfully"],
     )
-    fields: FieldResCreateProduct = Field(
-        title="Fields",
-        description="Fields of product",
-        examples=[
-            {
-                "key": "products/iphone-13.png",
-                "AWSAccessKeyId": "AKIA6Z3Z6Z3Z6Z3Z6Z3Z",
-                "policy": "eyJleHBpcmF0aW9uIjoiMjAyMi0xMC0yMlQxNzowMzowM1oiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJjdXN0b21hZms...=",
-                "signature": "Zm9vYmFy",
-            }
-        ],
+    presigned_url: str = Field(
+        title="Presigned URL",
+        description="Presigned URL of product",
+        examples=["https://example.com/image.jpg"],
     )
 
 

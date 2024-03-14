@@ -30,6 +30,8 @@ phases:
           echo "REFRESH_TOKEN_SECRET=$REFRESH_TOKEN_SECRET" >> .env
           echo "REFRESH_TOKEN_EXPIRE=$REFRESH_TOKEN_EXPIRE" >> .env
           echo "FORGOT_CODE_EXPIRE=600" >> .env
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
           else
           echo "Have exist file environments"
         fi

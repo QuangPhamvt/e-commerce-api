@@ -25,15 +25,13 @@ class Helper:
         return hash
 
     @staticmethod
-    def verify_password(*, password: str, hash_password: str) -> bool:
+    def verify_password(password: str, hash_password: str) -> bool:
         """
         Verify password using bcrypt
         """
         password_byte: bytes = password.encode("utf-8")
         hash_password_byte: bytes = hash_password.encode("utf-8")
-        return bcrypt.checkpw(
-            password=password_byte, hashed_password=hash_password_byte
-        )
+        return bcrypt.checkpw(password_byte, hash_password_byte)
 
     @staticmethod
     def verify_email(*, send_from: str, send_to: str, token: str):
@@ -53,7 +51,7 @@ class Helper:
         return email
 
     @staticmethod
-    def forgot_email(*, send_from: str, send_to: str, code: str):
+    def forgot_email(send_from: str, send_to: str, code: str):
         """
         Send email to forgot password
         """
@@ -83,11 +81,9 @@ class Helper:
     def verify_token(token: str):
         key = config["VERIFY_EMAIL_SECRET"] or "key"
         try:
-            decode = jwt.decode(jwt=token, key=key, algorithms=["HS256"])
+            decode = jwt.decode(token, key, algorithms=["HS256"])
         except jwt.PyJWTError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Token"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid Token")
         user_id: str = decode.get("user_id")
         return user_id
 
@@ -114,22 +110,17 @@ class Helper:
         user_id = str(user.id)
         role_id = str(user.role_id)
         payload = {"id": user_id, "role_id": role_id, "exp": expire}
-        token = jwt.encode(
-            payload=payload,
-            key=key,
-            algorithm=algorithm,
-        )
+        token = jwt.encode(payload, key, algorithm)
         return token
 
     @staticmethod
     def verify_access_token(token: str):
         secret = config["ACCESS_TOKEN_SECRET"] or "secret"
         try:
-            decode = jwt.decode(jwt=token, key=secret, algorithms=["HS256"])
+            decode = jwt.decode(token, secret, algorithms=["HS256"])
         except jwt.PyJWTError:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid access token. Please Re-login",
+                status.HTTP_401_UNAUTHORIZED, "Invalid access token. Please Re-login"
             )
         return decode
 
@@ -137,11 +128,10 @@ class Helper:
     def verify_refresh_token(token: str):
         secret = config["REFRESH_TOKEN_SECRET"] or "secret"
         try:
-            decode = jwt.decode(jwt=token, key=secret, algorithms=["HS256"])
+            decode = jwt.decode(token, secret, algorithms=["HS256"])
         except jwt.PyJWTError:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid refresh token. Please Re-login",
+                status.HTTP_400_BAD_REQUEST, "Invalid refresh token. Please Re-login"
             )
         return decode
 
@@ -173,13 +163,13 @@ class Helper:
         """
         slug = title.lower().strip()
 
-        slug = re.sub(r"/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi", "a", slug)
-        slug = re.sub(r"/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi", "e", slug)
-        slug = re.sub(r"/i|í|ì|ỉ|ĩ|ị/gi", "i", slug)
-        slug = re.sub(r"/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi", "o", slug)
-        slug = re.sub(r"/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi", "u", slug)
-        slug = re.sub(r"/ý|ỳ|ỷ|ỹ|ỵ/gi", "y", slug)
-        slug = re.sub(r"/đ/gi", "d", slug)
+        slug = re.sub(r"á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ", "a", slug)
+        slug = re.sub(r"é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ", "e", slug)
+        slug = re.sub(r"i|í|ì|ỉ|ĩ|ị/gi", "i", slug)
+        slug = re.sub(r"ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ", "o", slug)
+        slug = re.sub(r"ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự", "u", slug)
+        slug = re.sub(r"ý|ỳ|ỷ|ỹ|ỵ", "y", slug)
+        slug = re.sub(r"đ", "d", slug)
         slug = re.sub(
             r"/\`|\~|\!|\@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi",
             "",
