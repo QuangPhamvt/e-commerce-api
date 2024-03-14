@@ -6,23 +6,24 @@ from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import defer
 from app.utils.uuid import generate_uuid
+from app.utils.helper import helper
 
 
 async def create_category(
     category: CreateCategoryParam, parent_id: UUID | None, db: AsyncSession
 ):
     id = generate_uuid()
+    slug = helper.slugify(category.name)
     db_category = Category(
         id=id,
-        name=category.name,
-        description=category.description,
-        slug=category.slug,
+        slug=slug,
         parent_id=parent_id,
+        **category.model_dump(),
     )
     db.add(db_category)
     await db.commit()
     await db.refresh(db_category)
-    return db_category
+    pass
 
 
 async def is_exist_name(name: str, db: AsyncSession):
@@ -53,15 +54,13 @@ async def delete_category(id: UUID, db: AsyncSession):
 
 
 async def update_category(id: UUID, category: UpdateCategoryParam, db: AsyncSession):
+    slug = helper.slugify(category.name)
     await db.execute(
         update(Category)
         .where(Category.id == id)
         .values(
-            {
-                "name": category.name,
-                "description": category.description,
-                "slug": category.slug,
-            }
+            **category.model_dump(),
+            slug=slug,
         )
     )
     await db.commit()

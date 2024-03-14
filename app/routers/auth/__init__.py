@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .services import AuthService
 from app import dependencies
 from app.dependencies import get_db
-from app.schemas.auth import UserSignInParam, UserSignUpParam, VerifyParam
+from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.utils.helper import helper
 from app.configs.constants import AUTH, AUTH_PATH, AUTH_PREFIX
 from app.schemas.responses import ResBadRequest
@@ -115,9 +115,7 @@ async def refresh(
     description="This endpoint is used to get user's information.",
     status_code=status.HTTP_200_OK,
     responses={
-        200: {
-            "description": "Get Me Succeed!",
-        },
+        200: {"description": "Get Me Succeed!", "model": ResGetMe},
     },
 )
 async def get_me(request: Request, db: AsyncSession = Depends(get_db)):

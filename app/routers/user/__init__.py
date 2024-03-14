@@ -3,7 +3,7 @@ from app.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.responses import ResBadRequest
 from .services import UserService
-from app.schemas.user import CreateDemoUserParam
+from app.schemas.user import CreateDemoUserParam, ResGetListUsers
 from app.configs.constants import USER, USER_PREFIX, USER_PATH
 
 GET_LIST_USERS = USER_PATH["GET_LIST_USERS"]
@@ -29,11 +29,12 @@ router = APIRouter(
     responses={
         200: {
             "description": "Get List Users Succeed!",
+            "model": ResGetListUsers,
         },
     },
 )
 async def get_list_users(db: AsyncSession = Depends(get_db)):
-    return await UserService().get_list_users(db=db)
+    return await UserService().get_list_users(db)
 
 
 # ********** Create Demo User **********

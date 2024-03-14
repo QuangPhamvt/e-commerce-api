@@ -4,14 +4,10 @@ from app.utils.uuid import generate_uuid
 from app.schemas.bio import CreateBioParam
 
 
-async def create_bio(db: AsyncSession, user_data: CreateBioParam) -> Bio:
+async def create_bio(db: AsyncSession, user_data: CreateBioParam):
     bio_id = generate_uuid()
-    db_bio = Bio(
-        id=bio_id,
-        user_id=user_data.user_id,
-        username=user_data.username,
-        fullname=user_data.fullname,
-        phone_number=user_data.phone_number,
-    )
+    if user_data.phone_number is None:
+        user_data.phone_number = ""
+    db_bio = Bio(id=bio_id, **user_data.model_dump())
     db.add(db_bio)
     await db.commit()

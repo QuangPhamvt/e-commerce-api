@@ -36,16 +36,18 @@ class Product(Base):
     id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
     name: Mapped[str] = mapped_column("name", String(50), unique=True)
     description: Mapped[str] = mapped_column("description", Text(), nullable=True)
-    original_price: Mapped[float] = mapped_column("original_price", Float)
-    sell_price: Mapped[float] = mapped_column("sell_price", Float)
-    quantity: Mapped[int] = mapped_column("quantity", Integer)
-    image: Mapped[str] = mapped_column("image", String(255))
+    original_price: Mapped[float] = mapped_column(
+        "original_price", Float, nullable=True
+    )
+    sell_price: Mapped[float] = mapped_column("sell_price", Float, nullable=True)
+    quantity: Mapped[int] = mapped_column("quantity", Integer, nullable=True)
+    image: Mapped[str] = mapped_column("image", String(255), nullable=True)
     slug: Mapped[str] = mapped_column("slug", String(255), unique=True)
-    country: Mapped[str] = mapped_column("country", String(50))
-    factory: Mapped[str] = mapped_column("factory", String(50))
-    status: Mapped[str] = mapped_column("status", String(12))
-    category_id: Mapped[UUID] = mapped_column(
-        "category_id", Uuid, ForeignKey("Category.id")
+    country: Mapped[str] = mapped_column("country", String(50), nullable=True)
+    factory: Mapped[str] = mapped_column("factory", String(50), nullable=True)
+    status: Mapped[str] = mapped_column("status", String(12), nullable=True)
+    category_id: Mapped[UUID | None] = mapped_column(
+        "category_id", Uuid, ForeignKey("Category.id"), default=None, nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(
         "created_at", DateTime, default=datetime.today()
@@ -70,7 +72,7 @@ class Product(Base):
         country: str,
         factory: str,
         status: str,
-        category_id: UUID,
+        category_id: UUID | None = None,
     ):
         print("Product model")
         self.id = id

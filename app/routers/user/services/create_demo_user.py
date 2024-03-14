@@ -5,66 +5,62 @@ from app.schemas.bio import CreateBioParam
 from fastapi import HTTPException, status
 from app.utils.helper import helper
 from uuid import UUID
-from app.configs.constants import PHONE_NUMBER, USERNAME
+from app.configs.constants import PHONE_NUMBER
 
 
 class CreateDemoUser:
     async def create_demo_user(self, user: CreateDemoUserParam, db: AsyncSession):
-        role_id = await self.get_role_id(db=db, role_name=user.role_name)
-        await self.check_user_exist(email=user.email, db=db)
-        new_user = await self.create_user(
-            email=user.email, password=user.password, role_id=role_id, db=db
+        role_id = await self.__get_role_id(db, user.role_name)
+        await self.__check_user_exist(email=user.email, db=db)
+
+        new_user = await self.__create_user(
+            **user.model_dump(exclude={"role_name", "first_name", "last_name"}),
+            role_id=role_id,
+            db=db,
         )
-        await self.create_bio(
+        await self.__create_bio(
+            **user.model_dump(exclude={"role_name", "password"}),
             user_id=new_user.id,
-            first_name=user.first_name,
-            last_name=user.last_name,
             db=db,
         )
         return {
-            "message": "User has been created successfully!",
+            "detail": "User has been created successfully!",
         }
 
     # Get role
     @staticmethod
-    async def get_role_id(db: AsyncSession, role_name: str):
-        role_id = await role_crud.get_role_id_by_name(db=db, role_name=role_name)
+    async def __get_role_id(db: AsyncSession, role_name: str):
+        role_id = await role_crud.get_role_id_by_name(db, role_name)
         if role_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Role not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Role not found!")
         return role_id
 
     # Check if demo user already exists
     @staticmethod
-    async def check_user_exist(email: str, db: AsyncSession):
+    async def __check_user_exist(email: str, db: AsyncSession):
         get_user_by_email = user_crud.get_user_by_email
         exist_user = await get_user_by_email(email=email, db=db)
         if exist_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Email has been used!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email has been used!")
         pass
 
     # Create new demo user
     @staticmethod
-    async def create_user(email: str, password: str, role_id: UUID, db: AsyncSession):
+    async def __create_user(email: str, password: str, role_id: UUID, db: AsyncSession):
         create_user = user_crud.create_user
         new_user_obj = CreateUserParam(email=email, password=password, role_id=role_id)
-        new_user = await create_user(user=new_user_obj, db=db)
+        new_user = await create_user(new_user_obj, db)
         return new_user
 
     # Create new bio
     @staticmethod
-    async def create_bio(
-        user_id: UUID, first_name: str, last_name: str, db: AsyncSession
+    async def __create_bio(
+        user_id: UUID, email: str, first_name: str, last_name: str, db: AsyncSession
     ):
         new_bio_param = CreateBioParam(
             user_id=user_id,
-            fullname=helper.correct_fullname(
-                first_name=first_name, last_name=last_name
-            ),
-            username=USERNAME,
+            fullname=helper.correct_fullname(first_name, last_name),
+            username=email.split("@")[0],
             phone_number=PHONE_NUMBER,
         )
-        await bio_crud.create_bio(db=db, user_data=new_bio_param)
+        await bio_crud.create_bio(db, new_bio_param)

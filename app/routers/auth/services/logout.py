@@ -12,7 +12,7 @@ class Logout:
         response.delete_cookie(key="access_token")
         response.delete_cookie(key="refresh_token")
         if refresh_token:
-            payload = helper.verify_refresh_token(token=refresh_token)
+            payload = helper.verify_refresh_token(refresh_token)
             user_id = UUID(payload["id"])
-            await user_crud.update_refresh_token(id=user_id, refresh_token=None, db=db)
+            await user_crud.update_refresh_token(user_id, None, db)
         return {"message": "Logout Succeed!"}

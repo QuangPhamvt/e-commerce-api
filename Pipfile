@@ -20,6 +20,7 @@ pydantic = {extras = ["email"], version = "*"}
 resend = "*"
 pyjwt = "*"
 greenlet = "*"
+boto3 = "*"
 
 [dev-packages]
 ruff = "*"
