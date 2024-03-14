@@ -15,12 +15,10 @@ class CreateSub:
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Name has been used!"
             )
         parent_id = convert_str_to_uuid(id)
-        is_valid_parent_id = await category_crud.get_category_by_id(id=parent_id, db=db)
+        is_valid_parent_id = await category_crud.get_category_by_id(parent_id, db)
         if not is_valid_parent_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Parent's id not found!"
             )
-        await category_crud.create_category(
-            category=category, parent_id=parent_id, db=db
-        )
-        return {"message": "Create Sub-category Succeed!"}
+        await category_crud.create_category(category, parent_id, db)
+        return {"detail": "Create Sub-category Succeed!"}

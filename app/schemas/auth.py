@@ -14,6 +14,11 @@ class AuthBase(BaseModel):
 
 
 class UserSignUpParam(AuthBase):
+    fullname: str = Field(
+        title="Fullname",
+        description="Fullname of user",
+        examples=["Pham Minh Quang"],
+    )
     pass
 
 
@@ -39,3 +44,11 @@ class TokenPayload(BaseModel):
 
 class VerifyPayload(BaseModel):
     user_id: UUID
+
+
+class ResGetMe(BaseModel):
+    id: UUID
+    role_id: UUID
+    email: EmailStr
+    is_active: bool
+    pass

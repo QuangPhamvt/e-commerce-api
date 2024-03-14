@@ -1,17 +1,20 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.database import Base
+from app.dependencies import get_current_username
 
 from .database import engine_local
-from .routers import roles, auth, user, category
+from .routers import roles, auth, user, product, category
 from .middlewares import db_session_middleware, log_middleware
 from .configs.constants import DOCUMENTATIONS
 
 
-app = FastAPI(**DOCUMENTATIONS)
+app = FastAPI(docs_url=None, **DOCUMENTATIONS)
 
 origins = [
     "http://localhost:3000",
@@ -46,9 +49,22 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(roles.router)
 app.include_router(user.router)
+app.include_router(product.router)
 app.include_router(category.router)
 
 
 @app.get("/")
 async def read_root():
     return {"msg": "Hello World"}
+
+
+@app.get("/docs", include_in_schema=False)
+async def get_swagger_documentation(username: str = Depends(get_current_username)):
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json", title="E-commerce API Documentation"
+    )
+
+
+@app.get("/openapi.json", include_in_schema=False)
+async def openapi(username: str = Depends(get_current_username)):
+    get_openapi(title=app.title, version=app.version, routes=app.routes)
