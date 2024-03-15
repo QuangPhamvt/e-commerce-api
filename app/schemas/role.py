@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel
 
 
@@ -10,4 +11,4 @@ class CreateRoleParam(RoleBase):
 
 
 class Role(RoleBase):
-    id: str
+    id: UUID
