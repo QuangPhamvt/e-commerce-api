@@ -81,6 +81,6 @@ class SignUp:
             user_id=user_id,
             fullname=fullname,
             username=username,
-            phone_number=None,
+            phone_number="",
         )
         await bio_crud.create_bio(db=db, user_data=new_bio_param)
