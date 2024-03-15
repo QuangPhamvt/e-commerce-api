@@ -9,7 +9,7 @@ from app.database import Base
 from app.dependencies import get_current_username
 
 from .database import engine_local
-from .routers import role, auth, user, category
+from .routers import role, auth, user, category, product
 from .middlewares import db_session_middleware, log_middleware
 from .configs.constants import DOCUMENTATIONS
 
