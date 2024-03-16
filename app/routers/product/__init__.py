@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import PRODUCT, PRODUCT_PREFIX
 from app.dependencies import get_db
 from app.schemas.product import BodyCreateProduct, BodyUpdateProduct, ResCreateProduct
-from app.routers.product.services import ProductService
 from app.schemas.responses import Res201Resquest
+from app.services.product import ProductService
 
 
 router = APIRouter(
