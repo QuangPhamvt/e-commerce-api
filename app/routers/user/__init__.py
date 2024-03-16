@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, status
 from app.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.responses import ResBadRequest
-from .services import UserService
 from app.schemas.user import CreateDemoUserParam, ResGetListUsers
 from app.configs.constants import USER, USER_PREFIX, USER_PATH
+from app.services.user import UserService
 
 GET_LIST_USERS = USER_PATH["GET_LIST_USERS"]
 CREATE_DEMO_USER = USER_PATH["CREATE_DEMO_USER"]

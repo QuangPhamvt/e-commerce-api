@@ -1,13 +1,12 @@
 from fastapi import HTTPException, status
 from app.database.crud import role_crud
 from app.schemas.role import CreateRoleParam
-from app.database.models import Role
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class Create:
     @staticmethod
-    async def create(*, role: CreateRoleParam, db: AsyncSession) -> Role:
+    async def create(*, role: CreateRoleParam, db: AsyncSession):
         is_exist_name = await role_crud.get_role_by_name(db=db, role_name=role.name)
         if is_exist_name:
             raise HTTPException(
@@ -15,4 +14,4 @@ class Create:
                 detail="Name has been used!",
             )
         await role_crud.create_role(db=db, role=role)
-        return {"message": "Create role succeed!"}
+        return {"detail": "Create role succeed!"}

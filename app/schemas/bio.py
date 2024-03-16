@@ -7,7 +7,7 @@ class BioBase(BaseModel):
     user_id: UUID
     username: str
     fullname: str
-    phone_number: str
+    phone_number: str | None = None
 
 
 class CreateBioParam(BioBase):

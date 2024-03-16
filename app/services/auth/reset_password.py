@@ -19,7 +19,7 @@ class ResetPassword:
             id=exist_user.id, db=db
         )
         if user_reset_password:
-            now = datetime.utcnow()
+            now = datetime.today()
             expire_time = user_reset_password.expire_at
             is_valid_code = (
                 user_reset_password.code == verify_code and expire_time > now
