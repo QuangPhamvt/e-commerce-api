@@ -9,11 +9,9 @@ from app.utils.helper import helper
 
 class Create:
     async def create(self, body: CreateSeriesParam, db: AsyncSession):
-        is_exist = await self.__is_exist_series(name=body.name, db=db)
+        is_exist = await self.__is_exist_series(body.name, db)
         if is_exist:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Name has been used!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Name has been used!")
         slug = helper.slugify(body.name)
         image = f"series/{slug}.webp"
         data = CreateSeriesData(slug=slug, image=image, **body.model_dump())
@@ -29,7 +27,7 @@ class Create:
 
     @staticmethod
     async def __is_exist_series(name: str, db: AsyncSession):
-        is_exist = await series_crud.get_series_by_name(name=name, db=db)
+        is_exist = await series_crud.is_exist_name(name, db)
         return is_exist
 
     @staticmethod

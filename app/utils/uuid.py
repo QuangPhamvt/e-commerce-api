@@ -12,6 +12,4 @@ def convert_str_to_uuid(raw_id: str):
         new_uuid = uuid.UUID(raw_id)
         return new_uuid
     except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Id is not UUID type!"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Id is not UUID type!")

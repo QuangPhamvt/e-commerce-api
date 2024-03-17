@@ -50,9 +50,7 @@ class SignUp:
     async def __check_user_exist(email: str, db: AsyncSession):
         exist_user = await user_crud.get_user_by_email(email, db)
         if exist_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Email has been used!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email has been used!")
         pass
 
     # Get default role
@@ -60,9 +58,7 @@ class SignUp:
     async def __get_default_role(db: AsyncSession):
         user_role = await role_crud.get_role_by_name(db, DEFAULT_ROLE_NAME)
         if user_role is None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Role not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Role not found!")
         return user_role
 
     # Create new user

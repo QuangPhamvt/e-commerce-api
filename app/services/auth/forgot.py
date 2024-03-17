@@ -28,4 +28,4 @@ class Forgot:
         await user_crud.upsert_verify_code(exist_user.id, verify_code, expire_time, db)
         resend_sender = config["RESEND_SENDER"] or "noreply@localhost"
         helper.forgot_email(resend_sender, email, verify_code)
-        return {"message": "Mail has been sent!"}
+        return {"detail": "Mail has been sent!"}

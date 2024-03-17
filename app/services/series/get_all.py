@@ -8,7 +8,7 @@ from app.database.models.Product import Series
 
 class GetAll:
     async def get_all(self, db: AsyncSession):
-        series = await series_crud.get_all(db=db)
+        series = await series_crud.get_all(db)
         new_series = self.__convert_image_to_url(series)
         return new_series
 

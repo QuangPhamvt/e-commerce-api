@@ -12,9 +12,7 @@ class ResetPassword:
     ):
         exist_user = await user_crud.get_user_by_email(email=email, db=db)
         if not exist_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Email not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email not found!")
         user_reset_password = await user_crud.get_user_reset_password(
             id=exist_user.id, db=db
         )
@@ -29,8 +27,8 @@ class ResetPassword:
                 await user_crud.reset_password(
                     id=exist_user.id, hash_password=hash_password, db=db
                 )
-                return {"message": "Reset Password Succeed!"}
+                return {"detail": "Reset Password Succeed!"}
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect Verification Code! Maybe it's wrong or be expired",
+            status.HTTP_400_BAD_REQUEST,
+            "Incorrect Verification Code! Maybe it's wrong or be expired",
         )

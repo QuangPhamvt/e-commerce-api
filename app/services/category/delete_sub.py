@@ -15,9 +15,9 @@ class DeleteSub:
         )
         if not is_valid_id:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Incorrect id or parent id!",
+                status.HTTP_400_BAD_REQUEST,
+                "Incorrect id or parent id!",
             )
 
         await category_crud.delete_category(id=id, db=db)
-        return {"message": "Delete category succeed!"}
+        return {"detail": "Delete category succeed!"}

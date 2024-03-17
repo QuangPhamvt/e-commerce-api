@@ -8,7 +8,7 @@ from app.schemas.series import CreateSeriesData, UpdateSeriesData
 from app.utils.uuid import generate_uuid
 
 
-async def get_series_by_name(name: str, db: AsyncSession) -> UUID | None:
+async def is_exist_name(name: str, db: AsyncSession) -> UUID | None:
     result = await db.execute(select(Series.id).where(Series.name == name))
     return result.scalars().first()
 

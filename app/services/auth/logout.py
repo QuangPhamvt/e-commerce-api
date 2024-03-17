@@ -15,4 +15,4 @@ class Logout:
             payload = helper.verify_refresh_token(refresh_token)
             user_id = UUID(payload["id"])
             await user_crud.update_refresh_token(user_id, None, db)
-        return {"message": "Logout Succeed!"}
+        return {"detail": "Logout Succeed!"}

@@ -55,7 +55,7 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     },
 )
 async def get_product(product_id: UUID):
-    return {"message": f"Get Product {product_id} Succeed!"}
+    return {"detail": f"Get Product {product_id} Succeed!"}
 
 
 # ********** UPDATE PRODUCT BY ID **********

@@ -12,8 +12,8 @@ class Verify:
         user = await user_crud.get_user_by_id(db=db, id=user_id)
         if user and user.is_active:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User has been verified!",
+                status.HTTP_400_BAD_REQUEST,
+                "User has been verified!",
             )
         await user_crud.verify_user(db=db, user_id=user_id)
         return

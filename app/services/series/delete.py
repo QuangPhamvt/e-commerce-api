@@ -8,13 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class Delete:
     async def delete(self, id: str, db: AsyncSession):
         series_id = convert_str_to_uuid(id)
-        series = await series_crud.get_series_by_id(id=series_id, db=db)
+        series = await series_crud.get_series_by_id(series_id, db)
         if not series:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Series not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
         await self.__delete_image_S3(series.image)
-        await series_crud.delete_series(id=series_id, db=db)
+        await series_crud.delete_series(series_id, db)
         return {"detail": "Delete Series Succeed!"}
 
     @staticmethod

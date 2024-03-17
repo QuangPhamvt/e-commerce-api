@@ -62,7 +62,7 @@ async def verify(body: VerifyParam, db: AsyncSession = Depends(get_db)):
     token = body.token
     payload = helper.verify_token(token=token)
     await AuthService().verify(payload=payload, db=db)
-    return {"message": "Verify Succeed!"}
+    return {"detail": "Verify Succeed!"}
 
 
 # ********** SIGN IN **********
@@ -80,7 +80,7 @@ async def sign_in(
     user: UserSignInParam, response: Response, db: AsyncSession = Depends(get_db)
 ):
     await AuthService().sign_in(user=user, response=response, db=db)
-    return {"message": "Sign In Succeed!"}
+    return {"detail": "Sign In Succeed!"}
 
 
 @router.delete(LOG_OUT)
@@ -105,7 +105,7 @@ async def refresh(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ):
     await AuthService().refresh(request=request, response=response, db=db)
-    return {"message": "Refresh Succeed!"}
+    return {"detail": "Refresh Succeed!"}
 
 
 # ********** GET ME **********
