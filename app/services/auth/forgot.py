@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from dotenv import dotenv_values
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,8 +24,8 @@ class Forgot:
         )
         expire = FORGOT_CODE_EXPIRE or 600
         expire_seconds = int(expire)
-        expire_time = datetime.now(timezone.utc) + timedelta(expire_seconds)
+        expire_time = datetime.today() + timedelta(seconds=expire_seconds)
         await user_crud.upsert_verify_code(exist_user.id, verify_code, expire_time, db)
         resend_sender = config["RESEND_SENDER"] or "noreply@localhost"
         helper.forgot_email(resend_sender, email, verify_code)
-        return {"message": "Mail has been sent!"}
+        return {"detail": "Mail has been sent!"}

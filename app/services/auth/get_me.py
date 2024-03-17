@@ -14,7 +14,5 @@ class GetMe:
         user_id = UUID(decode["id"])
         user = await user_crud.get_user_by_id(user_id, db)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="User not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "User not found!")
         return ResGetMe(**user.__dict__)

@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import CATEGORY, CATEGORY_PREFIX
 from app.dependencies import get_db
-from app.routers.category.services import CategoryService
 from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
 from app.schemas.responses import Res201Resquest
+from app.services.category import CategoryService
 
 
 router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])

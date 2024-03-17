@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.S3.delete_object import delete_object_s3
 from app.database.crud.product_crud import ProductCRUD
@@ -10,7 +10,7 @@ class DeleteProductById:
         product = await ProductCRUD(db).get_product_by_id(id)
 
         if not product:
-            raise HTTPException(status_code=404, detail="Product not found")
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
 
         await self.__delete_image_S3(product.image)
         await ProductCRUD(db).delete_by_id(id)

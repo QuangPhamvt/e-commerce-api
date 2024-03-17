@@ -21,7 +21,7 @@ class CreateProduct:
 
         if data is None:
             raise HTTPException(
-                status.HTTT_400_BAD_REQUEST, "Failed to create presigned URL"
+                status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
             )
 
         return {"detail": "Product created successfully", "presigned_url": data}

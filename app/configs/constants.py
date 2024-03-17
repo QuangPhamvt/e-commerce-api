@@ -43,6 +43,9 @@ PRODUCT_PATH: dict = {
 # ********** Category **********
 CATEGORY: str = "Category"
 CATEGORY_PREFIX: str = "/categories"
+# ********** Series **********
+SERIES: str = "Series"
+SERIES_PREFIX: str = "/series"
 
 # ********** Role **********
 ROLE: str = "Role"
@@ -51,7 +54,7 @@ ROLE_PATH: dict = {
     "GET_LIST_ROLES": "",
     "CREATE_ROLE": "",
     "DELETE_ROLE": "/{id}",
-    "UPDATE_ROLE": "/{id}"
+    "UPDATE_ROLE": "/{id}",
 }
 # ===========================
 
@@ -113,14 +116,8 @@ DOCUMENTATIONS: dict = {
             "name": AUTH,
             "description": "Auth endpoints usefull for user authentication.",
         },
-        {
-            "name": ROLE, 
-            "description": "Role endpoints usefull for role management."
-        },
-        {
-            "name": USER, 
-            "description": "User endpoints usefull for user management."            
-        },
+        {"name": ROLE, "description": "Role endpoints usefull for role management."},
+        {"name": USER, "description": "User endpoints usefull for user management."},
         {
             "name": "Product",
             "description": "Product endpoints usefull for product management.",

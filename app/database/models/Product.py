@@ -49,12 +49,16 @@ class Product(Base):
     category_id: Mapped[UUID | None] = mapped_column(
         "category_id", Uuid, ForeignKey("Category.id"), default=None, nullable=True
     )
+    series_id: Mapped[UUID | None] = mapped_column(
+        "series_id", Uuid, ForeignKey("Series.id"), default=None, nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         "created_at", DateTime, default=datetime.today()
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
 
     category: Mapped["Category"] = relationship("Category", back_populates="products")
+    series: Mapped["Series"] = relationship("Series", back_populates="products")
     tags: Mapped[List["Tag"]] = relationship(
         secondary=product_tag, back_populates="products"
     )
@@ -196,3 +200,36 @@ class DepositType(Base):
 
     def __repr__(self):
         return f"<DepositType {self.name}>"
+
+
+class Series(Base):
+    """
+    Series Model
+    """
+
+    __tablename__ = "Series"
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    name: Mapped[str] = mapped_column("name", String(50), unique=True)
+    slug: Mapped[str] = mapped_column("slug", String(255), unique=True)
+    description: Mapped[str] = mapped_column("description", Text(), nullable=True)
+    image: Mapped[str] = mapped_column("image", String(255), nullable=True)
+    products: Mapped[List["Product"]] = relationship("Product", back_populates="series")
+    created_at: Mapped[datetime] = mapped_column(
+        "created_at", DateTime, default=datetime.today()
+    )
+    updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
+
+    def __init__(
+        self, id: UUID, name: str, description: str | None, image: str, slug: str
+    ):
+        print("Series model")
+        self.id = id
+        self.name = name
+        if description:
+            self.description = description
+        self.image = image
+        self.slug = slug
+        self.created_at = datetime.now()
+
+    def __repr__(self):
+        return f"<Series {self.name}>"

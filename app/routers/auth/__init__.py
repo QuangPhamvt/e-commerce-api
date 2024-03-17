@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .services import AuthService
 from app import dependencies
 from app.dependencies import get_db
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
+from app.services.auth import AuthService
 from app.utils.helper import helper
 from app.configs.constants import AUTH, AUTH_PATH, AUTH_PREFIX
 from app.schemas.responses import ResBadRequest
@@ -62,7 +62,7 @@ async def verify(body: VerifyParam, db: AsyncSession = Depends(get_db)):
     token = body.token
     payload = helper.verify_token(token=token)
     await AuthService().verify(payload=payload, db=db)
-    return {"message": "Verify Succeed!"}
+    return {"detail": "Verify Succeed!"}
 
 
 # ********** SIGN IN **********
@@ -80,7 +80,7 @@ async def sign_in(
     user: UserSignInParam, response: Response, db: AsyncSession = Depends(get_db)
 ):
     await AuthService().sign_in(user=user, response=response, db=db)
-    return {"message": "Sign In Succeed!"}
+    return {"detail": "Sign In Succeed!"}
 
 
 @router.delete(LOG_OUT)
@@ -105,7 +105,7 @@ async def refresh(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ):
     await AuthService().refresh(request=request, response=response, db=db)
-    return {"message": "Refresh Succeed!"}
+    return {"detail": "Refresh Succeed!"}
 
 
 # ********** GET ME **********

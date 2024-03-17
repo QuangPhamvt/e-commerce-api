@@ -8,7 +8,7 @@ async def db_session_middleware(request: Request, call_next):
     request: Request object from FastAPI
     call_next: function to call the next middleware
     """
-    response = Response("Internal server error", status_code=500)
+    response = Response("Internal server error", 500)
     try:
         print("Opening database session")
         request.state.db = SessionLocal()

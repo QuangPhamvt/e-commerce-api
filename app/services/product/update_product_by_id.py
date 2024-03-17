@@ -9,4 +9,4 @@ class UpdateProductById:
         self, id: UUID, body: BodyUpdateProduct, db: AsyncSession
     ):
         await ProductCRUD(db).update_by_id(id, body)
-        return {"message": f"Update Product {id} Succeed!"}
+        return {"detail": f"Update Product {id} Succeed!"}

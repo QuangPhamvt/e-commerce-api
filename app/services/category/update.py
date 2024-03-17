@@ -12,8 +12,6 @@ class Update:
         category_id = convert_str_to_uuid(id)
         is_valid_id = await category_crud.get_category_by_id(id=category_id, db=db)
         if not is_valid_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Id not found!"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Id not found!")
         await category_crud.update_category(id=category_id, category=category, db=db)
-        return {"message": "Update category succeed!"}
+        return {"detail": "Update category succeed!"}

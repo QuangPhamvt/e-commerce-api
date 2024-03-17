@@ -16,13 +16,11 @@ class SignIn:
         user_data = await self.__authenticate_user(email, password, db)
         if not user_data:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Incorrect Email or Password",
+                status.HTTP_400_BAD_REQUEST,
+                "Incorrect Email or Password",
             )
         if not user_data.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="User is not active"
-            )
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "User is not active")
         payload = TokenPayload(id=user_data.id, role_id=user_data.role_id)
         await self.__gen_token(payload, response, user_data, db)
 

@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import PRODUCT, PRODUCT_PREFIX
 from app.dependencies import get_db
 from app.schemas.product import BodyCreateProduct, BodyUpdateProduct, ResCreateProduct
-from app.routers.product.services import ProductService
 from app.schemas.responses import Res201Resquest
+from app.services.product import ProductService
 
 
 router = APIRouter(
@@ -55,7 +55,7 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     },
 )
 async def get_product(product_id: UUID):
-    return {"message": f"Get Product {product_id} Succeed!"}
+    return {"detail": f"Get Product {product_id} Succeed!"}
 
 
 # ********** UPDATE PRODUCT BY ID **********
