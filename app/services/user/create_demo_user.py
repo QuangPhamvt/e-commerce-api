@@ -30,10 +30,10 @@ class CreateDemoUser:
     # Get role
     @staticmethod
     async def __get_role_id(db: AsyncSession, role_name: str):
-        role_id = await role_crud.get_role_id_by_name(db, role_name)
-        if role_id is None:
+        role = await role_crud.get_role_id_by_name(db, role_name)
+        if role is None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Role not found!")
-        return role_id
+        return role.id
 
     # Check if demo user already exists
     @staticmethod
