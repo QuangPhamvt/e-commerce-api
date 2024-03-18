@@ -47,6 +47,14 @@ CATEGORY_PREFIX: str = "/categories"
 SERIES: str = "Series"
 SERIES_PREFIX: str = "/series"
 
+# ********** Tag **********
+TAG: str = "Tag"
+TAG_PREFIX: str = "/tags"
+TAG_PATH: dict = {
+    "GET_LIST_TAG": "",
+    "CREATE_TAG": "",
+    "DELETE_TAG": "/{id}",
+}
 # ********** Role **********
 ROLE: str = "Role"
 ROLE_PREFIX: str = "/roles"
