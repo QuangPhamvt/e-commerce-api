@@ -4,6 +4,7 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from app.configs.constants import DOCUMENTATIONS
 from app.database import Base
 from app.dependencies import get_current_username
 from .database import engine_local
@@ -14,12 +15,12 @@ from .configs.documentations import (
     DEFINITION_DOCUMENTATIONS,
     USER_DOCUMENTATIONS,
 )
-from .routers.v1.admin import router as admin_router
-from .routers.v1.auth import router as auth_router
-from .routers.v1.definition import router as definition_router
-from .routers.v1.user import router as user_router
+from .routers.admin import router as admin_router
+from .routers.auth import router as auth_router
+from .routers.definition import router as definition_router
+from .routers.user import router as user_router
 
-app = FastAPI(docs_url=None, **USER_DOCUMENTATIONS)
+app = FastAPI(docs_url=None, **DOCUMENTATIONS)
 
 origins = [
     "http://localhost:3000",
@@ -51,24 +52,50 @@ app.add_middleware(
 )
 
 
-app.include_router(user_router)
-
-
 @app.get("/")
 async def read_root():
     return {"msg": "Hello World"}
 
 
 @app.get("/docs", include_in_schema=False)
-async def get_swagger_documentation(username: str = Depends(get_current_username)):
+async def get_swaggerdocumentation(
+    username: str = Depends(get_current_username),
+):
     return get_swagger_ui_html(
-        openapi_url="/openapi.json", title="E-commerce API Documentation"
+        openapi_url="/openapi.json",
+        title="E-commerce API Documentation",
     )
 
 
 @app.get("/openapi.json", include_in_schema=False)
 async def openapi(username: str = Depends(get_current_username)):
     get_openapi(title=app.title, version=app.version, routes=app.routes)
+
+
+# Website Api
+web_api = FastAPI(docs_url=None, **USER_DOCUMENTATIONS)
+
+web_api.include_router(user_router)
+
+
+@web_api.get("/")
+def read_website():
+    return {"message": "Hello World from web api"}
+
+
+@web_api.get("/docs", include_in_schema=False)
+async def get_swagger_website_documentation(
+    username: str = Depends(get_current_username),
+):
+    return get_swagger_ui_html(
+        openapi_url="/api/v1/web/openapi.json",
+        title="E-commerce API Documentation",
+    )
+
+
+@web_api.get("/openapi.json", include_in_schema=False)
+async def web_openapi(username: str = Depends(get_current_username)):
+    get_openapi(title=web_api.title, version=web_api.version, routes=web_api.routes)
 
 
 # Admin Api
@@ -87,7 +114,7 @@ async def get_swagger_admin_documentation(
     username: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
-        openapi_url="/api/v1/admin-api/openapi.json",
+        openapi_url="/api/v1/admin/openapi.json",
         title="E-commerce API Documentation",
     )
 
@@ -115,7 +142,7 @@ async def get_swagger_auth_documentation(
     username: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
-        openapi_url="/api/v1/auth-api/openapi.json",
+        openapi_url="/api/v1/auth/openapi.json",
         title="E-commerce API Documentation",
     )
 
@@ -141,7 +168,7 @@ async def get_swagger_def_documentation(
     username: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
-        openapi_url="/api/v1/def-api/openapi.json",
+        openapi_url="/api/v1/def/openapi.json",
         title="E-commerce API Documentation",
     )
 
@@ -155,6 +182,7 @@ async def def_openapi(username: str = Depends(get_current_username)):
     )
 
 
-app.mount("/admin-api", admin_api)
-app.mount("/auth-api", auth_api)
-app.mount("/def-api", definition_api)
+app.mount("/web", web_api)
+app.mount("/admin", admin_api)
+app.mount("/auth", auth_api)
+app.mount("/def", definition_api)

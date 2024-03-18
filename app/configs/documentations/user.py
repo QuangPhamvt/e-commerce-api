@@ -18,7 +18,7 @@ DOCUMENTATIONS: dict = {
     "summary": SUMMARY,
     "version": VERSION,
     "description": DESCRIPTION,
-    "root_path": ROOT_PATH,
+    # "root_path": ROOT_PATH,
     "contact": {
         "name": "CustomAFK",
         "url": "https://github.com/QuangPhamvt",
