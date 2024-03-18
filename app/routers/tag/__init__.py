@@ -17,7 +17,7 @@ router = APIRouter(prefix=TAG_PREFIX, tags=[TAG])
     CREATE_TAG,
     description="This endpoint is used to create a new tag.",
     status_code=status.HTTP_201_CREATED,
-    responses={201: {"description": "Create tag succeed!"}},
+    responses={201: {"detail": "Create tag succeed!"}},
 )
 async def create_product(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
     return await TagService().create(body, db)
@@ -27,7 +27,7 @@ async def create_product(body: CreateTagParam, db: AsyncSession = Depends(get_db
     GET_LIST_TAG,
     description="This endpoint is used to get list of tags.",
     status_code=200,
-    responses={200: {"description": "Get List Tags Succeed!"}},
+    responses={200: {"detail": "Get List Tags Succeed!"}},
 )
 async def get_list_tags(db: AsyncSession = Depends(get_db)):
     return await TagService().get_all(db)
@@ -37,7 +37,7 @@ async def get_list_tags(db: AsyncSession = Depends(get_db)):
     DELETE_TAG,
     response_description="This endpoint is used to delete a tag by id.",
     status_code=200,
-    responses={200: {"description": "Delete Tag Succeed!"}},
+    responses={200: {"detail": "Delete Tag Succeed!"}},
 )
 async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
     return await TagService().delete(id=id, db=db)
