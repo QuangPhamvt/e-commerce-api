@@ -54,7 +54,13 @@ app.add_middleware(
 
 @app.get("/")
 async def read_root():
-    return {"msg": "Hello World"}
+    return {
+        "msg": "Hello World",
+        "website_docs": "/api/v1/web/docs",
+        "admin_docs": "/api/v1/admin/docs",
+        "auth_docs": "/api/v1/auth/docs",
+        "def_docs": "/api/v1/def/docs",
+    }
 
 
 @app.get("/docs", include_in_schema=False)
@@ -134,7 +140,9 @@ auth_api.include_router(auth_router)
 
 @auth_api.get("/")
 def read_auth():
-    return {"message": "Hello World from auth api"}
+    return {
+        "message": "Hello World from auth api",
+    }
 
 
 @auth_api.get("/docs", include_in_schema=False)
