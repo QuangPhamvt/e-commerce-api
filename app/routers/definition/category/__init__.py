@@ -1,8 +1,8 @@
-from typing import Annotated
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import CATEGORY, CATEGORY_PREFIX
 from app.dependencies import get_db
+from app.schemas.category import ListCategoryRespone
 from app.services.category import CategoryService
 
 
@@ -13,15 +13,30 @@ router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
     "/",
     description="This endpoint is used to get list of category",
     status_code=status.HTTP_200_OK,
-    responses={200: {"Description": "Get list category succeed!"}},
+    response_model=list[ListCategoryRespone],
+    responses={
+        "200": {
+            "description": "Get List Categories Succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "name": "Action Figures",
+                            "description": "Action Figure description.",
+                            "slug": "action-figures",
+                            "id": "123e4567e89b12d3a456426614174000",
+                        },
+                        {
+                            "name": "Truyện Tranh",
+                            "description": "Truyen tranh description",
+                            "slug": "truyen-tranh",
+                            "id": "123e4567e89b12d3a456426614174000",
+                        },
+                    ]
+                },
+            },
+        },
+    },
 )
-async def get_categories(
-    current: Annotated[str | None, Query()] = None,
-    limit: Annotated[str | None, Query()] = None,
-    db: AsyncSession = Depends(get_db),
-):
-    current_page = int(current) if current else 1
-    default_limit = int(limit) if limit else 10
-    return await CategoryService().get_all(
-        current=current_page, limit=default_limit, db=db
-    )
+async def get_categories(db: AsyncSession = Depends(get_db)):
+    return await CategoryService().get_all(db=db)

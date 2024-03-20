@@ -76,7 +76,7 @@ async def count_category(db: AsyncSession):
     return count.scalar()
 
 
-async def get_all_with_paginate(offset: int, limit: int, db: AsyncSession):
+async def get_all(db: AsyncSession):
     none_id = None
     list_category = await db.execute(
         select(Category)
@@ -86,8 +86,6 @@ async def get_all_with_paginate(offset: int, limit: int, db: AsyncSession):
             defer(Category.updated_at),
         )
         .where(Category.parent_id == none_id)
-        .offset(offset=offset)
-        .limit(limit=limit)
     )
     results = [
         {
