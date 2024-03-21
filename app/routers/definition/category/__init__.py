@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.configs.constants import CATEGORY, CATEGORY_PREFIX
+from app.configs.constants import CATEGORY, CATEGORY_PREFIX, CATEGORY_PATH
 from app.dependencies import get_db
 from app.schemas.category import ListCategoryRespone
 from app.services.category import CategoryService
 
+GET_LIST_CATEGORIES = CATEGORY_PATH['GET_LIST_CATEGORIES']
 
 router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
 
 
 @router.get(
-    "/",
+    GET_LIST_CATEGORIES,
     description="This endpoint is used to get list of category",
     status_code=status.HTTP_200_OK,
     response_model=list[ListCategoryRespone],
@@ -39,4 +40,4 @@ router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
     },
 )
 async def get_categories(db: AsyncSession = Depends(get_db)):
-    return await CategoryService().get_all(db=db)
+    return await CategoryService().get_all(db)
