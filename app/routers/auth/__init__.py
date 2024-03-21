@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, FastAPI, Request, Response, status
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import dependencies
-from app.dependencies import get_db
+from app.dependencies import get_db, get_current_username, verify_access_token
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.services.auth import AuthService
 from app.utils.helper import helper
-from app.configs.constants import AUTH, AUTH_PATH, AUTH_PREFIX
+from app.configs.constants import AUTH, AUTH_PATH
 from app.schemas.responses import ResBadRequest
+from app.configs.documentations import AUTH_DOCUMENTATIONS
 
 SIGN_UP = AUTH_PATH["SIGN_UP"]
 VERIFY = AUTH_PATH["VERIFY"]
@@ -20,7 +22,6 @@ RESET = AUTH_PATH["RESET"]
 
 
 router = APIRouter(
-    prefix=AUTH_PREFIX,
     tags=[AUTH],
     responses={
         400: {
@@ -43,7 +44,7 @@ router = APIRouter(
     },
 )
 async def signup(user: UserSignUpParam, db: AsyncSession = Depends(get_db)):
-    res = await AuthService().sign_up(user=user, db=db)
+    res = await AuthService().sign_up(user, db)
     return res
 
 
@@ -60,8 +61,8 @@ async def signup(user: UserSignUpParam, db: AsyncSession = Depends(get_db)):
 )
 async def verify(body: VerifyParam, db: AsyncSession = Depends(get_db)):
     token = body.token
-    payload = helper.verify_token(token=token)
-    await AuthService().verify(payload=payload, db=db)
+    payload = helper.verify_token(token)
+    await AuthService().verify(payload, db)
     return {"detail": "Verify Succeed!"}
 
 
@@ -79,7 +80,7 @@ async def verify(body: VerifyParam, db: AsyncSession = Depends(get_db)):
 async def sign_in(
     user: UserSignInParam, response: Response, db: AsyncSession = Depends(get_db)
 ):
-    await AuthService().sign_in(user=user, response=response, db=db)
+    await AuthService().sign_in(user, response, db)
     return {"detail": "Sign In Succeed!"}
 
 
@@ -87,7 +88,7 @@ async def sign_in(
 async def logout(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ):
-    return await AuthService().logout(request=request, response=response, db=db)
+    return await AuthService().logout(request, response, db)
 
 
 # ********** REFRESH **********
@@ -104,14 +105,14 @@ async def logout(
 async def refresh(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ):
-    await AuthService().refresh(request=request, response=response, db=db)
+    await AuthService().refresh(request, response, db)
     return {"detail": "Refresh Succeed!"}
 
 
 # ********** GET ME **********
 @router.get(
     GET_ME,
-    dependencies=[Depends(dependencies.verify_access_token)],
+    dependencies=[Depends(verify_access_token)],
     description="This endpoint is used to get user's information.",
     status_code=status.HTTP_200_OK,
     responses={
@@ -119,18 +120,46 @@ async def refresh(
     },
 )
 async def get_me(request: Request, db: AsyncSession = Depends(get_db)):
-    return await AuthService().get_me(request=request, db=db)
+    return await AuthService().get_me(request, db)
 
 
+# ********** FORGOT **********
 @router.post(FORGOT)
 async def forgot(email: str, db: AsyncSession = Depends(get_db)):
-    return await AuthService().forgot_password(email=email, db=db)
+    return await AuthService().forgot_password(email, db)
 
 
+# ********** RESET **********
 @router.post(RESET)
 async def reset(
     email: str, verify_code: str, new_password: str, db: AsyncSession = Depends(get_db)
 ):
-    return await AuthService().reset_password(
-        email=email, verify_code=verify_code, new_password=new_password, db=db
+    return await AuthService().reset_password(email, verify_code, new_password, db)
+
+
+# Auth Api
+auth_api = FastAPI(docs_url=None, **AUTH_DOCUMENTATIONS)
+
+auth_api.include_router(router)
+
+
+@auth_api.get("")
+def read_auth():
+    return {
+        "message": "Hello World from auth api",
+    }
+
+
+@auth_api.get("/docs", include_in_schema=False)
+async def get_swagger_auth_documentation(
+    username: str = Depends(get_current_username),
+):
+    return get_swagger_ui_html(
+        openapi_url="/api/v1/auth/openapi.json",
+        title="E-commerce API Documentation",
     )
+
+
+@auth_api.get("/openapi.json", include_in_schema=False)
+async def auth_openapi(username: str = Depends(get_current_username)):
+    get_openapi(title=auth_api.title, version=auth_api.version, routes=auth_api.routes)
