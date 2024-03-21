@@ -29,11 +29,12 @@ USER_PATH: dict = {"GET_LIST_USERS": "/", "CREATE_DEMO_USER": "/"}
 PRODUCT: str = "Product"
 PRODUCT_PREFIX: str = "/products"
 PRODUCT_PATH: dict = {
-    "GET_LIST_PRODUCTS": "/",
-    "CREATE_PRODUCT": "/",
+    "GET_LIST_PRODUCTS": "",
+    "CREATE_PRODUCT": "",
     "GET_PRODUCT": "/{product_id}",
     "UPDATE_PRODUCT": "/{product_id}",
     "DELETE_PRODUCT": "/{product_id}",
+    "GET_PRODUCTS_BY_TAG": "/#{tag_name}",
 }
 # ===========================
 
@@ -60,6 +61,7 @@ TAG_PATH: dict = {
     "GET_LIST_TAG": "",
     "CREATE_TAG": "",
     "DELETE_TAG": "/{id}",
+    "ADD_PRODUCT_TAGS": "/products/{id}",
 }
 # ===========================
 

@@ -5,7 +5,7 @@ from app.dependencies import get_db
 from app.services.series import SeriesService
 from app.schemas.series import ListSeriesResponse
 
-GET_LIST_SERIES = SERIES_PATH['GET_LIST_SERIES']
+GET_LIST_SERIES = SERIES_PATH["GET_LIST_SERIES"]
 
 router = APIRouter(prefix=SERIES_PREFIX, tags=[SERIES])
 
