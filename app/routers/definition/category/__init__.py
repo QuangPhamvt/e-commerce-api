@@ -5,7 +5,7 @@ from app.dependencies import get_db
 from app.schemas.category import ListCategoryRespone
 from app.services.category import CategoryService
 
-GET_LIST_CATEGORIES = CATEGORY_PATH['GET_LIST_CATEGORIES']
+GET_LIST_CATEGORIES = CATEGORY_PATH["GET_LIST_CATEGORIES"]
 
 router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
 

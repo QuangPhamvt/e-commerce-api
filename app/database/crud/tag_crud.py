@@ -36,3 +36,8 @@ async def delete_tag(id: UUID, db: AsyncSession):
 async def get_all(db: AsyncSession):
     list_tag = await db.execute(select(Tag))
     return list_tag.scalars().all()
+
+
+async def get_tag_id_by_name(name: UUID, db: AsyncSession):
+    result = await db.execute(select(Tag.id).where(Tag.name == name))
+    return result.scalars().first()
