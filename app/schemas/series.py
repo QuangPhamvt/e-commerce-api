@@ -54,3 +54,11 @@ class CreateSeriesResponse(BaseModel):
         description="Presigned URL of product",
         examples=["https://example.com/image.jpg"],
     )
+
+
+class ListSeriesResponse(CreateSeriesData):
+    id: str = Field(
+        title="ID",
+        description="ID of series",
+        examples=["194bd139744847ba8c151e55e93a6a5c"],
+    )

@@ -23,3 +23,11 @@ class CreateTagData(TagBase):
 
 class UpdateTagData(TagBase):
     pass
+
+
+class ListTagRespone(TagBase):
+    id: str = Field(
+        title="Tag ID",
+        description="ID of Tag",
+        examples=["7625f01998634bfcad8301cfa07495b5"],
+    )
