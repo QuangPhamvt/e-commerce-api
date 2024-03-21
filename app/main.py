@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.configs.constants import DOCUMENTATIONS
@@ -34,6 +35,9 @@ origins = [
 @app.on_event("startup")
 async def init_models():
     print("starting server")
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
     async with engine_local.begin() as connection:
         # turn on to reset the database
         # await connection.run_sync(Base.metadata.drop_all)

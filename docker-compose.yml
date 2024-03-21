@@ -19,7 +19,7 @@ services:
     image: mysql:8.0.35
     container_name: mysql
     ports:
-      - 3306:3306
+      - '3306:3306'
     env_file:
       - .env
     environment:
@@ -29,6 +29,8 @@ services:
       - e-commerce-api:/var/lib/mysql
     networks:
       - e-commerce-api
+    expose:
+      - 3306
 volumes:
   e-commerce-api:
 networks:
