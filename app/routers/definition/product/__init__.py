@@ -15,7 +15,7 @@ router = APIRouter(
 
 # ********** GET LIST PRODUCTS **********
 @router.get(
-    "/",
+    "",
     description="This endpoint is used to get list of products.",
     status_code=200,
     responses={

@@ -27,7 +27,7 @@ def read_def():
 
 @definition_api.get("/docs", include_in_schema=False)
 async def get_swagger_def_documentation(
-    username: str = Depends(get_current_username),
+    __username__: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
         openapi_url="/api/v1/def/openapi.json",
@@ -36,7 +36,7 @@ async def get_swagger_def_documentation(
 
 
 @definition_api.get("/openapi.json", include_in_schema=False)
-async def def_openapi(username: str = Depends(get_current_username)):
+async def def_openapi(__username__: str = Depends(get_current_username)):
     get_openapi(
         title=definition_api.title,
         version=definition_api.version,

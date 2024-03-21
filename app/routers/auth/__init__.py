@@ -152,7 +152,7 @@ def read_auth():
 
 @auth_api.get("/docs", include_in_schema=False)
 async def get_swagger_auth_documentation(
-    username: str = Depends(get_current_username),
+    __username__: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
         openapi_url="/api/v1/auth/openapi.json",
@@ -161,5 +161,5 @@ async def get_swagger_auth_documentation(
 
 
 @auth_api.get("/openapi.json", include_in_schema=False)
-async def auth_openapi(username: str = Depends(get_current_username)):
+async def auth_openapi(__username__: str = Depends(get_current_username)):
     get_openapi(title=auth_api.title, version=auth_api.version, routes=auth_api.routes)

@@ -16,7 +16,7 @@ def read_website():
 
 @web_api.get("/docs", include_in_schema=False)
 async def get_swagger_website_documentation(
-    username: str = Depends(get_current_username),
+    __username__: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
         openapi_url="/api/v1/web/openapi.json",
@@ -25,5 +25,5 @@ async def get_swagger_website_documentation(
 
 
 @web_api.get("/openapi.json", include_in_schema=False)
-async def web_openapi(username: str = Depends(get_current_username)):
+async def web_openapi(__username__: str = Depends(get_current_username)):
     get_openapi(title=web_api.title, version=web_api.version, routes=web_api.routes)

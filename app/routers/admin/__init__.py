@@ -29,7 +29,7 @@ def read_admin():
 
 @admin_api.get("/docs", include_in_schema=False)
 async def get_swagger_admin_documentation(
-    username: str = Depends(get_current_username),
+    __username__: str = Depends(get_current_username),
 ):
     return get_swagger_ui_html(
         openapi_url="/api/v1/admin/openapi.json",
@@ -38,7 +38,7 @@ async def get_swagger_admin_documentation(
 
 
 @admin_api.get("/openapi.json", include_in_schema=False)
-async def admin_openapi(username: str = Depends(get_current_username)):
+async def admin_openapi(__username__: str = Depends(get_current_username)):
     get_openapi(
         title=admin_api.title, version=admin_api.version, routes=admin_api.routes
     )

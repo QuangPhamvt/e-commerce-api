@@ -58,14 +58,14 @@ app.add_middleware(
 )
 
 
-@app.get("")
+@app.get("/")
 async def read_root():
     return {
         "msg": "Hello World",
-        "website_docs": "/api/v1/web/docs",
-        "admin_docs": "/api/v1/admin/docs",
-        "auth_docs": "/api/v1/auth/docs",
-        "def_docs": "/api/v1/def/docs",
+        "website_docs": "https://dev.api.customafk.com/api/v1/web/docs",
+        "admin_docs": "https://dev.api.customafk.com/api/v1/admin/docs",
+        "auth_docs": "https://dev.api.customafk.com/api/v1/auth/docs",
+        "def_docs": "https://dev.api.customafk.com/api/v1/def/docs",
     }
 
 
