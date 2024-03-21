@@ -25,9 +25,6 @@ USER_PREFIX: str = "/users"
 USER_PATH: dict = {"GET_LIST_USERS": "/", "CREATE_DEMO_USER": "/"}
 # ===========================
 
-# ********** Role **********
-# ===========================
-
 # ********** Product **********
 PRODUCT: str = "Product"
 PRODUCT_PREFIX: str = "/products"
@@ -43,9 +40,18 @@ PRODUCT_PATH: dict = {
 # ********** Category **********
 CATEGORY: str = "Category"
 CATEGORY_PREFIX: str = "/categories"
+CATEGORY_PATH: dict = {
+    "GET_LIST_CATEGORIES": "",
+}
+# ===========================
+
 # ********** Series **********
 SERIES: str = "Series"
 SERIES_PREFIX: str = "/series"
+SERIES_PATH: dict = {
+    "GET_LIST_SERIES": "",
+}
+# ===========================
 
 # ********** Tag **********
 TAG: str = "Tag"
@@ -55,6 +61,8 @@ TAG_PATH: dict = {
     "CREATE_TAG": "",
     "DELETE_TAG": "/{id}",
 }
+# ===========================
+
 # ********** Role **********
 ROLE: str = "Role"
 ROLE_PREFIX: str = "/roles"
