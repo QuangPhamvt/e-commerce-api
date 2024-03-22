@@ -34,7 +34,7 @@ router = APIRouter(
     },
 )
 async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db)):
-    return await RoleService().create(role=role, db=db)
+    return await RoleService().create(role, db)
 
 
 @router.get(
@@ -44,11 +44,21 @@ async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db))
     responses={
         200: {
             "description": "Get list roles succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "67b5ab15-ee53-446e-8fe5-7ab13bac7ff7",
+                            "name": "Admin",
+                        }
+                    ]
+                }
+            },
         },
     },
 )
 async def get_list_roles(db: AsyncSession = Depends(get_db)):
-    return await RoleService().get_all(db=db)
+    return await RoleService().get_all(db)
 
 
 @router.delete(
@@ -62,7 +72,7 @@ async def get_list_roles(db: AsyncSession = Depends(get_db)):
     },
 )
 async def delete_role(id: str, db: AsyncSession = Depends(get_db)):
-    return await RoleService().delete(id=id, db=db)
+    return await RoleService().delete(id, db)
 
 
 @router.put(

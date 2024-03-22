@@ -1,7 +1,7 @@
 from logging.config import fileConfig
+from dotenv import dotenv_values
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import create_engine
 from alembic import context
 from app.database import Base
 # from app.database.models import User
@@ -60,14 +60,32 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    Config = dotenv_values(".env")
+
+    url_tokens = {
+        "DB_USERNAME": Config.get("DB_USERNAME", ""),
+        "DB_PASSWORD": Config.get("DB_PASSWORD", ""),
+        "DB_HOST": Config.get("DB_HOST", ""),
+        "DB_NAME": Config.get("DB_NAME", ""),
+    }
+    print(f"URL Tokens: {url_tokens['DB_HOST']}")
+
+    url = config.get_main_option("sqlalchemy.url")
+
+    if url is None:
+        raise ValueError("sqlalchemy.url is not set")
+
+    url = f"mysql+pymysql://{url_tokens['DB_USERNAME']}:{url_tokens['DB_PASSWORD']}@{url_tokens['DB_HOST']}:3306/{url_tokens['DB_NAME']}"
+
+    connectable = create_engine(url)
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True,
+        )
 
         with context.begin_transaction():
             context.run_migrations()

@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import SERIES, SERIES_PREFIX, SERIES_PATH
 from app.dependencies import get_db
 from app.services.series import SeriesService
-from app.schemas.series import ListSeriesResponse
 
 GET_LIST_SERIES = SERIES_PATH["GET_LIST_SERIES"]
 
@@ -14,7 +13,6 @@ router = APIRouter(prefix=SERIES_PREFIX, tags=[SERIES])
     GET_LIST_SERIES,
     description="This endpoint is used to get list of series.",
     status_code=status.HTTP_200_OK,
-    response_model=list[ListSeriesResponse],
     responses={
         "200": {
             "description": "Get List Series Succeed!",
