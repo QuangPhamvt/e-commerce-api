@@ -75,10 +75,27 @@ async def update_category(
 
 
 @router.get(
-    "/",
+    "",
     description="This endpoint is used to get list of category",
     status_code=status.HTTP_200_OK,
-    responses={200: {"Description": "Get list category succeed!"}},
+    responses={
+        200: {
+            "description": "Get list category succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "51babb32-40f4-4d14-bff2-4c035d09fcd0",
+                            "name": "Category 1",
+                            "slug": "category-1",
+                            "description": "Category 1 description",
+                            "sub": [],
+                        }
+                    ]
+                }
+            },
+        }
+    },
 )
 async def get_categories(db: AsyncSession = Depends(get_db)):
-    return await CategoryService().get_all(db=db)
+    return await CategoryService().get_all(db)

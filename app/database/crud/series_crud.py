@@ -40,6 +40,7 @@ async def delete_series(id: UUID, db: AsyncSession):
 
 
 async def get_all(db: AsyncSession):
+    print("Get All Series")
     list_series = await db.execute(
         select(Series).options(
             defer(Series.created_at),

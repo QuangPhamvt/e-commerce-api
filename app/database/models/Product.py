@@ -57,6 +57,8 @@ class Product(Base):
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
 
+    deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
+
     category: Mapped["Category"] = relationship("Category", back_populates="products")
     series: Mapped["Series"] = relationship("Series", back_populates="products")
     tags: Mapped[List["Tag"]] = relationship(

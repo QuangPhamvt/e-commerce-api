@@ -14,6 +14,34 @@ from app.services.series import SeriesService
 router = APIRouter(prefix=SERIES_PREFIX, tags=[SERIES])
 
 
+# ********** GET LIST SERIES **********
+@router.get(
+    "",
+    description="This endpoint is used to get list of series.",
+    status_code=200,
+    responses={
+        200: {
+            "description": "Get List Series Succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "name": "Series 1",
+                            "id": "67b5ab15-ee53-446e-8fe5-7ab13bac7ff7",
+                            "description": "Series 1 description",
+                            "slug": "series-1",
+                            "image": "https://customafk-ecommerce-web.s3.amazonaws.com/series/series-1.webp",
+                        }
+                    ]
+                }
+            },
+        },
+    },
+)
+async def get_list_products(db: AsyncSession = Depends(get_db)):
+    return await SeriesService().get_all(db)
+
+
 # ********** CREATE SERIES **********
 @router.post(
     "",
@@ -51,17 +79,3 @@ async def update_product(
 )
 async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
     return await SeriesService().delete(id=id, db=db)
-
-
-@router.get(
-    "/",
-    description="This endpoint is used to get list of series.",
-    status_code=200,
-    responses={
-        200: {
-            "description": "Get List Series Succeed!",
-        },
-    },
-)
-async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await SeriesService().get_all(db)

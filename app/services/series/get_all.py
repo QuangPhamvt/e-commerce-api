@@ -1,9 +1,9 @@
 from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.configs.S3.get_object import get_object
 from app.database.crud import series_crud
 from app.database.models.Product import Series
+from app.configs.Clounfront import get_image_from_url
 
 
 class GetAll:
@@ -15,8 +15,7 @@ class GetAll:
     @staticmethod
     def __convert_image_to_url(series: Sequence[Series]) -> Sequence[Series]:
         for item in series:
-            DOMAIN_IMAGE = get_object("customafk-ecommerce-web", item.image)
+            DOMAIN_IMAGE = get_image_from_url(item.image)
             if DOMAIN_IMAGE:
                 item.image = DOMAIN_IMAGE
-
         return series

@@ -17,12 +17,36 @@ router = APIRouter(
 
 # ********** GET LIST PRODUCTS **********
 @router.get(
-    "/",
+    "",
     description="This endpoint is used to get list of products.",
     status_code=200,
     responses={
         200: {
             "description": "Get List Products Succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "fff1d10a-e83b-4a04-8421-d6f56f726f9d",
+                            "name": "Iphone 13",
+                            "description": "This is a new product from Apple",
+                            "original_price": 1000,
+                            "sell_price": 900,
+                            "quantity": 100,
+                            "image": "https://customafk-ecommerce-web.s3.amazonaws.com/products/iphone-13.webp",
+                            "slug": "iphone-13",
+                            "country": "USA",
+                            "factory": "Apple",
+                            "status": "active",
+                            "category_id": None,
+                            "series_id": None,
+                            "created_at": "2024-03-20T23:13:55",
+                            "updated_at": None,
+                            "deleted_at": None,
+                        }
+                    ]
+                }
+            },
         },
     },
 )

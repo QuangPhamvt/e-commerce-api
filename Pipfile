@@ -21,6 +21,7 @@ resend = "*"
 pyjwt = "*"
 greenlet = "*"
 boto3 = "*"
+alembic = "*"
 
 [dev-packages]
 ruff = "*"
@@ -28,7 +29,6 @@ pre-commit = "*"
 rich = "*"
 typer = "*"
 libcst = "*"
-alembic = "*"
 
 [requires]
 python_version = "3.11"
