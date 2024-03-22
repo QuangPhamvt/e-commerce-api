@@ -31,3 +31,6 @@ class ListTagRespone(TagBase):
         description="ID of Tag",
         examples=["7625f01998634bfcad8301cfa07495b5"],
     )
+
+class ListTagRequest(ListTagRespone):
+    pass

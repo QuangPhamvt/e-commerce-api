@@ -3,7 +3,7 @@ from app.services.tag import TagService
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import TAG, TAG_PATH, TAG_PREFIX
 from app.dependencies import get_db
-from app.schemas.tag import CreateTagParam
+from app.schemas.tag import CreateTagParam, TagBase
 
 
 CREATE_TAG = TAG_PATH["CREATE_TAG"]
@@ -47,11 +47,11 @@ async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
 
 @router.post(
     ADD_PRODUCT_TAGS,
-    description="This endpoint is used to add tags for a product.",
+    description="This endpoint is used to add tags for a product. If tag is not exist, it will be created and added for the product.",
     status_code=200,
     responses={200: {"detail": "Add Tags For Product Succeed!"}},
 )
 async def add_product_tags(
-    product_id: str, tags: list[str], db: AsyncSession = Depends(get_db)
+    product_id: str, tags: list[TagBase], db: AsyncSession = Depends(get_db)
 ):
     return await TagService().add(product_id, tags, db)
