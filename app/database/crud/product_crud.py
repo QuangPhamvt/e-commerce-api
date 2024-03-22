@@ -27,6 +27,11 @@ class ProductCRUD:
         await db.refresh(db_proudct)
         return
 
+    async def get_products(self) -> Sequence[Product]:
+        db = self.db
+        products = await db.execute(select(Product))
+        return products.scalars().all()
+
     async def get_product_by_id(self, id: UUID) -> Product | None:
         db = self.db
         product = await db.execute(select(Product).where(Product.id == id))
@@ -36,11 +41,6 @@ class ProductCRUD:
         db = self.db
         product = await db.execute(select(Product).where(Product.slug == slug))
         return product.scalars().first()
-
-    async def get_products(self) -> Sequence[Product]:
-        db = self.db
-        products = await db.execute(select(Product))
-        return products.scalars().all()
 
     async def delete_by_id(self, id: UUID) -> None:
         db = self.db
