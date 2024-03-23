@@ -34,6 +34,7 @@ __all__ = [
     "Voucher",
     "ExchangeRate",
     "DepositType",
+    "ProductTag",
     # Notification
     "Notification",
     "UserNotification",
