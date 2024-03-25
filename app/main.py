@@ -35,6 +35,7 @@ async def lifespan(__app__: FastAPI):
     log.info("Shutting down...")
 
 
+# app = FastAPI()
 app = FastAPI(lifespan=lifespan)
 
 origins = [

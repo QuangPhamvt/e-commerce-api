@@ -1,4 +1,4 @@
-from app.configs.constants import CATEGORY, PRODUCT, SERIES, TAG
+from app.configs.constants import CATEGORY, DEPOSIT, EXCHANGE, PRODUCT, SERIES, TAG
 
 # ********** DOCUMENTATIONS **********
 TITLE: str = "E-Commerce API for Definition"
@@ -29,7 +29,17 @@ You can use this API to get information about products.
 
 - **Get List Products**: Get list of products.
 
+## Deposit:
 
+You can use this API to get information about deposits.
+
+- **Get List Deposit**: Get list of deposits.
+
+## Exchange:
+
+You can use this API to get information about exchanges.
+
+- **Get List Exchange**: Get list of exchanges.
 
 
 """
@@ -67,6 +77,14 @@ DOCUMENTATIONS: dict = {
         {
             "name": PRODUCT,
             "description": "Product endpoints useful for Product information.",
+        },
+        {
+            "name": DEPOSIT,
+            "description": "Deposit endpoints useful for Deposit information.",
+        },
+        {
+            "name": EXCHANGE,
+            "description": "Exchange endpoints useful for Exchange information.",
         },
     ],
 }

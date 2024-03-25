@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Sequence
 from uuid import UUID
-from sqlalchemy import delete, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product
 from app.utils.helper import helper
@@ -16,15 +17,15 @@ class ProductCRUD:
         db = self.db
         uuid = generate_uuid()
         slug = helper.slugify(product.name)
-        db_proudct = Product(
+        db_product = Product(
             id=uuid,
             slug=str(slug),
             category_id=None,
             **product.model_dump(),
         )
-        db.add(db_proudct)
+        db.add(db_product)
         await db.commit()
-        await db.refresh(db_proudct)
+        await db.refresh(db_product)
         return
 
     async def get_products(self) -> Sequence[Product]:
@@ -44,7 +45,9 @@ class ProductCRUD:
 
     async def delete_by_id(self, id: UUID) -> None:
         db = self.db
-        await db.execute(delete(Product).where(Product.id == id))
+        await db.execute(
+            update(Product).where(Product.id == id).values(deleted_at=datetime.today())
+        )
         await db.commit()
         pass
 
