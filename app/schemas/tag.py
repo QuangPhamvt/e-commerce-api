@@ -32,5 +32,6 @@ class ListTagRespone(TagBase):
         examples=["7625f01998634bfcad8301cfa07495b5"],
     )
 
+
 class ListTagRequest(ListTagRespone):
     pass

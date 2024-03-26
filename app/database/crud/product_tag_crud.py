@@ -1,9 +1,9 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import defer
-from sqlalchemy import select, func
+from sqlalchemy import select
 from app.database.models import Product
 from app.database.models.Product import product_tag
+
 
 async def create(product_id: UUID, tag_id: UUID, db: AsyncSession):
     await db.execute(product_tag.insert().values(product_id=product_id, tag_id=tag_id))

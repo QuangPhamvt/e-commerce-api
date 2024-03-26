@@ -1,6 +1,6 @@
-from typing import Sequence
 from uuid import UUID
 from sqlalchemy import delete, select, update
+from sqlalchemy.orm import defer
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product
 from app.utils.helper import helper
@@ -27,14 +27,30 @@ class ProductCRUD:
         await db.refresh(db_proudct)
         return
 
-    async def get_products(self) -> Sequence[Product]:
+    async def get_products(self):
         db = self.db
-        products = await db.execute(select(Product))
+        products = await db.execute(
+            select(Product).options(
+                defer(Product.created_at),
+                defer(Product.updated_at),
+            )
+        )
         return products.scalars().all()
 
     async def get_product_by_id(self, id: UUID) -> Product | None:
         db = self.db
-        product = await db.execute(select(Product).where(Product.id == id))
+        product = await db.execute(
+            select(Product)
+            .options(
+                defer(Product.id),
+                defer(Product.deleted_at),
+                defer(Product.series_id),
+                defer(Product.category_id),
+                defer(Product.created_at),
+                defer(Product.updated_at),
+            )
+            .where(Product.id == id)
+        )
         return product.scalars().first()
 
     async def get_product_by_slug(self, slug: str) -> Product | None:

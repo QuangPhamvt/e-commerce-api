@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud import tag_crud, product_tag_crud
-from app.schemas.tag import CreateTagData, TagBase
+from app.schemas.tag import TagBase
 from app.utils.helper import helper
 
 

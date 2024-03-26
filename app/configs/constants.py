@@ -1,5 +1,5 @@
 from dotenv import dotenv_values
-
+from enum import Enum
 
 config = dotenv_values(".env")
 
@@ -162,3 +162,10 @@ USERNAME = "ABC@@"
 
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
+
+
+# ********** Product Status **********
+class ProductStatus(str, Enum):
+    preorder = "Preorder"
+    in_stock = "In Stock"
+    out_of_stock = "Out of Stock"
