@@ -5,6 +5,10 @@ from app.database.models import User
 from app.schemas.auth import TokenPayload, UserSignInParam
 from app.utils.helper import helper
 from fastapi import Response
+from dotenv import dotenv_values
+
+
+config = dotenv_values(".env")
 
 
 class SignIn:
@@ -44,8 +48,19 @@ class SignIn:
         payload: TokenPayload, response: Response, user_data: User, db: AsyncSession
     ):
         update_refresh_token = user_crud.update_refresh_token
+        at_seconds = 600
+        rt_seconds = 604800
+        if config["ACCESS_TOKEN_EXPIRE"]:
+            at_seconds = int(config["ACCESS_TOKEN_EXPIRE"])
+        if config["REFRESH_TOKEN_EXPIRE"]:
+            rt_seconds = int(config["REFRESH_TOKEN_EXPIRE"])
+
         access_token = helper.create_access_token(payload)
         refresh_token = helper.create_refresh_token(payload)
-        response.set_cookie("access_token", access_token, secure=True)
-        response.set_cookie("refresh_token", refresh_token, secure=True)
+        response.set_cookie(
+            "access_token", access_token, at_seconds, secure=True, httponly=True
+        )
+        response.set_cookie(
+            "refresh_token", refresh_token, rt_seconds, secure=True, httponly=True
+        )
         await update_refresh_token(user_data.id, refresh_token, db)
