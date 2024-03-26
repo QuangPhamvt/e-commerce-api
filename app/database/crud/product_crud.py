@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import Sequence
 from uuid import UUID
 from sqlalchemy import select, update
@@ -30,23 +30,31 @@ class ProductCRUD:
 
     async def get_products(self) -> Sequence[Product]:
         db = self.db
-        products = await db.execute(select(Product))
+        products = await db.execute(select(Product).where(Product.deleted_at.is_(None)))
         return products.scalars().all()
 
     async def get_product_by_id(self, id: UUID) -> Product | None:
         db = self.db
-        product = await db.execute(select(Product).where(Product.id == id))
+        product = await db.execute(
+            select(Product).where(Product.id == id).where(Product.deleted_at.is_(None))
+        )
         return product.scalars().first()
 
     async def get_product_by_slug(self, slug: str) -> Product | None:
         db = self.db
-        product = await db.execute(select(Product).where(Product.slug == slug))
+        product = await db.execute(
+            select(Product)
+            .where(Product.slug == slug)
+            .where(Product.deleted_at.is_(None))
+        )
         return product.scalars().first()
 
     async def delete_by_id(self, id: UUID) -> None:
         db = self.db
         await db.execute(
-            update(Product).where(Product.id == id).values(deleted_at=datetime.today())
+            update(Product)
+            .where(Product.id == id)
+            .values(deleted_at=datetime.datetime.now())
         )
         await db.commit()
         pass

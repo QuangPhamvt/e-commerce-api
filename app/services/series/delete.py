@@ -11,11 +11,11 @@ class Delete:
         series = await series_crud.get_series_by_id(series_id, db)
         if not series:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
-        await self.__delete_image_S3(series.image)
+        self.__delete_image_S3(series.image)
         await series_crud.delete_series(series_id, db)
         return {"detail": "Delete Series Succeed!"}
 
     @staticmethod
-    async def __delete_image_S3(image: str):
+    def __delete_image_S3(image: str):
         delete_object_s3("customafk-ecommerce-web", image)
         pass
