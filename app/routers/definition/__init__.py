@@ -9,7 +9,8 @@ from .category import router as category_router
 from .product import router as product_router
 from .series import router as series_router
 from .tag import router as tag_router
-
+from .deposit import router as deposit_router
+from .exchange import router as exchange_router
 
 # Definition Api
 definition_api = FastAPI(docs_url=None, **DEFINITION_DOCUMENTATIONS)
@@ -18,6 +19,8 @@ definition_api.include_router(category_router)
 definition_api.include_router(product_router)
 definition_api.include_router(series_router)
 definition_api.include_router(tag_router)
+definition_api.include_router(deposit_router)
+definition_api.include_router(exchange_router)
 
 
 @definition_api.get("/")

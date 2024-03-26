@@ -31,9 +31,9 @@ PRODUCT_PREFIX: str = "/products"
 PRODUCT_PATH: dict = {
     "GET_LIST_PRODUCTS": "",
     "CREATE_PRODUCT": "",
-    "GET_PRODUCT": "/{product_id}",
-    "UPDATE_PRODUCT": "/{product_id}",
-    "DELETE_PRODUCT": "/{product_id}",
+    "GET_PRODUCT": "/{id}",
+    "UPDATE_PRODUCT": "/{id}",
+    "DELETE_PRODUCT": "/{id}",
     "GET_PRODUCTS_BY_TAG": "/tag/{tag_name}",
 }
 # ===========================
@@ -73,6 +73,30 @@ ROLE_PATH: dict = {
     "CREATE_ROLE": "",
     "DELETE_ROLE": "/{id}",
     "UPDATE_ROLE": "/{id}",
+}
+# ===========================
+
+# ********** Deposit **********
+DEPOSIT: str = "Deposit"
+DEPOSIT_PREFIX: str = "/deposits"
+DEPOSIT_PATH: dict = {
+    "GET_LIST_DEPOSIT": "",
+    "CREATE_DEPOSIT": "",
+    "GET_DEPOSIT_BY_ID": "/{id}",
+    "DELETE_DEPOSIT": "/{id}",
+    "UPDATE_DEPOSIT": "/{id}",
+}
+# ===========================
+
+# ********** Exchange **********
+EXCHANGE: str = "Exchange"
+EXCHANGE_PREFIX: str = "/exchanges"
+EXCHANGE_PATH: dict = {
+    "GET_LIST_EXCHANGE": "",
+    "CREATE_EXCHANGE": "",
+    "GET_EXCHANGE_BY_ID": "/{id}",
+    "DELETE_EXCHANGE": "/{id}",
+    "UPDATE_EXCHANGE": "/{id}",
 }
 # ===========================
 
@@ -132,13 +156,13 @@ DOCUMENTATIONS: dict = {
     "openapi_tags": [
         {
             "name": AUTH,
-            "description": "Auth endpoints usefull for user authentication.",
+            "description": "Auth endpoints useful for user authentication.",
         },
-        {"name": ROLE, "description": "Role endpoints usefull for role management."},
-        {"name": USER, "description": "User endpoints usefull for user management."},
+        {"name": ROLE, "description": "Role endpoints useful for role management."},
+        {"name": USER, "description": "User endpoints useful for user management."},
         {
             "name": "Product",
-            "description": "Product endpoints usefull for product management.",
+            "description": "Product endpoints useful for product management.",
         },
     ],
 }

@@ -1,4 +1,12 @@
-from app.configs.constants import CATEGORY, PRODUCT, ROLE, SERIES, TAG
+from app.configs.constants import (
+    CATEGORY,
+    PRODUCT,
+    ROLE,
+    SERIES,
+    TAG,
+    DEPOSIT,
+    EXCHANGE,
+)
 
 
 # ********** DOCUMENTATIONS **********
@@ -52,6 +60,25 @@ You can use this API to manage products.
 - **Update Product**: Update a product by id.
 - **Delete Product**: Delete a product by id.
 
+## Deposit:
+
+You can use this API to manage deposit.
+- **Get List Deposit**: Get list of deposit.
+- **Create Deposit**: Create a new deposit.
+- **Get Deposit**: Get a deposit by id.
+- **Update Deposit**: Update a deposit by id.
+- **Delete Deposit**: Delete a deposit by id.
+
+
+## Exchange:
+
+You can use this API to manage exchange.
+- **Get List Exchange**: Get list of exchange.
+- **Create Exchange**: Create a new exchange.
+- **Get Exchange**: Get a exchange by id.
+- **Update Exchange**: Update a exchange by id.
+- **Delete Exchange**: Delete a exchange by id.
+
 """
 SUMMARY: str = "This is a simple API for E-Commerce"
 VERSION: str = "0.0.1"
@@ -83,6 +110,14 @@ DOCUMENTATIONS: dict = {
         {
             "name": CATEGORY,
             "description": "Category endpoints useful for category management.",
+        },
+        {
+            "name": DEPOSIT,
+            "description": "Deposit endpoints useful for deposit management.",
+        },
+        {
+            "name": EXCHANGE,
+            "description": "Exchange endpoints useful for exchange management.",
         },
     ],
 }

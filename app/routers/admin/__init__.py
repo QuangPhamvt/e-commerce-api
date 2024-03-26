@@ -10,7 +10,8 @@ from .product import router as product_router
 from .series import router as series_router
 from .tag import router as tag_router
 from .role import router as role_router
-
+from .deposit import router as deposit_router
+from .exchange import router as exchange_router
 
 # Admin Api
 admin_api = FastAPI(docs_url=None, **ADMIN_DOCUMENTATIONS)
@@ -20,6 +21,8 @@ admin_api.include_router(product_router)
 admin_api.include_router(series_router)
 admin_api.include_router(tag_router)
 admin_api.include_router(role_router)
+admin_api.include_router(deposit_router)
+admin_api.include_router(exchange_router)
 
 
 @admin_api.get("/")

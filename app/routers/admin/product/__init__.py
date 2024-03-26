@@ -91,8 +91,8 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
         },
     },
 )
-async def get_product(product_id: UUID):
-    return {"detail": f"Get Product {product_id} Succeed!"}
+async def get_product(id: UUID):
+    return {"detail": f"Get Product {id} Succeed!"}
 
 
 # ********** UPDATE PRODUCT BY ID **********
@@ -120,7 +120,7 @@ async def update_product(
     },
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
-    return await ProductService().delete_by_Id(id=id, db=db)
+    return await ProductService().delete_by_Id(id, db)
 
 
 @router.get(
