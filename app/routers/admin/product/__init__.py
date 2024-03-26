@@ -115,7 +115,7 @@ async def update_product(
     },
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
-    return await ProductService().delete_by_Id(id=id, db=db)
+    return await ProductService().delete_by_Id(id, db)
 
 
 @router.get(
