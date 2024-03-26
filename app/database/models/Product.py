@@ -41,7 +41,7 @@ class Product(Base):
     )
     sell_price: Mapped[float] = mapped_column("sell_price", Float, nullable=True)
     quantity: Mapped[int] = mapped_column("quantity", Integer, nullable=True)
-    images: Mapped[str] = mapped_column("images", String(255), nullable=True)
+    base_url: Mapped[str] = mapped_column("base_url", String(255), nullable=True)
     slug: Mapped[str] = mapped_column("slug", String(255), unique=True)
     country: Mapped[str] = mapped_column("country", String(50), nullable=True)
     factory: Mapped[str] = mapped_column("factory", String(50), nullable=True)
@@ -81,7 +81,8 @@ class Product(Base):
         original_price: float,
         sell_price: float,
         quantity: int,
-        images: str,
+        thumbnail: str,
+        base_url: str,
         slug: str,
         country: str,
         factory: str,
@@ -95,7 +96,8 @@ class Product(Base):
         self.original_price = original_price
         self.sell_price = sell_price
         self.quantity = quantity
-        self.images = images
+        self.thumbnail = thumbnail
+        self.base_url = base_url
         self.slug = slug
         self.country = country
         self.factory = factory

@@ -1,9 +1,7 @@
-from sqlalchemy.orm import defer
 import datetime
-from typing import Sequence
 from uuid import UUID
+from sqlalchemy.orm import defer
 from sqlalchemy import select, update
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product
 from app.utils.helper import helper
@@ -33,10 +31,12 @@ class ProductCRUD:
     async def get_products(self):
         db = self.db
         products = await db.execute(
-            select(Product).options(
+            select(Product)
+            .options(
                 defer(Product.created_at),
                 defer(Product.updated_at),
-            ).where(Product.deleted_at.is_(None)
+            )
+            .where(Product.deleted_at.is_(None))
         )
         return products.scalars().all()
 
@@ -53,7 +53,7 @@ class ProductCRUD:
                 defer(Product.updated_at),
             )
             .where(Product.id == id)
-            .where(Product.deleted_at.is_(None)
+            .where(Product.deleted_at.is_(None))
         )
         return product.scalars().first()
 

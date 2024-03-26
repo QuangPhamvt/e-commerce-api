@@ -54,9 +54,9 @@ class ProductBase(BaseModel):
 
 
 class ProductCreateCRUD(ProductBase):
-    images: str = Field(
-        title="Image",
-        description="Image of product",
+    thumbnail: str = Field(
+        title="Thumbnail",
+        description="Images of product",
         examples=["example.com/image1.jpg,example.com/image2.jpg,"],
     )
     pass
@@ -80,15 +80,15 @@ class ResCreateProduct(BaseModel):
 
 
 class CreateProductResponse(ProductBase):
-    images: str = Field(
-        title="Image",
-        description="Image of product",
-        examples=["example.com/image1.jpg,example.com/image2.jpg,"],
-    )
     thumbnail: str | None = Field(
         title="Thumbnail",
         description="Thumbnail of product",
         examples=["example.com/thumbnail.jpg"],
+    )
+    base_url: str | None = Field(
+        title="Base Urel",
+        description="Base Url of product thumbnail",
+        examples=["https://customafk.image/"],
     )
     variant: str | None = Field(
         title="Variant",
