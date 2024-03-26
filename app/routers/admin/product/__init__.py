@@ -10,7 +10,7 @@ from app.schemas.product import (
     ResCreateProduct,
     BodyUpdateProduct,
 )
-from app.schemas.responses import Res201Resquest
+from app.schemas.responses import Res201Resquest, ResBadRequest
 from app.services.product import ProductService
 
 GET_LIST_PRODUCTS = PRODUCT_PATH["GET_LIST_PRODUCTS"]
@@ -85,14 +85,13 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     GET_PRODUCT,
     description="This endpoint is used to get a product by id.",
     status_code=200,
+    response_model=CreateProductResponse,
     responses={
-        200: {
-            "description": "Get Product Succeed!",
-        },
+        400: {"model": ResBadRequest, "description": "Not Found"},
     },
 )
-async def get_product(id: UUID):
-    return {"detail": f"Get Product {id} Succeed!"}
+async def get_product(id: str, db: AsyncSession = Depends(get_db)):
+    return await ProductService().get_product_by_id(id, db)
 
 
 # ********** UPDATE PRODUCT BY ID **********
