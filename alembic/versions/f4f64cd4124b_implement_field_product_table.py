@@ -20,36 +20,36 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column("product", sa.Column("variant", sa.Text()))
-    op.add_column("product", sa.Column("preorder_start_date", sa.DateTime))
-    op.add_column("product", sa.Column("preorder_end_date", sa.DateTime))
+    op.add_column("Product", sa.Column("variant", sa.Text()))
+    op.add_column("Product", sa.Column("preorder_start_date", sa.DateTime))
+    op.add_column("Product", sa.Column("preorder_end_date", sa.DateTime))
     op.alter_column(
-        "product",
+        "Product",
         "image",
         existing_type=sa.String(255),
         new_column_name="thumbnail",
         server_default=None,
     )
-
-    op.add_column("series", sa.Column("deleted_at", sa.DateTime))
-    op.add_column("tag", sa.Column("deleted_at", sa.DateTime))
-    op.add_column("category", sa.Column("deleted_at", sa.DateTime))
+    #
+    op.add_column("Series", sa.Column("deleted_at", sa.DateTime))
+    op.add_column("Tag", sa.Column("deleted_at", sa.DateTime))
+    op.add_column("Category", sa.Column("deleted_at", sa.DateTime))
     pass
 
 
 def downgrade() -> None:
-    op.drop_column("product", "variant")
-    op.drop_column("product", "preorder_start_date")
-    op.drop_column("product", "preorder_end_date")
+    op.drop_column("Product", "variant")
+    op.drop_column("Product", "preorder_start_date")
+    op.drop_column("Product", "preorder_end_date")
     op.alter_column(
-        "product",
+        "Product",
         "thumbnail",
         existing_type=sa.String(255),
         new_column_name="image",
         server_default=None,
     )
-
-    op.drop_column("series", "deleted_at")
-    op.drop_column("tag", "deleted_at")
-    op.drop_column("category", "deleted_at")
+    #
+    op.drop_column("Series", "deleted_at")
+    op.drop_column("Tag", "deleted_at")
+    op.drop_column("Category", "deleted_at")
     pass
