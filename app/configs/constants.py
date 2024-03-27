@@ -1,5 +1,5 @@
 from dotenv import dotenv_values
-
+from enum import Enum
 
 config = dotenv_values(".env")
 
@@ -186,3 +186,14 @@ USERNAME = "ABC@@"
 
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
+
+
+# ********** Product Status **********
+class ProductStatus(str, Enum):
+    PRE_ORDER = "PRE-ORDER"
+    IN_STOCK = "IN STOCK"
+    OUT_OF_STOCK = "OUT OF STOCK"
+
+
+# ********** Base URL **********
+BASE_URL = "http://customafk.image/"

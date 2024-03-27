@@ -1,6 +1,6 @@
 import datetime
-from typing import Sequence
 from uuid import UUID
+from sqlalchemy.orm import defer
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product
@@ -28,15 +28,32 @@ class ProductCRUD:
         await db.refresh(db_product)
         return
 
-    async def get_products(self) -> Sequence[Product]:
+    async def get_products(self):
         db = self.db
-        products = await db.execute(select(Product).where(Product.deleted_at.is_(None)))
+        products = await db.execute(
+            select(Product)
+            .options(
+                defer(Product.created_at),
+                defer(Product.updated_at),
+            )
+            .where(Product.deleted_at.is_(None))
+        )
         return products.scalars().all()
 
     async def get_product_by_id(self, id: UUID) -> Product | None:
         db = self.db
         product = await db.execute(
-            select(Product).where(Product.id == id).where(Product.deleted_at.is_(None))
+            select(Product)
+            .options(
+                defer(Product.id),
+                defer(Product.deleted_at),
+                defer(Product.series_id),
+                defer(Product.category_id),
+                defer(Product.created_at),
+                defer(Product.updated_at),
+            )
+            .where(Product.id == id)
+            .where(Product.deleted_at.is_(None))
         )
         return product.scalars().first()
 

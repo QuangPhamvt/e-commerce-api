@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import uuid
+from app.configs.Clounfront import get_image_from_url
 import bcrypt
 import re
 from dotenv import dotenv_values
@@ -179,6 +180,15 @@ class Helper:
         slug = re.sub(r"[\s_-]+", "-", slug)
         slug = re.sub(r"^-+|-+$", "", slug)
         return slug
+
+    @staticmethod
+    def convert_image_to_url(thumbnail: str):
+        new_convert_images = ""
+        for image in thumbnail.split(","):
+            DOMAIN_IMAGE = get_image_from_url(image)
+            if DOMAIN_IMAGE:
+                new_convert_images += DOMAIN_IMAGE + ","
+        return new_convert_images
 
 
 helper: Helper = Helper()

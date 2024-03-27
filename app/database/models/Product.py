@@ -41,7 +41,6 @@ class Product(Base):
     )
     sell_price: Mapped[float] = mapped_column("sell_price", Float, nullable=True)
     quantity: Mapped[int] = mapped_column("quantity", Integer, nullable=True)
-    image: Mapped[str] = mapped_column("image", String(255), nullable=True)
     slug: Mapped[str] = mapped_column("slug", String(255), unique=True)
     country: Mapped[str] = mapped_column("country", String(50), nullable=True)
     factory: Mapped[str] = mapped_column("factory", String(50), nullable=True)
@@ -64,6 +63,14 @@ class Product(Base):
     tags: Mapped[List["Tag"]] = relationship(
         secondary=product_tag, back_populates="products"
     )
+    thumbnail: Mapped[str] = mapped_column("thumbnail", String(255), nullable=True)
+    variant: Mapped[str] = mapped_column("variant", Text(), nullable=True)
+    preorder_start_date: Mapped[datetime] = mapped_column(
+        "preorder_start_date", DateTime, nullable=True
+    )
+    preorder_end_date: Mapped[datetime] = mapped_column(
+        "preorder_end_date", DateTime, nullable=True
+    )
 
     def __init__(
         self,
@@ -73,7 +80,7 @@ class Product(Base):
         original_price: float,
         sell_price: float,
         quantity: int,
-        image: str,
+        thumbnail: str,
         slug: str,
         country: str,
         factory: str,
@@ -87,7 +94,7 @@ class Product(Base):
         self.original_price = original_price
         self.sell_price = sell_price
         self.quantity = quantity
-        self.image = image
+        self.thumbnail = thumbnail
         self.slug = slug
         self.country = country
         self.factory = factory
@@ -120,6 +127,7 @@ class Category(Base):
     products: Mapped[List["Product"]] = relationship(
         "Product", back_populates="category"
     )
+    deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
 
     def __init__(
         self,
@@ -165,6 +173,7 @@ class Tag(Base):
     products: Mapped[List["Product"]] = relationship(
         secondary=product_tag, back_populates="tags"
     )
+    deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
 
     def __init__(self, id: UUID, name: str):
         print("Tag model")
@@ -220,6 +229,7 @@ class Series(Base):
         "created_at", DateTime, default=datetime.today()
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
+    deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
 
     def __init__(
         self, id: UUID, name: str, description: str | None, image: str, slug: str

@@ -4,8 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.configs.constants import PRODUCT, PRODUCT_PREFIX, PRODUCT_PATH
 from app.dependencies import get_db
-from app.schemas.product import BodyCreateProduct, BodyUpdateProduct, ResCreateProduct
-from app.schemas.responses import Res201Resquest
+from app.schemas.product import (
+    BodyCreateProduct,
+    CreateProductResponse,
+    ResCreateProduct,
+    BodyUpdateProduct,
+)
+from app.schemas.responses import Res201Resquest, ResBadRequest
 from app.services.product import ProductService
 
 GET_LIST_PRODUCTS = PRODUCT_PATH["GET_LIST_PRODUCTS"]
@@ -80,14 +85,13 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     GET_PRODUCT,
     description="This endpoint is used to get a product by id.",
     status_code=200,
+    response_model=CreateProductResponse,
     responses={
-        200: {
-            "description": "Get Product Succeed!",
-        },
+        400: {"model": ResBadRequest, "description": "Not Found"},
     },
 )
-async def get_product(id: UUID):
-    return {"detail": f"Get Product {id} Succeed!"}
+async def get_product(id: str, db: AsyncSession = Depends(get_db)):
+    return await ProductService().get_product_by_id(id, db)
 
 
 # ********** UPDATE PRODUCT BY ID **********
@@ -122,10 +126,10 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
     GET_PRODUCTS_BY_TAG,
     response_description="This endpoint is used to get a list product by tag name.",
     status_code=200,
+    response_model=list[CreateProductResponse],
     responses={
         200: {
             "description": "Get List Products By Tag Succeed!",
-            "model": list[BodyUpdateProduct],
         },
         400: {"description": "Tag not found!"},
     },
