@@ -190,6 +190,6 @@ AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
 
 # ********** Product Status **********
 class ProductStatus(str, Enum):
-    preorder = "PREODER"
-    in_stock = "IN STOCK"
-    out_of_stock = "OUT OF STOCK"
+    preorder = "Preorder"
+    in_stock = "In Stock"
+    out_of_stock = "Out of Stock"

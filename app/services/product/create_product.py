@@ -14,7 +14,7 @@ class CreateProduct:
         await self.__check_product_exist(slug, db)
 
         url = f"products/{slug}.webp"
-        new_product = ProductCreateCRUD(thumbnail=url, **body.model_dump())
+        new_product = ProductCreateCRUD(image=url, **body.model_dump())
         await ProductCRUD(db).create(new_product)
 
         data = self.__create_presigned_url("customafk-ecommerce-web", slug)
