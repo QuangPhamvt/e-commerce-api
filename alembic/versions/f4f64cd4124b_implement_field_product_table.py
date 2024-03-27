@@ -20,7 +20,6 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column("product", sa.Column("base_url", sa.Text()))
     op.add_column("product", sa.Column("variant", sa.Text()))
     op.add_column("product", sa.Column("preorder_start_date", sa.DateTime))
     op.add_column("product", sa.Column("preorder_end_date", sa.DateTime))
@@ -36,7 +35,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_column("product", "base_url")
     op.drop_column("product", "variant")
     op.drop_column("product", "preorder_start_date")
     op.drop_column("product", "preorder_end_date")

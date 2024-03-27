@@ -190,6 +190,10 @@ AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
 
 # ********** Product Status **********
 class ProductStatus(str, Enum):
-    preorder = "PREODER"
-    in_stock = "IN STOCK"
-    out_of_stock = "OUT OF STOCK"
+    PRE_ORDER = "PRE-ORDER"
+    IN_STOCK = "IN STOCK"
+    OUT_OF_STOCK = "OUT OF STOCK"
+
+
+# ********** Base URL **********
+BASE_URL = "http://customafk.image/"

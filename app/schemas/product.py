@@ -43,7 +43,7 @@ class ProductBase(BaseModel):
     status: ProductStatus = Field(
         title="Status",
         description="Status of product",
-        examples=[ProductStatus.in_stock],
+        examples=[ProductStatus.IN_STOCK],
     )
     slug: str = Field(
         title="Slug",
@@ -84,11 +84,6 @@ class CreateProductResponse(ProductBase):
         title="Thumbnail",
         description="Thumbnail of product",
         examples=["example.com/thumbnail.jpg"],
-    )
-    base_url: str | None = Field(
-        title="Base Urel",
-        description="Base Url of product thumbnail",
-        examples=["https://customafk.image/"],
     )
     variant: str | None = Field(
         title="Variant",
