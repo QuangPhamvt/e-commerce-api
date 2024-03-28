@@ -1,19 +1,5 @@
 
-<!-- markdownlint-disable MD032 MD033-->
-# 🔥 **CustomAFK GitHub Template next app**
-
-<!-- <p align="center"> -->
-<!--   <br> -->
-<!--   <a href="https://github.com/QuangPhamvt/ie307-front-end-next/issues"> -->
-<!--     <img src="https://img.shields.io/github/issues-closed/QuangPhamvt/ie307-front-end-next?color=0088ff&style=for-the-badge&logo=github" alt="@QuangPhamvt/ie307-front-end's issues"/> -->
-<!--   </a> -->
-<!--   <a href="https://github.com/QuangPhamvt/ie307-front-end-next/pulls"> -->
-<!--     <img src="https://img.shields.io/github/issues-pr-closed/QuangPhamvt/ie307-front-end-next?color=0088ff&style=for-the-badge&logo=github" alt="@QuangPhamvt/project-template's pull requests"/> -->
-<!--   </a> -->
-<!--   <a href="https://github.com/QuangPhamvt/ie307-front-end-next/actions/workflows/deploy.yml"> -->
-<!--     <img src="https://github.com/QuangPhamvt/ie307-front-end-next/actions/workflows/deploy.yml/badge.svg" alt="@QuangPhamvt/ie307-front-end-next's tests"> -->
-<!--   </a> -->
-<!-- </p> -->
+# 🔥 **GitHub Project ECOMMERCE API**
 
 ---
 
@@ -27,6 +13,35 @@
 
 1. Prerequires
 - python version > 3.11.x
+- Install pipenvv
+- Config .env file
+   ```bash
+   # Database
+   # This is example to connect to database is localhost
+   # IF use Docker compose, you can use db as host
+    DB_USERNAME=root
+    DB_PASSWORD=12345678
+    DB_HOST=db
+    DB_NAME=ECOMMERCE
+   #Email
+    RESEND_KEY=
+    VERIFY_PATH=
+    RESEND_SENDER=
+   #Verify Token
+    VERIFY_EMAIL_SECRET=
+    VERIFY_EMAIL_EXPIRE=
+   # Access Token
+    ACCESS_TOKEN_SECRET=
+    ACCESS_TOKEN_EXPIRE=
+   # REFRESH TOKEN
+    REFRESH_TOKEN_SECRET=
+    REFRESH_TOKEN_EXPIRE=
+   # Forgot Password
+    FORGOT_CODE_EXPIRE=
+   #AWS ACCESS KEY
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
+   ```
 2. Clone repository
    ```bash
    git clone git@github.com:QuangPhamvt/e-commerce-api.git
@@ -45,9 +60,8 @@
    ```
 7. IF YOU USE DOCKER
    ```bash
-   docker-compose up --build
+   docker compose up
    ```
-
 ---
 
 ## 📚 **What does it include?**
@@ -58,16 +72,105 @@
 ### 🌲 **Project tree**
 
 ```
+├── Dockerfile             # Docker file for build image
+├── Pipfile                # Pipfile for manage package
+├── Pipfile.lock           # Pipfile.lock for manage package version
+├── README.md              # README.md file for project information
+├── alembic                # Alembic for manage database migration
+├── alembic.ini            # Alembic config file
+├── app                    # App folder
+│   ├── __init__.py        # Init file for app
+│   ├── configs            # Configs folder for app example: database, email, token ...
+│   ├── database           # Database folder for app eg: models, schemas, crud ...
+│   ├── dependencies       # Dependencies folder for app eg: token, email, verify, logger, ...
+│   ├── main.py            # Main file for app
+│   ├── middlewares        # Middlewares folder for app eg: token, logger, ...
+│   ├── routers            # Routers folder for app eg: user, product, auth, ...
+│   ├── schemas            # Schemas folder for app eg: user, product, auth, ...
+│   ├── services           # Services folder for app eg: user, product, auth, ...
+│   └── utils              # Utils folder for app eg: token, email, verify, logger, ...
+├── buildspec.yml          # Buildspec file for AWS CodeBuild CI/CD
+├── docker-compose.yml     # Docker compose file for build image
+├── import.sql             # Import sql file for database
+├── requirements.txt       # Requirements file for manage package
+└── ruff.toml              # Ruff file for manage test
 ```
 
 ---
 
 ## 📝 **Additional notes**
+This project is licensed under the MIT License.
 
+---
 ## 📖 **Information**
 ### Package
 ```
+[packages]
+fastapi = "*"
+pymysql = "*"
+asyncmy = "*"
+sqlalchemy = {extras = ["asyncio"], version = "*"}
+uvicorn = "*"
+python-dotenv = "*"
+cryptography = "*"
+bcrypt = "*"
+pydantic = {extras = ["email"], version = "*"}
+resend = "*"
+pyjwt = "*"
+greenlet = "*"
+boto3 = "*"
+alembic = "*"
+
+[dev-packages]
+ruff = "*"
+pre-commit = "*"
+rich = "*"
+typer = "*"
+libcst = "*"
 ```
+**requirements.txt**
+```
+-i https://pypi.org/simple
+alembic==1.13.1; python_version >= '3.8'
+annotated-types==0.6.0; python_version >= '3.8'
+anyio==4.3.0; python_version >= '3.8'
+asyncmy==0.2.9; python_version >= '3.7' and python_version < '4.0'
+bcrypt==4.1.2; python_version >= '3.7'
+boto3==1.34.66; python_version >= '3.8'
+botocore==1.34.66; python_version >= '3.8'
+certifi==2024.2.2; python_version >= '3.6'
+cffi==1.16.0; platform_python_implementation != 'PyPy'
+charset-normalizer==3.3.2; python_full_version >= '3.7.0'
+click==8.1.7; python_version >= '3.7'
+cryptography==42.0.5; python_version >= '3.7'
+dnspython==2.6.1; python_version >= '3.8'
+email-validator==2.1.1
+fastapi==0.110.0; python_version >= '3.8'
+greenlet==3.0.3; python_version >= '3.7'
+h11==0.14.0; python_version >= '3.7'
+idna==3.6; python_version >= '3.5'
+jmespath==1.0.1; python_version >= '3.7'
+mako==1.3.2; python_version >= '3.8'
+markupsafe==2.1.5; python_version >= '3.7'
+pycparser==2.21
+pydantic[email]==2.6.4; python_version >= '3.8'
+pydantic-core==2.16.3; python_version >= '3.8'
+pyjwt==2.8.0; python_version >= '3.7'
+pymysql==1.1.0; python_version >= '3.7'
+python-dateutil==2.9.0.post0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+python-dotenv==1.0.1; python_version >= '3.8'
+requests==2.31.0; python_version >= '3.7'
+resend==0.8.0; python_version >= '3.7'
+s3transfer==0.10.1; python_version >= '3.8'
+six==1.16.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
+sniffio==1.3.1; python_version >= '3.7'
+sqlalchemy[asyncio]==2.0.28; python_version >= '3.7'
+starlette==0.36.3; python_version >= '3.8'
+typing-extensions==4.10.0; python_version >= '3.8'
+urllib3==2.2.1; python_version >= '3.8'
+uvicorn[standard]==0.29.0; python_version >= '3.8'
+```
+
 
 ## ❔ **How to push**
 

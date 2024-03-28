@@ -23,7 +23,9 @@ async def lifespan(__app__: FastAPI):
     log.info("Starting up...")
     log.info("Running migrations...")
     alembic_cfg = Config("alembic.ini")
-    command.upgrade(alembic_cfg, "head")
+    exist_revision = command.history(alembic_cfg)
+    if exist_revision:
+        command.upgrade(alembic_cfg, "head")
 
     log.info("Creating tables...")
     async with engine_local.begin() as connection:
