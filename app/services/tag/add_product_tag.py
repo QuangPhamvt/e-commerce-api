@@ -11,10 +11,13 @@ class AddProductTag:
             tag_id = await tag_crud.is_exist_name(tag.name, db)
             if not tag_id:
                 await tag_crud.create(tag, db)
-                tag_id = await tag_crud.is_exist_name(tag.name, db)
-            is_relation_exist = await product_tag_crud.is_exist_product_tag(
-                product_id, tag_id, db
-            )
-            if not is_relation_exist:
-                await product_tag_crud.create(product_id, tag_id, db)
-        return {"detail": "Add Tags For Product Succeed!"}
+            tag_id = await tag_crud.is_exist_name(tag.name, db)
+            if tag_id:
+                is_relation_exist = await product_tag_crud.is_exist_product_tag(
+                    product_id, tag_id, db
+                )
+                if not is_relation_exist:
+                    await product_tag_crud.create(product_id, tag_id, db)
+                    return {"detail": "Add Tags For Product Succeed!"}
+
+            return {"detail": "Tags Already For Product Exist!"}

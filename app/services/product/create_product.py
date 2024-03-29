@@ -10,20 +10,20 @@ from app.utils.helper import helper
 class CreateProduct:
     async def create_product(self, body: BodyCreateProduct, db: AsyncSession):
         slug = helper.slugify(body.name)
+        type = body.thumbnail_type
 
         await self.__check_product_exist(slug, db)
 
-        url = f"products/{slug}.webp"
+        url = f"products/{slug}.{type}"
         new_product = ProductCreateCRUD(thumbnail=url, **body.model_dump())
         await ProductCRUD(db).create(new_product)
 
-        data = self.__create_presigned_url("customafk-ecommerce-web", slug)
+        data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
 
         if data is None:
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
             )
-
         return {"detail": "Product created successfully", "presigned_url": data}
 
     @staticmethod
@@ -34,6 +34,6 @@ class CreateProduct:
         pass
 
     @staticmethod
-    def __create_presigned_url(bucket_name: str, slug: str):
-        url = f"products/{slug}.webp"
-        return put_object(bucket_name, url)
+    def __create_presigned_url(bucket_name: str, slug: str, type: str):
+        url = f"products/{slug}.{type}"
+        return put_object(bucket_name, url, type)

@@ -64,11 +64,11 @@ class Product(Base):
         secondary=product_tag, back_populates="products"
     )
     thumbnail: Mapped[str] = mapped_column("thumbnail", String(255), nullable=True)
-    variant: Mapped[str] = mapped_column("variant", Text(), nullable=True)
-    preorder_start_date: Mapped[datetime] = mapped_column(
+    variant: Mapped[str | None] = mapped_column("variant", Text(), nullable=True)
+    preorder_start_date: Mapped[datetime | None] = mapped_column(
         "preorder_start_date", DateTime, nullable=True
     )
-    preorder_end_date: Mapped[datetime] = mapped_column(
+    preorder_end_date: Mapped[datetime | None] = mapped_column(
         "preorder_end_date", DateTime, nullable=True
     )
 
@@ -86,6 +86,9 @@ class Product(Base):
         factory: str,
         status: str,
         category_id: UUID | None = None,
+        variant: str | None = None,
+        preorder_start_date: datetime | None = None,
+        preorder_end_date: datetime | None = None,
     ):
         print("Product model")
         self.id = id
@@ -101,6 +104,9 @@ class Product(Base):
         self.status = status
         self.category_id = category_id
         self.created_at = datetime.today()
+        self.variant = variant
+        self.preorder_start_date = preorder_start_date
+        self.preorder_end_date = preorder_end_date
 
     def __repr__(self):
         return f"<Product {self.name}>"

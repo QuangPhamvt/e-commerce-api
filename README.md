@@ -13,7 +13,7 @@
 
 1. Prerequires
 - python version > 3.11.x
-- Install pipenvv
+- Install pipenv
 - Config .env file
    ```bash
    # Database
@@ -21,7 +21,7 @@
    # IF use Docker compose, you can use db as host
     DB_USERNAME=root
     DB_PASSWORD=12345678
-    DB_HOST=db
+    DB_HOST=localhost
     DB_NAME=ECOMMERCE
    #Email
     RESEND_KEY=
@@ -58,11 +58,53 @@
    ```bash
    pipenv run server
    ```
-7. IF YOU USE DOCKER
+---
+
+## Usage Docker compose
+0. Prerequires
+- Install Docker
+- Install Docker compose version > 2.45.x
+
+1. Setup environment (config .env file)
+   ```bash
+   # Database
+   # This is example to connect to database is localhost
+   # IF use Docker compose, you can use db as host
+    DB_USERNAME=root
+    DB_PASSWORD=lunas
+    DB_HOST=db
+    DB_NAME=ECOMMERCE
+   #Email
+    RESEND_KEY=
+    VERIFY_PATH=
+    RESEND_SENDER=
+   #Verify Token
+    VERIFY_EMAIL_SECRET=
+    VERIFY_EMAIL_EXPIRE=
+   # Access Token
+    ACCESS_TOKEN_SECRET=
+    ACCESS_TOKEN_EXPIRE=
+   # REFRESH TOKEN
+    REFRESH_TOKEN_SECRET=
+    REFRESH_TOKEN_EXPIRE=
+   # Forgot Password
+    FORGOT_CODE_EXPIRE=
+   #AWS ACCESS KEY
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
+   ```
+2. Docker compose
    ```bash
    docker compose up
    ```
----
+3. Check mysql database
+   ```bash
+   mysql -h 0.0.0.0 -P 3007 -D ECOMMERCE  -u root -p
+   ```
+4. Backup database
+   ```bash
+   mysql -h 0.0.0.0 -P 3007 -D ECOMMERCE  -u root -p >> import.sql
+   ```
 
 ## 📚 **What does it include?**
 

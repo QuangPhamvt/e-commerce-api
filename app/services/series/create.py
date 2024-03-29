@@ -10,13 +10,16 @@ from app.utils.helper import helper
 class Create:
     async def create(self, body: CreateSeriesParam, db: AsyncSession):
         is_exist = await self.__is_exist_series(body.name, db)
+        image_type = body.image_type
         if is_exist:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Name has been used!")
         slug = helper.slugify(body.name)
-        image = f"series/{slug}.webp"
+        image = f"series/{slug}.{image_type}"
         data = CreateSeriesData(slug=slug, image=image, **body.model_dump())
         await series_crud.create(data=data, db=db)
-        new_series = self.__create_presigned_url("customafk-ecommerce-web", slug)
+        new_series = self.__create_presigned_url(
+            "customafk-ecommerce-web", slug, image_type
+        )
 
         if new_series is None:
             raise HTTPException(
@@ -31,6 +34,6 @@ class Create:
         return is_exist
 
     @staticmethod
-    def __create_presigned_url(bucket_name: str, slug: str):
-        url = f"series/{slug}.webp"
-        return put_object(bucket_name, url)
+    def __create_presigned_url(bucket_name: str, slug: str, image_type: str):
+        url = f"series/{slug}.{image_type}"
+        return put_object(bucket_name, url, image_type)

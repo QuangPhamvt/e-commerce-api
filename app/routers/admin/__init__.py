@@ -42,6 +42,6 @@ async def get_swagger_admin_documentation(
 
 @admin_api.get("/openapi.json", include_in_schema=False)
 async def admin_openapi(__username__: str = Depends(get_current_username)):
-    get_openapi(
+    return get_openapi(
         title=admin_api.title, version=admin_api.version, routes=admin_api.routes
     )

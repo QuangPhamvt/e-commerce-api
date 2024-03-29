@@ -15,6 +15,11 @@ class SeriesBase(BaseModel):
 
 
 class CreateSeriesParam(SeriesBase):
+    image_type: str = Field(
+        title="Image Type",
+        description="Image type of series",
+        examples=["jpeg"],
+    )
     pass
 
 

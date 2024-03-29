@@ -46,16 +46,19 @@ router = APIRouter(
                             "original_price": 1000,
                             "sell_price": 900,
                             "quantity": 100,
-                            "image": "https://customafk-ecommerce-web.s3.amazonaws.com/products/iphone-13.webp",
+                            "thumbnail": "https://dev.customafk.com/products/iphone-13.jpeg",
                             "slug": "iphone-13",
                             "country": "USA",
                             "factory": "Apple",
                             "status": "active",
                             "category_id": None,
                             "series_id": None,
+                            "variant": "string",
                             "created_at": "2024-03-20T23:13:55",
                             "updated_at": None,
                             "deleted_at": None,
+                            "preoder_start_date": "2024-03-20T23:13:55",
+                            "preoder_end_date": "2024-03-20T23:13:55",
                         }
                     ]
                 }
@@ -85,12 +88,34 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     GET_PRODUCT,
     description="This endpoint is used to get a product by id.",
     status_code=200,
-    response_model=CreateProductResponse,
     responses={
         400: {"model": ResBadRequest, "description": "Not Found"},
+        200: {
+            "id": "92792ee8-011b-4f9a-be7d-9f1c29eea149",
+            "name": "Iphone 13",
+            "thumbnail": "https://dev.image.customafk.com/products/iphone-13.jpeg",
+            "country": "USA",
+            "factory": "Apple",
+            "slug": "category-1",
+            "tags": [
+                {
+                    "name": "Tag 1",
+                    "deleted_at": "string",
+                    "id": "f837cf6a-4be1-4302-9df9-84a7ba320bbd",
+                }
+            ],
+            "variant": "string",
+            "sell_price": 900,
+            "original_price": 1000,
+            "preorder_start_date": "string",
+            "preorder_end_date": "string",
+            "status": "IN STOCK",
+            "quantity": 100,
+            "description": "This is a new product from Apple",
+        },
     },
 )
-async def get_product(id: str, db: AsyncSession = Depends(get_db)):
+async def get_product(id: UUID, db: AsyncSession = Depends(get_db)):
     return await ProductService().get_product_by_id(id, db)
 
 

@@ -1,10 +1,11 @@
+import logging
 import datetime
 from uuid import UUID
+from fastapi import HTTPException, status
 from sqlalchemy.orm import defer
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product
-from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
 
@@ -14,19 +15,21 @@ class ProductCRUD:
         self.db = db
 
     async def create(self, product: ProductCreateCRUD) -> None:
-        db = self.db
-        uuid = generate_uuid()
-        slug = helper.slugify(product.name)
-        db_product = Product(
-            id=uuid,
-            slug=str(slug),
-            category_id=None,
-            **product.model_dump(),
-        )
-        db.add(db_product)
-        await db.commit()
-        await db.refresh(db_product)
-        return
+        try:
+            db = self.db
+            uuid = generate_uuid()
+            db_product = Product(
+                id=uuid,
+                category_id=None,
+                **product.model_dump(exclude={"thumbnail_type"}),
+            )
+            db.add(db_product)
+            await db.commit()
+            await db.refresh(db_product)
+            pass
+        except Exception as e:
+            logging.warning(f"Error creating product : {e}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to create product")
 
     async def get_products(self):
         db = self.db
@@ -42,20 +45,23 @@ class ProductCRUD:
 
     async def get_product_by_id(self, id: UUID) -> Product | None:
         db = self.db
-        product = await db.execute(
-            select(Product)
-            .options(
-                defer(Product.id),
-                defer(Product.deleted_at),
-                defer(Product.series_id),
-                defer(Product.category_id),
-                defer(Product.created_at),
-                defer(Product.updated_at),
+        try:
+            product = await db.execute(
+                select(Product)
+                .options(
+                    defer(Product.deleted_at),
+                    defer(Product.series_id),
+                    defer(Product.category_id),
+                    defer(Product.created_at),
+                    defer(Product.updated_at),
+                )
+                .where(Product.id == id)
+                .where(Product.deleted_at.is_(None))
             )
-            .where(Product.id == id)
-            .where(Product.deleted_at.is_(None))
-        )
-        return product.scalars().first()
+            return product.scalars().first()
+        except Exception as e:
+            logging.warning(f"Error getting product by id : {e}")
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to get product")
 
     async def get_product_by_slug(self, slug: str) -> Product | None:
         db = self.db
@@ -78,7 +84,7 @@ class ProductCRUD:
 
     async def update_by_id(self, id: UUID, product: BodyUpdateProduct) -> None:
         db = self.db
-        data = {k: v for k, v in product.dict().items() if v is not None}
+        data = {k: v for k, v in product.model_dump().items() if v is not None}
         await db.execute(update(Product).where(Product.id == id).values(data))
         await db.commit()
         pass

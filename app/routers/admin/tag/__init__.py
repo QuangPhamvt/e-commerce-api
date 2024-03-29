@@ -32,7 +32,7 @@ router = APIRouter(prefix=TAG_PREFIX, tags=[TAG])
         }
     },
 )
-async def create_product(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
+async def create_tag(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
     return await TagService().create(body, db)
 
 

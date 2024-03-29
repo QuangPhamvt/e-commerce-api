@@ -12,11 +12,11 @@ class DeleteProductById:
         if not product:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
 
-        self.__delete_image_S3(product.image)
+        self.__delete_image_S3(product.thumbnail)
         await ProductCRUD(db).delete_by_id(id)
         return {"detail": "Product deleted"}
 
     @staticmethod
-    def __delete_image_S3(image: str):
-        res = delete_object_s3("customafk-ecommerce-web", image)
+    def __delete_image_S3(thumbnail: str):
+        res = delete_object_s3("customafk-ecommerce-web", thumbnail)
         return res
