@@ -182,13 +182,11 @@ class Helper:
         return slug
 
     @staticmethod
-    def convert_image_to_url(thumbnail: str):
-        new_convert_images = ""
-        for image in thumbnail.split(","):
-            DOMAIN_IMAGE = get_image_from_url(image)
-            if DOMAIN_IMAGE:
-                new_convert_images += DOMAIN_IMAGE + ","
-        return new_convert_images
+    def convert_image_to_url(thumbnail: str) -> str:
+        DOMAIN_IMAGE = get_image_from_url(thumbnail)
+        if DOMAIN_IMAGE:
+            return DOMAIN_IMAGE
+        return thumbnail
 
 
 helper: Helper = Helper()

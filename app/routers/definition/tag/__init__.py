@@ -35,4 +35,4 @@ router = APIRouter(prefix=TAG_PREFIX, tags=[TAG])
     },
 )
 async def get_list_tags(db: AsyncSession = Depends(get_db)):
-    return await TagService().get_all(db)
+    return await TagService(db).get_all()

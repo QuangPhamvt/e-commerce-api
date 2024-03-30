@@ -1,37 +1,44 @@
 version: "3.8"
 services:
-  api:
-    image: e-commerce-api
-    container_name: e-commerce-api
-    build: .
-    env_file:
-      -  .env
-    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-    volumes:
-      - .:/builder/app/src/
-    networks:
-      - e-commerce-api
-    ports:
-      - 8000:8000
-    depends_on:
-      - database
-  database:
+  db:
     image: mysql:8.0.35
-    container_name: mysql
+    container_name: db-ecommerce
+    cap_add:
+      - SYS_NICE
     ports:
-      - '3306:3306'
+      - 3007:3306
     env_file:
       - .env
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: 'exit 0'
     volumes:
-      - e-commerce-api:/var/lib/mysql
+      - db:/var/lib/mysql
+      - ./import.sql:/docker-entrypoint-initdb.d/dumps.sql
     networks:
       - e-commerce-api
     expose:
-      - 3306
+      - 3007
+  api:
+    image: e-commerce-api
+    container_name: e-commerce-api
+    build:
+      context: .
+    env_file:
+      -  .env
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - e-commerce-api
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
 volumes:
-  e-commerce-api:
+  db:
 networks:
   e-commerce-api:

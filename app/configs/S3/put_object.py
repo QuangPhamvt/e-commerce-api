@@ -1,11 +1,12 @@
 import logging
 import boto3
 from botocore.exceptions import ClientError
+from fastapi import HTTPException, status
 
 from app.configs.constants import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 
 
-def put_object(bucket_name, object_name, expiration=3600) -> str | None:
+def put_object(bucket_name, object_name, type: str, expiration=3600) -> str | None:
     """
     Generate a presigned URL to share an S3 object
     :param bucket_name: string
@@ -26,13 +27,15 @@ def put_object(bucket_name, object_name, expiration=3600) -> str | None:
             Params={
                 "Bucket": bucket_name,
                 "Key": object_name,
-                "ContentType": "image/png",
+                "ContentType": type,
             },
             ExpiresIn=expiration,
         )
     except ClientError as e:
         logging.error(e)
-        return None
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
+        )
 
     # The response contains the presigned URL
     return response

@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, Field
 
 
@@ -15,11 +16,30 @@ class CategoryBase(BaseModel):
 
 
 class CreateCategoryParam(CategoryBase):
+    parent_id: UUID | None = Field(
+        title="Parent ID",
+        description="Parent ID of category",
+        examples=["123e4567e89b12d3a456426614174000"],
+        default=None,
+    )
     pass
 
 
 class UpdateCategoryParam(CreateCategoryParam):
     pass
+
+
+class UpdateProductCategoryParam(BaseModel):
+    category_id: UUID = Field(
+        title="Category ID",
+        description="Category ID",
+        examples=["123e4567e89b12d3a456426614174000"],
+    )
+    product_id: UUID = Field(
+        title="Product ID",
+        description="Product ID",
+        examples=["123e4567e89b12d3a456426614174000"],
+    )
 
 
 class ListCategoryRespone(CategoryBase):

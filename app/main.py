@@ -1,5 +1,6 @@
-from contextlib import asynccontextmanager
 import logging
+import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
@@ -21,17 +22,20 @@ log = logging.getLogger("uvicorn")
 @asynccontextmanager
 async def lifespan(__app__: FastAPI):
     log.info("Starting up...")
-    log.info("Running migrations...")
-    alembic_cfg = Config("alembic.ini")
-    command.upgrade(alembic_cfg, "head")
+
+    log_history = os.popen("alembic history").read()
+    if log_history != "":
+        log.info("Running migrations...")
+        alembic_cfg = Config("alembic.ini")
+        command.upgrade(alembic_cfg, "head")
 
     log.info("Creating tables...")
     async with engine_local.begin() as connection:
         # turn on to reset the database
         # await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
-    yield
 
+    yield
     log.info("Shutting down...")
 
 

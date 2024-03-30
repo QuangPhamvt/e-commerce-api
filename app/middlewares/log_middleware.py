@@ -1,3 +1,4 @@
+import logging
 import time
 from fastapi import Request
 
@@ -8,8 +9,9 @@ async def log_middleware(request: Request, call_next):
     request: Request object from FastAPI
     call_next: function to call the next middleware
     """
+    log = logging.getLogger("uvicorn")
     start = time.time()
     response = await call_next(request)
     process_time = time.time() - start
-    print(f"Process time: {process_time}")
+    log.info(f"Process time: {process_time}")
     return response
