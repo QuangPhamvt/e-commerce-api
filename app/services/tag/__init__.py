@@ -3,7 +3,6 @@ from fastapi import status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.tag import CreateTagData, CreateTagParam, TagBase
-from app.utils.helper import helper
 from app.database.crud.tag_crud import TagCRUD
 from app.database.crud.product_tag_crud import ProductTagCRUD
 
@@ -36,8 +35,7 @@ class TagService:
         await self.tag_crud.delete(id)
         return {"detail": "Delete Tag Succeed!"}
 
-    async def add_product_tag(self, id: str, tags: list[TagBase]):
-        product_id = helper.convert_str_to_UUID(id)
+    async def add_product_tag(self, id: UUID, tags: list[TagBase]):
         for tag in tags:
             name = tag.name
             tag_id = await self.tag_crud.is_exist_name(name)
@@ -45,14 +43,11 @@ class TagService:
                 await self.tag_crud.create(tag)
             tag_id = await self.tag_crud.is_exist_name(name)
             if tag_id:
-                is_relation_exist = await self.product_tag_crud.is_exist(
-                    product_id, tag_id
-                )
+                is_relation_exist = await self.product_tag_crud.is_exist(id, tag_id)
                 if not is_relation_exist:
-                    await self.product_tag_crud.create(product_id, tag_id)
-                    return {"detail": "Add Tags For Product Succeed!"}
+                    await self.product_tag_crud.create(id, tag_id)
 
-            return {"detail": "Tags Already For Product Exist!"}
+        return {"detail": "Tags Already For Product Exist!"}
 
     async def __is_exist_tag(self, name: str):
         is_exist = await self.tag_crud.is_exist_name(name)

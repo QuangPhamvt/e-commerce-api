@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -6,7 +7,6 @@ from app.schemas.product import GetListProduct
 from app.dependencies import get_db
 from app.schemas.responses import ResBadRequest
 from app.services.product import ProductService
-from app.schemas.product import CreateProductResponse
 
 router = APIRouter(
     prefix=PRODUCT_PREFIX,
@@ -27,7 +27,7 @@ router = APIRouter(
     },
 )
 async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await ProductService().get_products(db)
+    return await ProductService(db).get_all()
 
 
 # ********** GET PRODUCT BY ID **********
@@ -35,10 +35,11 @@ async def get_list_products(db: AsyncSession = Depends(get_db)):
     "/{id}",
     description="This endpoint is used to get a product by id.",
     status_code=200,
-    response_model=CreateProductResponse,
     responses={
         400: {"model": ResBadRequest, "description": "Not Found"},
     },
 )
-async def get_product(id: str, db: AsyncSession = Depends(get_db)):
-    return await ProductService().get_product_by_id(id, db)
+async def get_product(id: UUID, db: AsyncSession = Depends(get_db)):
+    data = await ProductService(db).get_product_by_id(id)
+    data.pop("original_price") if data.get("original_price") else None
+    return data

@@ -1,110 +1,142 @@
+import logging
 from uuid import UUID
-from sqlalchemy import delete, select, update
-from sqlalchemy.sql.expression import func
-from app.database.models.Product import Category
-from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import defer
+from sqlalchemy import delete, select, update
+from app.database.crud.product_crud import ProductCRUD
+from app.database.models.Product import Category, Product
+from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
 from app.utils.uuid import generate_uuid
 from app.utils.helper import helper
 
 
-async def create_category(
-    category: CreateCategoryParam, parent_id: UUID | None, db: AsyncSession
-):
-    id = generate_uuid()
-    slug = helper.slugify(category.name)
-    db_category = Category(
-        id=id,
-        slug=slug,
-        parent_id=parent_id,
-        **category.model_dump(),
-    )
-    db.add(db_category)
-    await db.commit()
-    await db.refresh(db_category)
-    pass
+class CategoryCRUD:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+        self.product_crud = ProductCRUD(db)
 
+    async def create(self, data: CreateCategoryParam):
+        try:
+            id = generate_uuid()
+            slug = helper.slugify(data.name)
+            category = Category(
+                id=id,
+                slug=slug,
+                **data.model_dump(),
+            )
+            self.db.add(category)
+            await self.db.commit()
+        except Exception as e:
+            logging.warning(f"Error creating category : {e}")
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, "Failed to create category"
+            )
 
-async def is_exist_name(name: str, db: AsyncSession):
-    category = await db.execute(select(Category).where(Category.name == name))
-    return category.scalars().first()
-
-
-async def get_category_by_id(id: UUID, db: AsyncSession):
-    category = await db.execute(select(Category).where(Category.id == id))
-    return category.scalars().first()
-
-
-async def get_category_by_id_and_parent_id(id: UUID, parent_id: UUID, db: AsyncSession):
-    category = await db.execute(
-        select(Category).where(Category.id == id).where(Category.parent_id == parent_id)
-    )
-    return category.scalars().first()
-
-
-async def delete_sub_category_by_parent_id(parent_id: UUID, db: AsyncSession):
-    await db.execute(delete(Category).where(Category.parent_id == parent_id))
-    await db.commit()
-
-
-async def delete_category(id: UUID, db: AsyncSession):
-    await db.execute(delete(Category).where(Category.id == id))
-    await db.commit()
-
-
-async def update_category(id: UUID, category: UpdateCategoryParam, db: AsyncSession):
-    slug = helper.slugify(category.name)
-    await db.execute(
-        update(Category)
-        .where(Category.id == id)
-        .values(
-            **category.model_dump(),
-            slug=slug,
+    async def is_exist(self, name: str):
+        return (
+            (
+                await self.db.execute(
+                    select(Category.id)
+                    .where(Category.name == name)
+                    .where(Category.deleted_at.is_(None))
+                )
+            )
+            .scalars()
+            .first()
         )
-    )
-    await db.commit()
 
-
-async def count_category(db: AsyncSession):
-    none_id = None
-    count = await db.execute(
-        select(func.count(Category.id))
-        .where(Category.parent_id == none_id)
-        .order_by(None)
-    )
-    return count.scalar()
-
-
-async def get_all(db: AsyncSession):
-    none_id = None
-    list_category = await db.execute(
-        select(Category)
-        .options(
-            defer(Category.parent_id),
-            defer(Category.created_at),
-            defer(Category.updated_at),
+    async def read_by_id(self, id: UUID):
+        return (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .where(Category.id == id)
+                    .where(Category.deleted_at.is_(None))
+                )
+            )
+            .scalars()
+            .first()
         )
-        .where(Category.parent_id == none_id)
-    )
-    results = [
-        {
-            **category.Category.asdict(),
-            "sub": await get_sub_category(parent_id=category.Category.id, db=db),
-        }
-        for category in list_category.mappings()
-    ]
-    return results
 
-
-async def get_sub_category(parent_id: UUID, db: AsyncSession):
-    list_sub_category = await db.execute(
-        select(Category)
-        .options(
-            defer(Category.parent_id),
-            defer(Category.created_at),
-            defer(Category.updated_at),
+    async def read_by_id_and_parent_id(self, id: UUID, parent_id: UUID):
+        return (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .where(Category.id == id)
+                    .where(Category.parent_id == parent_id)
+                    .where(Category.deleted_at.is_(None))
+                )
+            )
+            .scalars()
+            .first()
         )
-        .where(Category.parent_id == parent_id)
-    )
-    return list_sub_category.scalars().all()
+
+    async def delete_sub_by_id(self, sub_id: UUID):
+        await self.db.execute(delete(Category).where(Category.id == sub_id))
+        await self.db.commit()
+
+    async def delete_parent_by_id(self, id: UUID):
+        await self.db.execute(delete(Category).where(Category.id == id))
+        await self.db.execute(
+            update(Category).where(Category.parent_id == id).values(parent_id=None)
+        )
+        await self.db.commit()
+
+    async def update(self, id: UUID, data: UpdateCategoryParam):
+        slug = helper.slugify(data.name)
+        await self.db.execute(
+            update(Category)
+            .where(Category.id == id)
+            .values(
+                **data.model_dump(),
+                slug=slug,
+            )
+        )
+        await self.db.commit()
+
+    async def read_all(self):
+        list_category = await self.db.execute(
+            select(Category)
+            .options(
+                defer(Category.parent_id),
+                defer(Category.created_at),
+                defer(Category.updated_at),
+            )
+            .where(Category.parent_id.is_(None))
+        )
+        results = [
+            {
+                **category.Category.asdict(),
+                "sub": await self.read_sub_category(category.Category.id),
+            }
+            for category in list_category.mappings()
+        ]
+        return results
+
+    async def read_sub_category(self, parent_id: UUID):
+        return (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .options(
+                        defer(Category.parent_id),
+                        defer(Category.created_at),
+                        defer(Category.updated_at),
+                        defer(Category.deleted_at),
+                    )
+                    .where(Category.parent_id == parent_id)
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+    async def update_product(self, product_id: UUID, category_id: UUID):
+        await self.db.execute(
+            update(Product)
+            .where(Product.id == product_id)
+            .values(category_id=category_id)
+        )
+        await self.db.commit()

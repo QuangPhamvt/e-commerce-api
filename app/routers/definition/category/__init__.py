@@ -38,4 +38,4 @@ router = APIRouter(prefix=CATEGORY_PREFIX, tags=[CATEGORY])
     },
 )
 async def get_categories(db: AsyncSession = Depends(get_db)):
-    return await CategoryService().get_all(db)
+    return await CategoryService(db).get_all()

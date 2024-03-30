@@ -4,7 +4,7 @@ from app.services.tag import TagService
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import TAG, TAG_PATH, TAG_PREFIX
 from app.dependencies import get_db
-from app.schemas.tag import CreateTagParam, TagBase
+from app.schemas.tag import CreateTagParam, UpdateProductTagParam
 
 
 CREATE_TAG = TAG_PATH["CREATE_TAG"]
@@ -37,6 +37,7 @@ async def create_tag(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
     return await TagService(db).create(body)
 
 
+# ********** GET LIST TAG **********
 @router.get(
     GET_LIST_TAG,
     description="This endpoint is used to get list of tags.",
@@ -62,6 +63,22 @@ async def get_list_tags(db: AsyncSession = Depends(get_db)):
     return await TagService(db).get_all()
 
 
+# ********** ADD PRODUCT TAGS **********
+@router.put(
+    ADD_PRODUCT_TAGS,
+    description="This endpoint is used to add tags for a product. If tag is not exist, it will be created and added for the product.",
+    status_code=200,
+    responses={200: {"detail": "Add Tags For Product Succeed!"}},
+)
+async def add_product_tags(
+    body: UpdateProductTagParam, db: AsyncSession = Depends(get_db)
+):
+    tags = body.tags
+    product_id = body.product_id
+    return await TagService(db).add_product_tag(product_id, tags)
+
+
+# ********** DELETE TAG **********
 @router.delete(
     DELETE_TAG,
     response_description="This endpoint is used to delete a tag by id.",
@@ -70,15 +87,3 @@ async def get_list_tags(db: AsyncSession = Depends(get_db)):
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
     return await TagService(db).delete(id)
-
-
-@router.post(
-    ADD_PRODUCT_TAGS,
-    description="This endpoint is used to add tags for a product. If tag is not exist, it will be created and added for the product.",
-    status_code=200,
-    responses={200: {"detail": "Add Tags For Product Succeed!"}},
-)
-async def add_product_tags(
-    product_id: str, tags: list[TagBase], db: AsyncSession = Depends(get_db)
-):
-    return await TagService(db).add_product_tag(product_id, tags)

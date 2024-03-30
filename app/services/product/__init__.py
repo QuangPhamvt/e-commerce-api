@@ -4,10 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
-
+from app.database.crud.category_crud import CategoryCRUD
+from app.database.crud.tag_crud import TagCRUD
 from app.database.crud.product_crud import ProductCRUD
 from app.database.crud.product_tag_crud import ProductTagCRUD
-from app.database.crud.tag_crud import TagCRUD
 from app.database.models.Product import Product
 from app.schemas.product import BodyCreateProduct, BodyUpdateProduct, ProductCreateCRUD
 from app.utils.helper import helper
@@ -16,15 +16,15 @@ from app.utils.helper import helper
 class ProductService:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.product_crud = ProductCRUD(db)
         self.tag_crud = TagCRUD(db)
+        self.product_crud = ProductCRUD(db)
+        self.category_crud = CategoryCRUD(db)
         self.product_tag_crud = ProductTagCRUD(db)
 
     async def get_all(self):
         products = await self.product_crud.read_all()
         for product in products:
             product.thumbnail = helper.convert_image_to_url(product.thumbnail)
-
         return products
 
     async def get_products_by_tag(self, tag_name: str):
@@ -43,8 +43,14 @@ class ProductService:
 
             product.thumbnail = self.__convert_image_to_url(product)
             tags = await self.product_tag_crud.read_list_tags_by_product(id)
+
+            category = None
+            if product.category_id:
+                category = await self.category_crud.read_by_id(product.category_id)
+
             new_product = {
                 "tags": tags,
+                "category": category if category else None,
                 **product.__dict__,
             }
             return new_product

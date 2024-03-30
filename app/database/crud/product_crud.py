@@ -55,7 +55,6 @@ class ProductCRUD:
                 .options(
                     defer(Product.deleted_at),
                     defer(Product.series_id),
-                    defer(Product.category_id),
                     defer(Product.created_at),
                     defer(Product.updated_at),
                 )

@@ -40,4 +40,4 @@ router = APIRouter(prefix=SERIES_PREFIX, tags=[SERIES])
     },
 )
 async def get_list_series(db: AsyncSession = Depends(get_db)):
-    return await SeriesService().get_all(db)
+    return await SeriesService(db).get_all()
