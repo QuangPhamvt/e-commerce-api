@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from app.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,7 +35,7 @@ router = APIRouter(
     },
 )
 async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db)):
-    return await RoleService().create(role, db)
+    return await RoleService(db).create(role)
 
 
 @router.get(
@@ -58,7 +59,7 @@ async def create_role(role: CreateRoleParam, db: AsyncSession = Depends(get_db))
     },
 )
 async def get_list_roles(db: AsyncSession = Depends(get_db)):
-    return await RoleService().get_all(db)
+    return await RoleService(db).get_all()
 
 
 @router.delete(
@@ -71,8 +72,8 @@ async def get_list_roles(db: AsyncSession = Depends(get_db)):
         },
     },
 )
-async def delete_role(id: str, db: AsyncSession = Depends(get_db)):
-    return await RoleService().delete(id, db)
+async def delete_role(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await RoleService(db).delete(id)
 
 
 @router.put(
@@ -86,6 +87,6 @@ async def delete_role(id: str, db: AsyncSession = Depends(get_db)):
     },
 )
 async def update_role(
-    id: str, role: CreateRoleParam, db: AsyncSession = Depends(get_db)
+    id: UUID, role: CreateRoleParam, db: AsyncSession = Depends(get_db)
 ):
-    return await RoleService().update(id=id, new_role_name=role.name, db=db)
+    return await RoleService(db).update(id, role.name)

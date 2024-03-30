@@ -6,41 +6,44 @@ from app.utils.uuid import generate_uuid
 from uuid import UUID
 
 
-async def get_role_by_name(db: AsyncSession, role_name: str) -> Role | None:
-    # return db.query(models.Role).filter(models.Role.name == role_name).first()
-    result = await db.execute(select(Role).where(Role.name == role_name))
-    return result.scalars().first()
+class RoleCRUD:
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
+    async def get_role_by_name(self, role_name: str) -> Role | None:
+        return (
+            (await self.db.execute(select(Role).where(Role.name == role_name)))
+            .scalars()
+            .first()
+        )
 
-async def get_role_id_by_name(db: AsyncSession, role_name: str) -> Role | None:
-    result = await db.execute(select(Role).where(Role.name == role_name))
-    return result.scalars().first()
+    async def get_role_id_by_name(self, role_name: str) -> Role | None:
+        return (
+            (await self.db.execute(select(Role).where(Role.name == role_name)))
+            .scalars()
+            .first()
+        )
 
+    async def get_role_by_id(self, id: UUID) -> Role | None:
+        return (
+            (await self.db.execute(select(Role).where(Role.id == id))).scalars().first()
+        )
 
-async def get_role_by_id(id: UUID, db: AsyncSession) -> UUID | None:
-    role = await db.execute(select(Role.id).where(Role.id == id))
-    return role.scalars().first()
+    async def create(self, data: CreateRoleParam):
+        id = generate_uuid()
+        db_role = Role(id, **data.model_dump())
+        self.db.add(db_role)
+        await self.db.commit()
 
+    async def delete_by_id(self, id: UUID):
+        await self.db.execute(delete(Role).where(Role.id == id))
+        await self.db.commit()
 
-async def create_role(db: AsyncSession, role: CreateRoleParam) -> Role:
-    role_id = generate_uuid()
-    db_role = Role(role_id, name=role.name)
-    db.add(db_role)
-    await db.commit()
-    await db.refresh(db_role)
-    return db_role
+    async def get_all(self):
+        return (await self.db.execute(select(Role))).scalars().all()
 
-
-async def get_list_role(db: AsyncSession):
-    list_roles = await db.execute(select(Role))
-    return list_roles.scalars().all()
-
-
-async def delete_role_by_id(role_id: UUID, db: AsyncSession):
-    await db.execute(delete(Role).where(Role.id == role_id))
-    await db.commit()
-
-
-async def update_role_by_id(role_id: UUID, new_role_name: str, db: AsyncSession):
-    await db.execute(update(Role).where(Role.id == role_id).values(name=new_role_name))
-    await db.commit()
+    async def update_by_id(self, id: UUID, new_role_name: str):
+        await self.db.execute(
+            update(Role).where(Role.id == id).values(name=new_role_name)
+        )
+        await self.db.commit()

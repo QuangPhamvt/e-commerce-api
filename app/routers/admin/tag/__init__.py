@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from app.services.tag import TagService
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,7 +34,7 @@ router = APIRouter(prefix=TAG_PREFIX, tags=[TAG])
     },
 )
 async def create_tag(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
-    return await TagService().create(body, db)
+    return await TagService(db).create(body)
 
 
 @router.get(
@@ -58,7 +59,7 @@ async def create_tag(body: CreateTagParam, db: AsyncSession = Depends(get_db)):
     },
 )
 async def get_list_tags(db: AsyncSession = Depends(get_db)):
-    return await TagService().get_all(db)
+    return await TagService(db).get_all()
 
 
 @router.delete(
@@ -67,8 +68,8 @@ async def get_list_tags(db: AsyncSession = Depends(get_db)):
     status_code=200,
     responses={200: {"detail": "Delete Tag Succeed!"}},
 )
-async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
-    return await TagService().delete(id=id, db=db)
+async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await TagService(db).delete(id)
 
 
 @router.post(
@@ -80,4 +81,4 @@ async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
 async def add_product_tags(
     product_id: str, tags: list[TagBase], db: AsyncSession = Depends(get_db)
 ):
-    return await TagService().add(product_id, tags, db)
+    return await TagService(db).add_product_tag(product_id, tags)

@@ -14,7 +14,7 @@ class SeriesBase(BaseModel):
     )
 
 
-class CreateSeriesParam(SeriesBase):
+class CreateSeriesBody(SeriesBase):
     image_type: str = Field(
         title="Image Type",
         description="Image type of series",
@@ -27,7 +27,7 @@ class UpdateSeriesParam(SeriesBase):
     pass
 
 
-class UpdateSeriesData(SeriesBase):
+class UpdateSeriesById(SeriesBase):
     slug: str = Field(
         title="Series Slug",
         description="Series Slug",
@@ -35,7 +35,7 @@ class UpdateSeriesData(SeriesBase):
     )
 
 
-class CreateSeriesData(SeriesBase):
+class CreateSeriesCRUD(SeriesBase):
     image: str = Field(
         title="Series Image",
         description="Series Image",
@@ -61,7 +61,7 @@ class CreateSeriesResponse(BaseModel):
     )
 
 
-class ListSeriesResponse(CreateSeriesData):
+class ListSeriesResponse(CreateSeriesBody):
     id: str = Field(
         title="ID",
         description="ID of series",

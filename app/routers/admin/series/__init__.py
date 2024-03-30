@@ -1,10 +1,11 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import SERIES, SERIES_PREFIX
 from app.dependencies import get_db
 from app.schemas.responses import Res201Resquest
 from app.schemas.series import (
-    CreateSeriesParam,
+    CreateSeriesBody,
     CreateSeriesResponse,
     UpdateSeriesParam,
 )
@@ -39,7 +40,7 @@ router = APIRouter(prefix=SERIES_PREFIX, tags=[SERIES])
     },
 )
 async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await SeriesService().get_all(db)
+    return await SeriesService(db).get_all()
 
 
 # ********** CREATE SERIES **********
@@ -51,8 +52,8 @@ async def get_list_products(db: AsyncSession = Depends(get_db)):
         201: {"model": CreateSeriesResponse},
     },
 )
-async def create_product(body: CreateSeriesParam, db: AsyncSession = Depends(get_db)):
-    return await SeriesService().create(body, db)
+async def create_product(body: CreateSeriesBody, db: AsyncSession = Depends(get_db)):
+    return await SeriesService(db).create(body)
 
 
 @router.put(
@@ -64,9 +65,9 @@ async def create_product(body: CreateSeriesParam, db: AsyncSession = Depends(get
     },
 )
 async def update_product(
-    id: str, body: UpdateSeriesParam, db: AsyncSession = Depends(get_db)
+    id: UUID, body: UpdateSeriesParam, db: AsyncSession = Depends(get_db)
 ):
-    return await SeriesService().update(id, body, db)
+    return await SeriesService(db).update(id, body)
 
 
 @router.delete(
@@ -78,4 +79,4 @@ async def update_product(
     },
 )
 async def delete_product(id: str, db: AsyncSession = Depends(get_db)):
-    return await SeriesService().delete(id=id, db=db)
+    return await SeriesService(db).delete(id)

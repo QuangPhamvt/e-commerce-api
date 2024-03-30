@@ -67,7 +67,7 @@ router = APIRouter(
     },
 )
 async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await ProductService().get_products(db)
+    return await ProductService(db).get_all()
 
 
 # ********** CREATE PRODUCT **********
@@ -80,7 +80,7 @@ async def get_list_products(db: AsyncSession = Depends(get_db)):
     },
 )
 async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get_db)):
-    return await ProductService().create_product(body, db)
+    return await ProductService(db).create_product(body)
 
 
 # ********** GET PRODUCT BY ID **********
@@ -116,7 +116,7 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
     },
 )
 async def get_product(id: UUID, db: AsyncSession = Depends(get_db)):
-    return await ProductService().get_product_by_id(id, db)
+    return await ProductService(db).get_product_by_id(id)
 
 
 # ********** UPDATE PRODUCT BY ID **********
@@ -131,7 +131,7 @@ async def get_product(id: UUID, db: AsyncSession = Depends(get_db)):
 async def update_product(
     id: UUID, body: BodyUpdateProduct, db: AsyncSession = Depends(get_db)
 ):
-    return await ProductService().update_product_by_id(id, body, db)
+    return await ProductService(db).update_by_id(id, body)
 
 
 # ********** DELETE PRODUCT BY ID **********
@@ -144,9 +144,10 @@ async def update_product(
     },
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
-    return await ProductService().delete_by_Id(id, db)
+    return await ProductService(db).delete_by_id(id)
 
 
+# ********** GET LIST PRODUCTS BY TAG **********
 @router.get(
     GET_PRODUCTS_BY_TAG,
     response_description="This endpoint is used to get a list product by tag name.",
@@ -160,4 +161,4 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
     },
 )
 async def get_list_products_by_tag(tag_name: str, db: AsyncSession = Depends(get_db)):
-    return await ProductService().get_products_by_tag(tag_name, db)
+    return await ProductService(db).get_products_by_tag(tag_name)

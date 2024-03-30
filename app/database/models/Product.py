@@ -237,17 +237,12 @@ class Series(Base):
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
     deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
 
-    def __init__(
-        self, id: UUID, name: str, description: str | None, image: str, slug: str
-    ):
-        print("Series model")
+    def __init__(self, id: UUID, name: str, slug: str, description: str, image: str):
         self.id = id
         self.name = name
-        if description:
-            self.description = description
-        self.image = image
         self.slug = slug
-        self.created_at = datetime.now()
+        self.description = description
+        self.image = image
 
     def __repr__(self):
         return f"<Series {self.name}>"
