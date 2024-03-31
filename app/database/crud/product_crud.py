@@ -40,6 +40,7 @@ class ProductCRUD:
                     .options(
                         defer(Product.created_at),
                         defer(Product.updated_at),
+                        defer(Product.deleted_at),
                     )
                     .where(Product.deleted_at.is_(None))
                 )
@@ -53,10 +54,7 @@ class ProductCRUD:
             product = await self.db.execute(
                 select(Product)
                 .options(
-                    defer(Product.deleted_at),
                     defer(Product.series_id),
-                    defer(Product.created_at),
-                    defer(Product.updated_at),
                 )
                 .where(Product.id == id)
                 .where(Product.deleted_at.is_(None))
