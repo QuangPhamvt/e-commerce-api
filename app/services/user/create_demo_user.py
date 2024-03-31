@@ -38,7 +38,7 @@ class CreateDemoUser:
     # Check if demo user already exists
     @staticmethod
     async def __check_user_exist(email: str, db: AsyncSession):
-        exist_user = await user_crud.UserCRUD(db).get_user_by_email(email)
+        exist_user = await user_crud.UserCRUD(db).read_user_by_email(email)
         if exist_user:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email has been used!")
         pass

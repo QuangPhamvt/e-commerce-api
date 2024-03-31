@@ -15,7 +15,7 @@ class UserCRUD:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_user_by_email(self, email: str) -> User | None:
+    async def read_user_by_email(self, email: str) -> User | None:
         data_user = await self.db.execute(select(User).where(User.email == email))
         return data_user.scalars().first()
 
@@ -34,7 +34,7 @@ class UserCRUD:
         await self.db.refresh(db_user)
         return db_user
 
-    async def verify_user(self, user_id: UUID):
+    async def update_verify(self, user_id: UUID):
         await self.db.execute(
             update(User).where(User.id == user_id).values(is_active=True)
         )
@@ -46,11 +46,11 @@ class UserCRUD:
         )
         await self.db.commit()
 
-    async def get_user_by_id(self, id: UUID):
+    async def read_user_by_id(self, id: UUID):
         data_user = await self.db.execute(select(User).where(User.id == id))
         return data_user.scalars().first()
 
-    async def upsert_verify_code(self, id: UUID, verify_code: str, expire: datetime):
+    async def update_verify_code(self, id: UUID, verify_code: str, expire: datetime):
         data_user = await self.db.execute(
             select(ResetPassword).where(ResetPassword.user_id == id)
         )
@@ -70,19 +70,19 @@ class UserCRUD:
             )
             await self.db.commit()
 
-    async def get_user_reset_password(self, id: UUID):
+    async def read_user_reset_password(self, id: UUID):
         user_reset_password = await self.db.execute(
             select(ResetPassword).where(ResetPassword.user_id == id)
         )
         return user_reset_password.scalars().first()
 
-    async def reset_password(self, id: UUID, hash_password: bytes):
+    async def update_password(self, id: UUID, hash_password: bytes):
         await self.db.execute(
             update(User).where(User.id == id).values(hash_password=hash_password)
         )
         await self.db.commit()
 
-    async def get_list_users(self):
+    async def read_list_users(self):
         list_users = await self.db.execute(
             select(User, Bio, Role.name)
             .options(

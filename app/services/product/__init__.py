@@ -49,12 +49,16 @@ class ProductService:
             category = None
             if product.category_id:
                 category = await self.category_crud.read_by_id(product.category_id)
+            series = None
+            if product.series_id:
+                series = await self.series_crud.get_by_id(product.series_id)
 
             product.__dict__.pop("category_id")
             product.thumbnail = self.__convert_image_to_url(product)
             new_product = {
                 "tags": tags,
                 "category": category if category else None,
+                "series": series if series else None,
                 **product.__dict__,
             }
             return new_product
@@ -111,14 +115,14 @@ class ProductService:
         if not series:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
 
-        await self.product_crud.set_series(product_id, series_id)
+        await self.product_crud.update_series_to_product(product_id, series_id)
         return {"detail": "Set series to product succeed!"}
 
     async def get_products_by_series(self, series_id: UUID) -> Sequence[Product]:
         series = await self.series_crud.get_by_id(series_id)
         if not series:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
-        products = await self.product_crud.get_product_by_series(series_id)
+        products = await self.product_crud.read_product_by_series(series_id)
         for product in products:
             product.thumbnail = helper.convert_image_to_url(product.thumbnail)
         return products

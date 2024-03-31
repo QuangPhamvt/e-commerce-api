@@ -32,7 +32,7 @@ class SignIn:
     async def __authenticate_user(
         email: str, password: str, db: AsyncSession
     ) -> User | None:
-        user = await user_crud.get_user_by_email(email, db)
+        user = await user_crud.UserCRUD(db).read_user_by_email(email)
         if not user:
             return None
 
@@ -47,7 +47,7 @@ class SignIn:
     async def __gen_token(
         payload: TokenPayload, response: Response, user_data: User, db: AsyncSession
     ):
-        update_refresh_token = user_crud.update_refresh_token
+        update_refresh_token = user_crud.UserCRUD(db).update_refresh_token
         at_seconds = 600
         rt_seconds = 604800
         if config["ACCESS_TOKEN_EXPIRE"]:
@@ -63,4 +63,4 @@ class SignIn:
         response.set_cookie(
             "refresh_token", refresh_token, rt_seconds, secure=True, httponly=True
         )
-        await update_refresh_token(user_data.id, refresh_token, db)
+        await update_refresh_token(user_data.id, refresh_token)
