@@ -1,6 +1,7 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import defer
 from app.database.models.Product import Tag, product_tag, Product
 
 
@@ -46,6 +47,9 @@ class ProductTagCRUD:
             (
                 await self.db.execute(
                     select(Tag)
+                    .options(
+                        defer(Tag.deleted_at),
+                    )
                     .select_from(product_tag)
                     .join(Tag, product_tag.c.tag_id == Tag.id)
                     .where(product_tag.c.product_id == product_id)

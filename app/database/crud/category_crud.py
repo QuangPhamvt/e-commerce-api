@@ -51,6 +51,11 @@ class CategoryCRUD:
             (
                 await self.db.execute(
                     select(Category)
+                    .options(
+                        defer(Category.created_at),
+                        defer(Category.updated_at),
+                        defer(Category.deleted_at),
+                    )
                     .where(Category.id == id)
                     .where(Category.deleted_at.is_(None))
                 )

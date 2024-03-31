@@ -41,13 +41,14 @@ class ProductService:
                     "Id not found!",
                 )
 
-            product.thumbnail = self.__convert_image_to_url(product)
             tags = await self.product_tag_crud.read_list_tags_by_product(id)
 
             category = None
             if product.category_id:
                 category = await self.category_crud.read_by_id(product.category_id)
 
+            product.__dict__.pop("category_id")
+            product.thumbnail = self.__convert_image_to_url(product)
             new_product = {
                 "tags": tags,
                 "category": category if category else None,
