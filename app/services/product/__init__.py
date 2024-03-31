@@ -101,8 +101,9 @@ class ProductService:
         pass
 
     @staticmethod
-    def __create_presigned_url(bucket_name: str, slug: str, type: str):
-        url = f"products/{slug}.{type}"
+    def __create_presigned_url(bucket_name: str, slug: str, image_type: str):
+        url = f"products/{slug}.{image_type}"
+        type = f"image/{image_type}"
         return put_object(bucket_name, url, type)
 
     @staticmethod

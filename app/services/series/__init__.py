@@ -93,8 +93,10 @@ class SeriesService:
         return is_exist
 
     @staticmethod
-    def __create_presigned_url(bucket_name: str, url: str, image_type: str):
-        return put_object(bucket_name, url, image_type)
+    def __create_presigned_url(bucket_name: str, slug: str, image_type: str):
+        url = f"series/{slug}.{image_type}"
+        type = f"image/{image_type}"
+        return put_object(bucket_name, url, type)
 
     @staticmethod
     def __convert_image_to_url(series: Sequence[Series]) -> Sequence[Series]:
