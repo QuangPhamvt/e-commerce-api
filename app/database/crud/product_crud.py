@@ -53,6 +53,7 @@ class ProductCRUD:
         try:
             product = await self.db.execute(
                 select(Product)
+                .options(defer(Product.series_id))
                 .where(Product.id == id)
                 .where(Product.deleted_at.is_(None))
             )
