@@ -30,7 +30,7 @@ class CreateDemoUser:
     # Get role
     @staticmethod
     async def __get_role_id(db: AsyncSession, role_name: str):
-        role = await role_crud.get_role_id_by_name(db, role_name)
+        role = await role_crud.RoleCRUD(db).get_role_by_name(role_name)
         if role is None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Role not found!")
         return role.id
@@ -38,8 +38,7 @@ class CreateDemoUser:
     # Check if demo user already exists
     @staticmethod
     async def __check_user_exist(email: str, db: AsyncSession):
-        get_user_by_email = user_crud.get_user_by_email
-        exist_user = await get_user_by_email(email=email, db=db)
+        exist_user = await user_crud.UserCRUD(db).get_user_by_email(email)
         if exist_user:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email has been used!")
         pass
@@ -47,9 +46,8 @@ class CreateDemoUser:
     # Create new demo user
     @staticmethod
     async def __create_user(email: str, password: str, role_id: UUID, db: AsyncSession):
-        create_user = user_crud.create_user
         new_user_obj = CreateUserParam(email=email, password=password, role_id=role_id)
-        new_user = await create_user(new_user_obj, db)
+        new_user = await user_crud.UserCRUD(db).create_user(new_user_obj)
         return new_user
 
     # Create new bio
@@ -63,4 +61,4 @@ class CreateDemoUser:
             username=email.split("@")[0],
             phone_number=PHONE_NUMBER,
         )
-        await bio_crud.create_bio(db, new_bio_param)
+        await bio_crud.BioCRUD(db).create_bio(new_bio_param)

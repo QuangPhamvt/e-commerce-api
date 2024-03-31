@@ -88,3 +88,22 @@ class ProductCRUD:
         await self.db.execute(delete(Product).where(Product.id == id))
         await self.product_tag_crud.delete_by_product_id(id)
         await self.db.commit()
+
+    async def set_series(self, product_id: UUID, series_id: UUID) -> None:
+        await self.db.execute(
+            update(Product).where(Product.id == product_id).values(series_id=series_id)
+        )
+        await self.db.commit()
+
+    async def get_product_by_series(self, series_id: UUID):
+        return (
+            (
+                await self.db.execute(
+                    select(Product)
+                    .where(Product.series_id == series_id)
+                    .where(Product.deleted_at.is_(None))
+                )
+            )
+            .scalars()
+            .all()
+        )

@@ -6,6 +6,7 @@ from app.configs.constants import (
     TAG,
     DEPOSIT,
     EXCHANGE,
+    USER,
 )
 
 
@@ -59,6 +60,9 @@ You can use this API to manage products.
 - **Get Product**: Get a product by id.
 - **Update Product**: Update a product by id.
 - **Delete Product**: Delete a product by id.
+- **Get List Products By Tag**: Get list of products by tag.
+- **Set Series To Product**: Set series to product.
+- **Get Products By Series**: Get list of products by series.
 
 ## Deposit:
 
@@ -78,6 +82,12 @@ You can use this API to manage exchange.
 - **Get Exchange**: Get a exchange by id.
 - **Update Exchange**: Update a exchange by id.
 - **Delete Exchange**: Delete a exchange by id.
+
+## User:
+
+You can use this API to manage users.
+- **Get List Users**: Get list of users.
+- **Create Demo User**: Create a demo user.
 
 """
 SUMMARY: str = "This is a simple API for E-Commerce"
@@ -118,6 +128,10 @@ DOCUMENTATIONS: dict = {
         {
             "name": EXCHANGE,
             "description": "Exchange endpoints useful for exchange management.",
+        },
+        {
+            "name": USER,
+            "description": "User endpoints useful for user management.",
         },
     ],
 }
