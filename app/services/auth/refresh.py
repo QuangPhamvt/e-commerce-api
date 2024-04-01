@@ -29,6 +29,7 @@ class Refresh:
                 at_seconds,
                 secure=True,
                 httponly=True,
+                domain="customafk.com",
             )
             response.set_cookie(
                 "refresh_token",
@@ -36,6 +37,7 @@ class Refresh:
                 rt_seconds,
                 secure=True,
                 httponly=True,
+                domain="customafk.com",
             )
             user_id = payload.id
             await user_crud.update_refresh_token(
