@@ -9,8 +9,12 @@ class Logout:
     @staticmethod
     async def logout(request: Request, response: Response, db: AsyncSession):
         refresh_token = request.cookies.get("refresh_token")
-        response.delete_cookie(key="access_token")
-        response.delete_cookie(key="refresh_token")
+        response.delete_cookie(
+            key="access_token", domain="customafk.com", secure=True, httponly=True
+        )
+        response.delete_cookie(
+            key="refresh_token", domain="customafk.com", secure=True, httponly=True
+        )
         if refresh_token:
             payload = helper.verify_refresh_token(refresh_token)
             user_id = UUID(payload["id"])
