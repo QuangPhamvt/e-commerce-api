@@ -20,6 +20,8 @@ UPDATE_PRODUCT = PRODUCT_PATH["UPDATE_PRODUCT"]
 UPDATE_PRODUCT = PRODUCT_PATH["UPDATE_PRODUCT"]
 DELETE_PRODUCT = PRODUCT_PATH["DELETE_PRODUCT"]
 GET_PRODUCTS_BY_TAG = PRODUCT_PATH["GET_PRODUCTS_BY_TAG"]
+SET_SERIES_TO_PRODUCT = PRODUCT_PATH["SET_SERIES_TO_PRODUCT"]
+GET_PRODUCTS_BY_SERIES = PRODUCT_PATH["GET_PRODUCTS_BY_SERIES"]
 
 
 router = APIRouter(
@@ -162,3 +164,58 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
 )
 async def get_list_products_by_tag(tag_name: str, db: AsyncSession = Depends(get_db)):
     return await ProductService(db).get_products_by_tag(tag_name)
+
+
+@router.put(
+    SET_SERIES_TO_PRODUCT,
+    response_description="This endpoint is used to set series to product.",
+    status_code=201,
+    responses={
+        201: {"description": "Set series to product succeed!", "model": Res201Resquest}
+    },
+)
+async def set_series_to_product(
+    product_id: UUID, series_id: UUID, db: AsyncSession = Depends(get_db)
+):
+    return await ProductService(db).set_series_to_product(product_id, series_id)
+
+
+@router.get(
+    GET_PRODUCTS_BY_SERIES,
+    response_description="This endpoint is used to get list of products by series.",
+    status_code=200,
+    responses={
+        200: {
+            "description": "Get List Products Succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "fff1d10a-e83b-4a04-8421-d6f56f726f9d",
+                            "name": "Iphone 13",
+                            "description": "This is a new product from Apple",
+                            "original_price": 1000,
+                            "sell_price": 900,
+                            "quantity": 100,
+                            "thumbnail": "https://dev.customafk.com/products/iphone-13.jpeg",
+                            "slug": "iphone-13",
+                            "country": "USA",
+                            "factory": "Apple",
+                            "status": "active",
+                            "category_id": None,
+                            "series_id": None,
+                            "variant": "string",
+                            "created_at": "2024-03-20T23:13:55",
+                            "updated_at": None,
+                            "deleted_at": None,
+                            "preoder_start_date": "2024-03-20T23:13:55",
+                            "preoder_end_date": "2024-03-20T23:13:55",
+                        }
+                    ]
+                }
+            },
+        },
+    },
+)
+async def get_products_by_series(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await ProductService(db).get_products_by_series(id)

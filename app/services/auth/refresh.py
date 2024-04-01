@@ -38,8 +38,8 @@ class Refresh:
                 httponly=True,
             )
             user_id = payload.id
-            await user_crud.update_refresh_token(
-                db=db, id=user_id, refresh_token=new_refresh_token
+            await user_crud.UserCRUD(db).update_refresh_token(
+                id=user_id, refresh_token=new_refresh_token
             )
         else:
             raise HTTPException(
@@ -54,7 +54,7 @@ class Refresh:
             decode = helper.verify_refresh_token(token=refresh_token)
             user_id = UUID(decode["id"])
             role_id = UUID(decode["role_id"])
-            user = await user_crud.get_user_by_id(db=db, id=user_id)
+            user = await user_crud.UserCRUD(db).read_user_by_id(id=user_id)
             payload = TokenPayload(id=user_id, role_id=role_id)
             if user and user.refresh_token == refresh_token:
                 return payload

@@ -16,7 +16,7 @@ config = dotenv_values(".env")
 
 class Forgot:
     async def forgot_password(self, email: str, db: AsyncSession):
-        exist_user = await user_crud.get_user_by_email(email=email, db=db)
+        exist_user = await user_crud.UserCRUD(db).read_user_by_email(email)
         if not exist_user:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email not found!")
         verify_code = "".join(
@@ -25,7 +25,9 @@ class Forgot:
         expire = FORGOT_CODE_EXPIRE or 600
         expire_seconds = int(expire)
         expire_time = datetime.today() + timedelta(seconds=expire_seconds)
-        await user_crud.upsert_verify_code(exist_user.id, verify_code, expire_time, db)
+        await user_crud.UserCRUD(db).update_verify_code(
+            exist_user.id, verify_code, expire_time
+        )
         resend_sender = config["RESEND_SENDER"] or "noreply@localhost"
         helper.forgot_email(resend_sender, email, verify_code)
         return {"detail": "Mail has been sent!"}

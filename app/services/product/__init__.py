@@ -1,3 +1,4 @@
+from typing import Sequence
 from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -5,6 +6,7 @@ from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
 from app.database.crud.category_crud import CategoryCRUD
+from app.database.crud.series_crud import SeriesCRUD
 from app.database.crud.tag_crud import TagCRUD
 from app.database.crud.product_crud import ProductCRUD
 from app.database.crud.product_tag_crud import ProductTagCRUD
@@ -20,6 +22,7 @@ class ProductService:
         self.product_crud = ProductCRUD(db)
         self.category_crud = CategoryCRUD(db)
         self.product_tag_crud = ProductTagCRUD(db)
+        self.series_crud = SeriesCRUD(db)
 
     async def get_all(self):
         products = await self.product_crud.read_all()
@@ -46,12 +49,16 @@ class ProductService:
             category = None
             if product.category_id:
                 category = await self.category_crud.read_by_id(product.category_id)
+            series = None
+            if product.series_id:
+                series = await self.series_crud.get_by_id(product.series_id)
 
             product.__dict__.pop("category_id")
             product.thumbnail = self.__convert_image_to_url(product)
             new_product = {
                 "tags": tags,
                 "category": category if category else None,
+                "series": series if series else None,
                 **product.__dict__,
             }
             return new_product
@@ -99,6 +106,26 @@ class ProductService:
         if product:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product already exists!")
         pass
+
+    async def set_series_to_product(self, product_id: UUID, series_id: UUID):
+        product = await self.product_crud.read_by_id(product_id)
+        if not product:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+        series = await self.series_crud.get_by_id(series_id)
+        if not series:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
+
+        await self.product_crud.update_series_to_product(product_id, series_id)
+        return {"detail": "Set series to product succeed!"}
+
+    async def get_products_by_series(self, series_id: UUID) -> Sequence[Product]:
+        series = await self.series_crud.get_by_id(series_id)
+        if not series:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
+        products = await self.product_crud.read_product_by_series(series_id)
+        for product in products:
+            product.thumbnail = helper.convert_image_to_url(product.thumbnail)
+        return products
 
     @staticmethod
     def __create_presigned_url(bucket_name: str, slug: str, image_type: str):

@@ -11,105 +11,100 @@ from app.utils.uuid import generate_uuid
 from app.database.crud import customer_address_crud
 
 
-async def get_user_by_email(
-    email: str,
-    db: AsyncSession,
-) -> User | None:
-    data_user = await db.execute(select(User).where(User.email == email))
-    return data_user.scalars().first()
+class UserCRUD:
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
+    async def read_user_by_email(self, email: str) -> User | None:
+        data_user = await self.db.execute(select(User).where(User.email == email))
+        return data_user.scalars().first()
 
-async def create_user(user: CreateUserParam, db: AsyncSession) -> User:
-    user_id = generate_uuid()
-    hash_password = helper.hash_password(password=user.password)
-    db_user = User(
-        id=user_id,
-        email=user.email,
-        hash_password=hash_password,
-        role_id=user.role_id,
-        is_active=False,
-    )
-    db.add(db_user)
-    await db.commit()
-    await db.refresh(db_user)
-    return db_user
-
-
-async def verify_user(db: AsyncSession, user_id: UUID):
-    await db.execute(update(User).where(User.id == user_id).values(is_active=True))
-    await db.commit()
-
-
-async def update_refresh_token(id: UUID, refresh_token: str | None, db: AsyncSession):
-    await db.execute(
-        update(User).where(User.id == id).values(refresh_token=refresh_token)
-    )
-    await db.commit()
-
-
-async def get_user_by_id(id: UUID, db: AsyncSession):
-    data_user = await db.execute(select(User).where(User.id == id))
-    return data_user.scalars().first()
-
-
-async def upsert_verify_code(
-    id: UUID, verify_code: str, expire: datetime, db: AsyncSession
-):
-    data_user = await db.execute(
-        select(ResetPassword).where(ResetPassword.user_id == id)
-    )
-
-    user_reset = data_user.scalars().first()
-    if not user_reset:
-        db_user_reset = ResetPassword(user_id=id, code=verify_code, expire_at=expire)
-        db.add(db_user_reset)
-        await db.commit()
-    else:
-        await db.execute(
-            update(ResetPassword)
-            .where(ResetPassword.user_id == id)
-            .values(code=verify_code, expire_at=expire)
+    async def create_user(self, user: CreateUserParam) -> User:
+        user_id = generate_uuid()
+        hash_password = helper.hash_password(password=user.password)
+        db_user = User(
+            id=user_id,
+            email=user.email,
+            hash_password=hash_password,
+            role_id=user.role_id,
+            is_active=False,
         )
-        await db.commit()
+        self.db.add(db_user)
+        await self.db.commit()
+        await self.db.refresh(db_user)
+        return db_user
 
-
-async def get_user_reset_password(id: UUID, db: AsyncSession):
-    user_reset_password = await db.execute(
-        select(ResetPassword).where(ResetPassword.user_id == id)
-    )
-    return user_reset_password.scalars().first()
-
-
-async def reset_password(id: UUID, hash_password: bytes, db: AsyncSession):
-    await db.execute(
-        update(User).where(User.id == id).values(hash_password=hash_password)
-    )
-    await db.commit()
-
-
-async def get_list_users(db: AsyncSession):
-    list_users = await db.execute(
-        select(User, Bio, Role.name)
-        .options(
-            defer(User.hash_password),
-            defer(User.refresh_token),
-            defer(Bio.user_id),
-            defer(Bio.created_at),
+    async def update_verify(self, user_id: UUID):
+        await self.db.execute(
+            update(User).where(User.id == user_id).values(is_active=True)
         )
-        .join(Bio, Bio.user_id == User.id)
-        .join(Role, Role.id == User.role_id)
-    )
+        await self.db.commit()
 
-    results = [
-        {
-            **data_user.User.asdict(),
-            **data_user.Bio.asdict(),
-            "role": data_user.name,
-            "adresses": await customer_address_crud.get_user_addresses(
-                db=db, user_id=data_user.User.id
-            ),
-        }
-        for data_user in list_users.mappings()
-    ]
+    async def update_refresh_token(self, id: UUID, refresh_token: str | None):
+        await self.db.execute(
+            update(User).where(User.id == id).values(refresh_token=refresh_token)
+        )
+        await self.db.commit()
 
-    return results
+    async def read_user_by_id(self, id: UUID):
+        data_user = await self.db.execute(select(User).where(User.id == id))
+        return data_user.scalars().first()
+
+    async def update_verify_code(self, id: UUID, verify_code: str, expire: datetime):
+        data_user = await self.db.execute(
+            select(ResetPassword).where(ResetPassword.user_id == id)
+        )
+
+        user_reset = data_user.scalars().first()
+        if not user_reset:
+            db_user_reset = ResetPassword(
+                user_id=id, code=verify_code, expire_at=expire
+            )
+            self.db.add(db_user_reset)
+            await self.db.commit()
+        else:
+            await self.db.execute(
+                update(ResetPassword)
+                .where(ResetPassword.user_id == id)
+                .values(code=verify_code, expire_at=expire)
+            )
+            await self.db.commit()
+
+    async def read_user_reset_password(self, id: UUID):
+        user_reset_password = await self.db.execute(
+            select(ResetPassword).where(ResetPassword.user_id == id)
+        )
+        return user_reset_password.scalars().first()
+
+    async def update_password(self, id: UUID, hash_password: bytes):
+        await self.db.execute(
+            update(User).where(User.id == id).values(hash_password=hash_password)
+        )
+        await self.db.commit()
+
+    async def read_list_users(self):
+        list_users = await self.db.execute(
+            select(User, Bio, Role.name)
+            .options(
+                defer(User.hash_password),
+                defer(User.refresh_token),
+                defer(Bio.user_id),
+                defer(Bio.created_at),
+            )
+            .join(Bio, Bio.user_id == User.id)
+            .join(Role, Role.id == User.role_id)
+        )
+
+        results = [
+            {
+                **data_user.User.asdict(),
+                **data_user.Bio.asdict(),
+                "role": data_user.name,
+                "addresses": await customer_address_crud.get_user_addresses(
+                    db=self.db, user_id=data_user.User.id
+                ),
+            }
+            for data_user in list_users.mappings()
+        ]
+
+        return results

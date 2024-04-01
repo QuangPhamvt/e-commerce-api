@@ -12,7 +12,7 @@ class GetMe:
         access_token = request.cookies.get("access_token") or "fake_refresh_token"
         decode = helper.verify_access_token(access_token)
         user_id = UUID(decode["id"])
-        user = await user_crud.get_user_by_id(user_id, db)
+        user = await user_crud.UserCRUD(db).read_user_by_id(user_id)
         if not user:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "User not found!")
         return ResGetMe(**user.__dict__)

@@ -10,11 +10,11 @@ class ResetPassword:
     async def reset_password(
         email: str, verify_code: str, new_password: str, db: AsyncSession
     ):
-        exist_user = await user_crud.get_user_by_email(email=email, db=db)
+        exist_user = await user_crud.UserCRUD(db).read_user_by_email(email)
         if not exist_user:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Email not found!")
-        user_reset_password = await user_crud.get_user_reset_password(
-            id=exist_user.id, db=db
+        user_reset_password = await user_crud.UserCRUD(db).read_user_reset_password(
+            exist_user.id
         )
         if user_reset_password:
             now = datetime.today()
@@ -24,8 +24,8 @@ class ResetPassword:
             )
             if is_valid_code:
                 hash_password = helper.hash_password(password=new_password)
-                await user_crud.reset_password(
-                    id=exist_user.id, hash_password=hash_password, db=db
+                await user_crud.UserCRUD(db).update_password(
+                    exist_user.id, hash_password
                 )
                 return {"detail": "Reset Password Succeed!"}
         raise HTTPException(
