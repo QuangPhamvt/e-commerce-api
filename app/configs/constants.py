@@ -64,6 +64,7 @@ TAG_PATH: dict = {
     "CREATE_TAG": "",
     "DELETE_TAG": "/{id}",
     "ADD_PRODUCT_TAGS": "/products",
+    "BULK_TAGS": "/bulk",
 }
 # ===========================
 
