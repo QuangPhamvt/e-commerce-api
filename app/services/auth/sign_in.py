@@ -58,9 +58,19 @@ class SignIn:
         access_token = helper.create_access_token(payload)
         refresh_token = helper.create_refresh_token(payload)
         response.set_cookie(
-            "access_token", access_token, at_seconds, secure=True, httponly=True
+            "access_token",
+            access_token,
+            at_seconds,
+            secure=True,
+            httponly=True,
+            domain="customafk.com",
         )
         response.set_cookie(
-            "refresh_token", refresh_token, rt_seconds, secure=True, httponly=True
+            "refresh_token",
+            refresh_token,
+            rt_seconds,
+            secure=True,
+            httponly=True,
+            domain="customafk.com",
         )
         await update_refresh_token(user_data.id, refresh_token)
