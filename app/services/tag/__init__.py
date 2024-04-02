@@ -23,6 +23,15 @@ class TagService:
 
         return {"detail": "Create Tag Succeed!"}
 
+    async def create_bulk(self, tags: list[TagBase]):
+        list_tag_name = await self.tag_crud.read_all_name()
+        list_tag_name = list(map(lambda x: x.lower(), list_tag_name))
+        for tag in tags:
+            if tag.name.lower() in list_tag_name:
+                continue
+            await self.tag_crud.create(tag)
+        return {"detail": "Create List Tag Succeed!"}
+
     async def get_all(self):
         tags = await self.tag_crud.read_all()
         return tags

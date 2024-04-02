@@ -75,6 +75,13 @@ class TagCRUD:
             .all()
         )
 
+    async def read_all_name(self):
+        return (
+            (await self.db.execute(select(Tag.name).where(Tag.deleted_at.is_(None))))
+            .scalars()
+            .all()
+        )
+
     async def read_by_name(self, name: str):
         return (
             (await self.db.execute(select(Tag.id).where(Tag.name == name)))

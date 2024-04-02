@@ -4,13 +4,14 @@ from app.services.tag import TagService
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.constants import TAG, TAG_PATH, TAG_PREFIX
 from app.dependencies import get_db
-from app.schemas.tag import CreateTagParam, UpdateProductTagParam
+from app.schemas.tag import CreateTagParam, TagBase, UpdateProductTagParam
 
 
 CREATE_TAG = TAG_PATH["CREATE_TAG"]
 GET_LIST_TAG = TAG_PATH["GET_LIST_TAG"]
 DELETE_TAG = TAG_PATH["DELETE_TAG"]
 ADD_PRODUCT_TAGS = TAG_PATH["ADD_PRODUCT_TAGS"]
+BULK_TAGS = TAG_PATH["BULK_TAGS"]
 
 router = APIRouter(prefix=TAG_PREFIX, tags=[TAG])
 
@@ -87,3 +88,13 @@ async def add_product_tags(
 )
 async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
     return await TagService(db).delete(id)
+
+
+@router.post(
+    BULK_TAGS,
+    response_description="This endpoint is used to bulk create tags.",
+    status_code=200,
+    responses={200: {"detail": ["Create Tag Succeed!"]}},
+)
+async def bulk_tag(tags: list[TagBase], db: AsyncSession = Depends(get_db)):
+    return await TagService(db).create_bulk(tags)
