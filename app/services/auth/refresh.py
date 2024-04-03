@@ -13,7 +13,7 @@ class Refresh:
     async def refresh(self, request: Request, response: Response, db: AsyncSession):
         payload = await self.__is_valid_token(request=request, db=db)
         if payload:
-            at_seconds = 600
+            at_seconds = 604800
             rt_seconds = 604800
 
             if config["ACCESS_TOKEN_EXPIRE"]:
