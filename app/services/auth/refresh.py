@@ -11,22 +11,19 @@ config = dotenv_values(".env")
 
 class Refresh:
     async def refresh(self, request: Request, response: Response, db: AsyncSession):
-        payload = await self.__is_valid_token(request=request, db=db)
+        payload = await self.__is_valid_token(request, db)
         if payload:
-            at_seconds = 604800
             rt_seconds = 604800
 
-            if config["ACCESS_TOKEN_EXPIRE"]:
-                at_seconds = int(config["ACCESS_TOKEN_EXPIRE"])
             if config["REFRESH_TOKEN_EXPIRE"]:
                 rt_seconds = int(config["REFRESH_TOKEN_EXPIRE"])
-            new_access_token = helper.create_access_token(user=payload)
-            new_refresh_token = helper.create_refresh_token(user=payload)
+            new_access_token = helper.create_access_token(payload)
+            new_refresh_token = helper.create_refresh_token(payload)
 
             response.set_cookie(
                 "access_token",
                 new_access_token,
-                at_seconds,
+                604800,
                 secure=True,
                 httponly=True,
                 domain="customafk.com",
