@@ -48,10 +48,7 @@ class SignIn:
         payload: TokenPayload, response: Response, user_data: User, db: AsyncSession
     ):
         update_refresh_token = user_crud.UserCRUD(db).update_refresh_token
-        at_seconds = 604800
         rt_seconds = 604800
-        if config["ACCESS_TOKEN_EXPIRE"]:
-            at_seconds = int(config["ACCESS_TOKEN_EXPIRE"])
         if config["REFRESH_TOKEN_EXPIRE"]:
             rt_seconds = int(config["REFRESH_TOKEN_EXPIRE"])
 
@@ -60,7 +57,7 @@ class SignIn:
         response.set_cookie(
             "access_token",
             access_token,
-            at_seconds,
+            604800,
             secure=True,
             httponly=True,
             domain="customafk.com",
