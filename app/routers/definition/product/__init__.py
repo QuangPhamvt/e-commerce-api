@@ -49,7 +49,9 @@ router = APIRouter(
     },
 )
 async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await ProductService(db).get_all()
+    data = await ProductService(db).get_all()
+    data = [product.__dict__.pop("original_price") for product in data]
+    return data
 
 
 # ********** GET PRODUCT BY ID **********
