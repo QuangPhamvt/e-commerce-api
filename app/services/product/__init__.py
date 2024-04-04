@@ -1,5 +1,6 @@
-from typing import Sequence
+import logging
 from uuid import UUID
+from typing import Sequence
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
@@ -44,12 +45,12 @@ class ProductService:
                     "Id not found!",
                 )
 
-            tags = await self.product_tag_crud.read_list_tags_by_product(id)
-
+            tags = await self.product_tag_crud.read_list_tags_by_product(product.id)
             category = None
+            series = None
+
             if product.category_id:
                 category = await self.category_crud.read_by_id(product.category_id)
-            series = None
             if product.series_id:
                 series = await self.series_crud.get_by_id(product.series_id)
 
@@ -62,7 +63,8 @@ class ProductService:
                 **product.__dict__,
             }
             return new_product
-        except Exception:
+        except Exception as e:
+            logging.warning(e)
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
                 "Failed to get product",
