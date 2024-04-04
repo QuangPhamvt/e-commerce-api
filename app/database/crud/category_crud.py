@@ -83,7 +83,10 @@ class CategoryCRUD:
         await self.db.commit()
 
     async def delete_parent_by_id(self, id: UUID):
-        await self.db.execute(delete(Category).where(Category.id == id))
+        await self.db.execute(
+            update(Product).where(Product.category_id == id).values(category_id=None)
+        )
+        await self.db.execute(delete(Category).where(Category.id.__eq__(id)))
         await self.db.execute(
             update(Category).where(Category.parent_id == id).values(parent_id=None)
         )
