@@ -118,6 +118,7 @@ class CategoryCRUD:
         list_category = await self.db.execute(
             select(Category)
             .options(
+                defer(Category.parent_id),
                 defer(Category.created_at),
                 defer(Category.updated_at),
             )
