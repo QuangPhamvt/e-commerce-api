@@ -21,6 +21,7 @@ UPDATE_PRODUCT = PRODUCT_PATH["UPDATE_PRODUCT"]
 DELETE_PRODUCT = PRODUCT_PATH["DELETE_PRODUCT"]
 GET_PRODUCTS_BY_TAG = PRODUCT_PATH["GET_PRODUCTS_BY_TAG"]
 SET_SERIES_TO_PRODUCT = PRODUCT_PATH["SET_SERIES_TO_PRODUCT"]
+SET_CATEGORY_TO_PRODUCT = PRODUCT_PATH["SET_CATEGORY_TO_PRODUCT"]
 GET_PRODUCTS_BY_SERIES = PRODUCT_PATH["GET_PRODUCTS_BY_SERIES"]
 
 
@@ -162,10 +163,11 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_db)):
         400: {"description": "Tag not found!"},
     },
 )
-async def get_list_products_by_tag(tag_name: str, db: AsyncSession = Depends(get_db)):
-    return await ProductService(db).get_products_by_tag(tag_name)
+async def get_list_products_by_tag(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await ProductService(db).get_products_by_tag(id)
 
 
+# ********** SET SERIES TO PRODUCT **********
 @router.put(
     SET_SERIES_TO_PRODUCT,
     response_description="This endpoint is used to set series to product.",
@@ -178,6 +180,23 @@ async def set_series_to_product(
     product_id: UUID, series_id: UUID, db: AsyncSession = Depends(get_db)
 ):
     return await ProductService(db).set_series_to_product(product_id, series_id)
+
+
+@router.put(
+    SET_CATEGORY_TO_PRODUCT,
+    response_description="This endpoint is used to set category to product.",
+    status_code=201,
+    responses={
+        201: {
+            "description": "Set category to product succeed!",
+            "model": Res201Resquest,
+        }
+    },
+)
+async def set_category_to_product(
+    product_id: UUID, category_id: UUID, db: AsyncSession = Depends(get_db)
+):
+    return await ProductService(db).set_category_to_product(product_id, category_id)
 
 
 @router.get(

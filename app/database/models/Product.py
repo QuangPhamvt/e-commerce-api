@@ -85,6 +85,7 @@ class Product(Base):
         country: str,
         factory: str,
         status: str,
+        series_id: UUID | None = None,
         category_id: UUID | None = None,
         variant: str | None = None,
         preorder_start_date: datetime | None = None,
@@ -98,6 +99,7 @@ class Product(Base):
         self.sell_price = sell_price
         self.quantity = quantity
         self.thumbnail = thumbnail
+        self.series_id = series_id
         self.slug = slug
         self.country = country
         self.factory = factory
