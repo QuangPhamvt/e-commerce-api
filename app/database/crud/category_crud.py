@@ -6,7 +6,10 @@ from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from app.database.crud.product_crud import ProductCRUD
 from app.database.models.Product import Category, Product
-from app.schemas.category import CreateCategoryParam, UpdateCategoryParam
+from app.schemas.category import (
+    CreateCategoryParam,
+    UpdateCategoryData,
+)
 from app.utils.uuid import generate_uuid
 from app.utils.helper import helper
 
@@ -92,7 +95,7 @@ class CategoryCRUD:
         )
         await self.db.commit()
 
-    async def update(self, id: UUID, data: UpdateCategoryParam):
+    async def update(self, id: UUID, data: UpdateCategoryData):
         slug = helper.slugify(data.name)
         await self.db.execute(
             update(Category)
@@ -101,6 +104,16 @@ class CategoryCRUD:
                 **data.model_dump(),
                 slug=slug,
             )
+        )
+        await self.db.commit()
+
+    async def update_parent_id_for_subcategory(
+        self, parent_id: UUID, list_sub_id: list[UUID]
+    ):
+        await self.db.execute(
+            update(Category)
+            .where(Category.id.in_(list_sub_id))
+            .values(parent_id=parent_id)
         )
         await self.db.commit()
 
@@ -122,6 +135,17 @@ class CategoryCRUD:
             for category in list_category.mappings()
         ]
         return results
+
+    async def read_list_id(self):
+        return (
+            (
+                await self.db.execute(
+                    select(Category.id).where(Category.parent_id.is_(None))
+                )
+            )
+            .scalars()
+            .all()
+        )
 
     async def read_sub_category(self, parent_id: UUID):
         return (

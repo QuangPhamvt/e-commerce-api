@@ -74,7 +74,7 @@ async def update_product_category(
     "/{id}",
     description="This endpoint is used to update a category",
     status_code=status.HTTP_200_OK,
-    responses={200: {"description": "Delete category succeed!"}},
+    responses={200: {"description": "Update category succeed!"}},
 )
 async def update_category(
     id: UUID, category: UpdateCategoryParam, db: AsyncSession = Depends(get_db)
