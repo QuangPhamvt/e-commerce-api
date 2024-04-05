@@ -56,6 +56,11 @@ class ProductService:
                 category = await self.category_crud.read_by_id(product.category_id)
             if product.series_id:
                 series = await self.series_crud.get_by_id(product.series_id)
+                series.__dict__.pop("created_at")
+                series.__dict__.pop("updated_at")
+                series.__dict__.pop("deleted_at")
+                if series is not None and series.image is not None:
+                    series.image = helper.convert_image_to_url(series.image)
 
             product.__dict__.pop("category_id")
             product.thumbnail = self.__convert_image_to_url(product)
@@ -70,7 +75,7 @@ class ProductService:
             logging.warning(e)
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
-                "Failed to get product",
+                f"Failed to get product {e}",
             )
 
     async def create_product(self, body: BodyCreateProduct):
