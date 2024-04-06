@@ -19,6 +19,8 @@ class GetUserByEmailParam(UserBase):
 
 
 class CreateUserParam(UserBase):
+    id: UUID
+    email: str
     password: str
     role_id: UUID
 
