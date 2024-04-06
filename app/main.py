@@ -39,8 +39,8 @@ async def lifespan(__app__: FastAPI):
     log.info("Shutting down...")
 
 
-# app = FastAPI()
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
+# app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
@@ -72,6 +72,18 @@ async def read_root():
         "auth_docs": "https://dev.api.customafk.com/api/v1/auth/docs",
         "def_docs": "https://dev.api.customafk.com/api/v1/def/docs",
     }
+
+
+@app.get("/pay")
+def get_pay():
+    print("========GET==========")
+    return {"msg": "succeed!"}
+
+
+@app.post("/pay")
+def post_pay(body: dict):
+    print(f"========POST========={body}")
+    return {"msg": "succeed!"}
 
 
 app.mount(f"{ROOT_PATH}/web", web_api)
