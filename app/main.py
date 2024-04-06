@@ -1,7 +1,7 @@
 import logging
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -39,8 +39,8 @@ async def lifespan(__app__: FastAPI):
     log.info("Shutting down...")
 
 
-app = FastAPI()
-# app = FastAPI(lifespan=lifespan)
+# app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
@@ -75,14 +75,15 @@ async def read_root():
 
 
 @app.get("/pay")
-def get_pay():
-    print("========GET==========")
+def get_pay(request: Request):
+    logging.warning("===========GET===========")
+    logging.warning(request.headers)
     return {"msg": "succeed!"}
 
 
 @app.post("/pay")
 def post_pay(body: dict):
-    print(f"========POST========={body}")
+    logging.warning(f"========POST========={body}")
     return {"msg": "succeed!"}
 
 
