@@ -26,14 +26,17 @@ class ProductService:
         self.series_crud = SeriesCRUD(db)
 
     async def get_all(self):
+        """
+        Get all products
+        Parameters: None
+        """
         products = await self.product_crud.read_all()
         for product in products:
             product.thumbnail = helper.convert_image_to_url(product.thumbnail)
         return products
 
-    async def get_products_by_tag(self, tag_name: str):
-        tag_id = await self.__get_tag_id(tag_name)
-        products = await self.product_tag_crud.read_by_tag(tag_id)
+    async def get_products_by_tag(self, id: UUID):
+        products = await self.product_tag_crud.read_by_tag(id)
         return products
 
     async def get_product_by_id(self, id: UUID):
@@ -53,6 +56,11 @@ class ProductService:
                 category = await self.category_crud.read_by_id(product.category_id)
             if product.series_id:
                 series = await self.series_crud.get_by_id(product.series_id)
+                series.__dict__.pop("created_at")
+                series.__dict__.pop("updated_at")
+                series.__dict__.pop("deleted_at")
+                if series is not None and series.image is not None:
+                    series.image = helper.convert_image_to_url(series.image)
 
             product.__dict__.pop("category_id")
             product.thumbnail = self.__convert_image_to_url(product)
@@ -67,47 +75,89 @@ class ProductService:
             logging.warning(e)
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
-                "Failed to get product",
+                f"Failed to get product {e}",
             )
 
     async def create_product(self, body: BodyCreateProduct):
-        slug = helper.slugify(body.name)
-        type = body.thumbnail_type
+        try:
+            slug = helper.slugify(body.name)
+            type = body.thumbnail_type
 
-        await self.__check_product_exist(slug)
+            await self.__check_product_exist(slug)
 
-        url = f"products/{slug}.{type}"
-        new_product = ProductCreateCRUD(thumbnail=url, **body.model_dump())
-        await self.product_crud.create(new_product)
+            url = f"products/{slug}.{type}"
+            new_product = ProductCreateCRUD(thumbnail=url, **body.model_dump())
 
-        data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
+            series_id = await self.series_crud.get_by_id(body.series_id)
+            category_id = await self.category_crud.read_by_id(body.category_id)
+            old_product = await self.product_crud.read_by_slug(body.slug)
 
-        if data is None:
+            # Check if product already exist, series, category not exist
+            if series_id is None:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
+            if category_id is None:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
+            if old_product:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Product already exist"
+                )
+
+            new_product.series_id = series_id.id
+            category_id = category_id.id
+            product_id = await self.product_crud.create(new_product)
+            await self.product_tag_crud.create_many_by_product_id(product_id, body.tags)
+            data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
+
+            if data is None:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
+                )
+            return {"detail": "Product created successfully", "presigned_url": data}
+        except Exception as e:
             raise HTTPException(
-                status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
+                status.HTTP_400_BAD_REQUEST, f"Failed to create product : {e}"
             )
-        return {"detail": "Product created successfully", "presigned_url": data}
 
     async def update_by_id(self, id: UUID, body: BodyUpdateProduct):
-        await self.product_crud.update_by_id(id, body)
-        return {"detail": f"Update Product {id} Succeed!"}
+        try:
+            await self.product_crud.update_by_id(id, body)
+            return {"detail": f"Update Product {id} Succeed!"}
+        except Exception as e:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to update product : {e}"
+            )
 
     async def delete_by_id(self, id: UUID):
-        product = await self.product_crud.read_by_id(id)
+        try:
+            product = await self.product_crud.read_by_id(id)
 
-        if not product:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
+            if not product:
+                raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
 
-        self.__delete_image_S3(product.thumbnail)
-        await self.product_crud.delete_by_id(id)
+            self.__delete_image_S3(product.thumbnail)
+            await self.product_crud.delete_by_id(id)
 
-        return {"detail": "Product deleted"}
+            return {"detail": "Product deleted"}
+        except Exception as e:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to delete product : {e}"
+            )
 
-    async def __check_product_exist(self, slug: str):
-        product = await self.product_crud.read_by_slug(slug)
-        if product:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product already exists!")
-        pass
+    async def set_category_to_product(self, product_id: UUID, category_id: UUID):
+        try:
+            product = await self.product_crud.read_by_id(product_id)
+            if not product:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+            category = await self.category_crud.read_by_id(category_id)
+            if not category:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
+
+            await self.product_crud.update_category_to_product(product_id, category.id)
+            return {"detail": "Set series to product succeed!"}
+        except Exception as e:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to set category to product : {e}"
+            )
 
     async def set_series_to_product(self, product_id: UUID, series_id: UUID):
         product = await self.product_crud.read_by_id(product_id)
@@ -128,6 +178,12 @@ class ProductService:
         for product in products:
             product.thumbnail = helper.convert_image_to_url(product.thumbnail)
         return products
+
+    async def __check_product_exist(self, slug: str):
+        product = await self.product_crud.read_by_slug(slug)
+        if product:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product already exists!")
+        pass
 
     @staticmethod
     def __create_presigned_url(bucket_name: str, slug: str, image_type: str):

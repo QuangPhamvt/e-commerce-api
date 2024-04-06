@@ -5,7 +5,7 @@ from .History import History
 from .Cart import Cart
 from .CustomAddress import CustomerAddress
 from .Authorization import Role, Permission
-from .Product import Product, Category, Tag, DepositType
+from .Product import Product, Category, Tag, DepositType, Series, product_tag
 from .Voucher import Voucher
 from .ExchangeRate import ExchangeRate
 from .Bill import Bill, BillDetail
@@ -29,12 +29,13 @@ __all__ = [
     "Permission",
     # Product
     "Product",
+    "product_tag",
+    "Series",
     "Category",
     "Tag",
     "Voucher",
     "ExchangeRate",
     "DepositType",
-    "ProductTag",
     # Notification
     "Notification",
     "UserNotification",

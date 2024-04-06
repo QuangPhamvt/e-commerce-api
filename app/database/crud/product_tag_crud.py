@@ -1,6 +1,7 @@
 from uuid import UUID
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import defer
 from app.database.models.Product import Tag, product_tag, Product
 
@@ -14,6 +15,20 @@ class ProductTagCRUD:
             product_tag.insert().values(product_id=product_id, tag_id=tag_id)
         )
         await self.db.commit()
+
+    async def create_many_by_product_id(self, product_id: UUID, tags: list[UUID]):
+        values = [{"product_id": product_id, "tag_id": tag_id} for tag_id in tags]
+        try:
+            for value in values:
+                if await self.is_exist(value["product_id"], value["tag_id"]):
+                    continue
+                await self.db.execute(product_tag.insert().values(**value))
+        except Exception:
+            await self.db.execute(delete(Product).where(Product.id == product_id))
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                detail="Failed to create product tag",
+            )
 
     async def is_exist(self, product_id: UUID, tag_id: UUID):
         return (

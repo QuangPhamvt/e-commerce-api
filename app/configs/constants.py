@@ -34,8 +34,9 @@ PRODUCT_PATH: dict = {
     "GET_PRODUCT": "/{id}",
     "UPDATE_PRODUCT": "/{id}",
     "DELETE_PRODUCT": "/{id}",
-    "GET_PRODUCTS_BY_TAG": "/tag/{tag_name}",
+    "GET_PRODUCTS_BY_TAG": "/tag/{id}",
     "SET_SERIES_TO_PRODUCT": "/{product_id}/series/{series_id}",
+    "SET_CATEGORY_TO_PRODUCT": "/{product_id}/categories/{category_id}",
     "GET_PRODUCTS_BY_SERIES": "/series/{id}",
 }
 # ===========================

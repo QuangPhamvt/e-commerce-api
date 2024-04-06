@@ -5,7 +5,9 @@ from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud.product_tag_crud import ProductTagCRUD
-from app.database.models import Product
+from app.database.models import (
+    Product,
+)
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
@@ -16,21 +18,20 @@ class ProductCRUD:
         self.db = db
         self.product_tag_crud = ProductTagCRUD(db)
 
-    async def create(self, product: ProductCreateCRUD) -> None:
-        try:
-            db = self.db
-            uuid = generate_uuid()
-            db_product = Product(
-                id=uuid,
-                category_id=None,
-                **product.model_dump(exclude={"thumbnail_type"}),
-            )
-            db.add(db_product)
-            await db.commit()
-            await db.refresh(db_product)
-        except Exception as e:
-            logging.warning(f"Error creating product : {e}")
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to create product")
+    async def create(self, product: ProductCreateCRUD) -> UUID:
+        db = self.db
+        uuid = generate_uuid()
+
+        db_product = Product(
+            id=uuid,
+            **product.model_dump(
+                exclude={"thumbnail_type", "tags", "series_id", "category_id"}
+            ),
+        )
+        db.add(db_product)
+        await db.commit()
+        await db.refresh(db_product)
+        return uuid
 
     async def read_all(self):
         return (
@@ -76,19 +77,29 @@ class ProductCRUD:
 
     async def update_by_id(self, id: UUID, product: BodyUpdateProduct) -> None:
         data = {k: v for k, v in product.model_dump().items() if v is not None}
-        if data["name"]:
+        if data["name"] is not None:
             data["slug"] = helper.slugify(data["name"])
         await self.db.execute(update(Product).where(Product.id == id).values(data))
         await self.db.commit()
 
     async def delete_by_id(self, id: UUID) -> None:
-        await self.db.execute(delete(Product).where(Product.id == id))
         await self.product_tag_crud.delete_by_product_id(id)
+        await self.db.execute(delete(Product).where(Product.id == id))
         await self.db.commit()
 
     async def update_series_to_product(self, product_id: UUID, series_id: UUID) -> None:
         await self.db.execute(
             update(Product).where(Product.id == product_id).values(series_id=series_id)
+        )
+        await self.db.commit()
+
+    async def update_category_to_product(
+        self, product_id: UUID, category_id: UUID
+    ) -> None:
+        await self.db.execute(
+            update(Product)
+            .where(Product.id == product_id)
+            .values(category_id=category_id)
         )
         await self.db.commit()
 
