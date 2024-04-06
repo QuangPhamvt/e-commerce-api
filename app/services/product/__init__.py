@@ -88,6 +88,22 @@ class ProductService:
             url = f"products/{slug}.{type}"
             new_product = ProductCreateCRUD(thumbnail=url, **body.model_dump())
 
+            series_id = await self.series_crud.get_by_id(body.series_id)
+            category_id = await self.category_crud.read_by_id(body.category_id)
+            old_product = await self.product_crud.read_by_slug(body.slug)
+
+            # Check if product already exist, series, category not exist
+            if series_id is None:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series not found!")
+            if category_id is None:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
+            if old_product:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Product already exist"
+                )
+
+            new_product.series_id = series_id.id
+            category_id = category_id.id
             product_id = await self.product_crud.create(new_product)
             await self.product_tag_crud.create_many_by_product_id(product_id, body.tags)
             data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)

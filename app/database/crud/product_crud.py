@@ -7,8 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.crud.product_tag_crud import ProductTagCRUD
 from app.database.models import (
     Product,
-    Category,
-    Series,
 )
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
@@ -23,38 +21,9 @@ class ProductCRUD:
     async def create(self, product: ProductCreateCRUD) -> UUID:
         db = self.db
         uuid = generate_uuid()
-        series_id = product.series_id
-        category_id = product.category_id
-
-        old_product = await self.read_by_slug(product.slug)
-
-        series_id = (
-            (await db.execute(select(Series.id).where(Series.id.__eq__(series_id))))
-            .scalars()
-            .first()
-        )
-        category_id = (
-            (
-                await db.execute(
-                    select(Category.id).where(Category.id.__eq__(category_id))
-                )
-            )
-            .scalars()
-            .first()
-        )
-
-        # Check if series_id and category_id exist and product not exist
-        if not series_id:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Series id not found")
-        if not category_id:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category id not found")
-        if old_product:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product already exist")
 
         db_product = Product(
             id=uuid,
-            series_id=series_id,
-            category_id=category_id,
             **product.model_dump(
                 exclude={"thumbnail_type", "tags", "series_id", "category_id"}
             ),

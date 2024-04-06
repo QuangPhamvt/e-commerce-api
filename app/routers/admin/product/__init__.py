@@ -182,6 +182,7 @@ async def set_series_to_product(
     return await ProductService(db).set_series_to_product(product_id, series_id)
 
 
+# ********** SET CATEGORY TO PRODUCT **********
 @router.put(
     SET_CATEGORY_TO_PRODUCT,
     response_description="This endpoint is used to set category to product.",
@@ -199,6 +200,7 @@ async def set_category_to_product(
     return await ProductService(db).set_category_to_product(product_id, category_id)
 
 
+# ********** GET LIST PRODUCTS BY SERIES **********
 @router.get(
     GET_PRODUCTS_BY_SERIES,
     response_description="This endpoint is used to get list of products by series.",
