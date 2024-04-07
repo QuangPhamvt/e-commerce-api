@@ -49,6 +49,10 @@ class UserCRUD:
     async def read_user_by_id(self, id: UUID):
         data_user = await self.db.execute(select(User).where(User.id == id))
         return data_user.scalars().first()
+    
+    async def read_user_by_email(self, email: str):
+        data_user = await self.db.execute(select(User).where(User.email == email))
+        return data_user.scalars().first()
 
     async def update_verify_code(self, id: UUID, verify_code: str, expire: datetime):
         data_user = await self.db.execute(

@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends
+from uuid import UUID
 from app.configs.constants import USER, USER_PATH, USER_PREFIX
 from app.dependencies.get_db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.user import CreateDemoUserParam
+from app.schemas.responses import Res201Resquest
+from app.schemas.user import CreateDemoUserParam, CreateUserParam
 from app.services.user import UserService
 
 CREATE_USER = USER_PATH["CREATE_USER"]
@@ -33,7 +35,7 @@ router = APIRouter(prefix=USER_PREFIX, tags=[USER])
     }
 )
 async def get_user(id: str, db: AsyncSession = Depends(get_db)):
-    return await UserService().get_by_id(id, db)
+    return await UserService(db).get_by_id(id, db)
 
 @router.post(
     CREATE_USER,
@@ -52,8 +54,8 @@ async def get_user(id: str, db: AsyncSession = Depends(get_db)):
         }
     },
 )
-async def create_user(body: CreateDemoUserParam, db: AsyncSession = Depends(get_db)):
-    return await UserService().create_user(body, db)
+async def create_user(body: CreateUserParam, db: AsyncSession = Depends(get_db)):
+    return await UserService(db).create_user(body, db)
 
 
 @router.put(
@@ -73,8 +75,8 @@ async def create_user(body: CreateDemoUserParam, db: AsyncSession = Depends(get_
         }
     },
 )
-async def update_user(id: str, body: CreateDemoUserParam, db: AsyncSession = Depends(get_db)):
-    return await UserService().update_user(id, body, db)
+async def update_user(id: UUID, body: CreateDemoUserParam, db: AsyncSession = Depends(get_db)):
+    return await UserService(db).update_user(id, body, db)
 
 @router.delete(
     DELETE_USER,
@@ -86,7 +88,7 @@ async def update_user(id: str, body: CreateDemoUserParam, db: AsyncSession = Dep
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Delete User Succeed!",
+                        "detail": "Delete User Succeed!"
                     }
                 }
             },
@@ -94,7 +96,7 @@ async def update_user(id: str, body: CreateDemoUserParam, db: AsyncSession = Dep
     },
 )
 async def delete_user(id: str, db: AsyncSession = Depends(get_db)):
-    return await UserService().delete_user(id, db)
+    return await UserService(db).delete_user(id, db)
 
 
 
@@ -122,7 +124,7 @@ async def delete_user(id: str, db: AsyncSession = Depends(get_db)):
     },
 )
 async def get_list_user(db: AsyncSession = Depends(get_db)):
-    return await UserService().get_list_users(db)
+    return await UserService(db).get_list_users(db)
 
 
 @router.post(
@@ -148,4 +150,4 @@ async def get_list_user(db: AsyncSession = Depends(get_db)):
 async def create_demo_user(
     body: CreateDemoUserParam, db: AsyncSession = Depends(get_db)
 ):
-    return await UserService().create_demo_user(body, db)
+    return await UserService(db).create_demo_user(body, db)

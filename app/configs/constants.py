@@ -23,10 +23,10 @@ AUTH_PATH: dict = {
 USER: str = "User"
 USER_PREFIX: str = "/users"
 USER_PATH: dict = {
-    "GET_LIST_USERS": "/", 
-    "CREATE_DEMO_USER": "/",
-    "CREATE_USER": "/",
-    "GET_USER": "/",
+    "GET_LIST_USERS": "", 
+    "CREATE_DEMO_USER": "",
+    "CREATE_USER": "",
+    "GET_USER": "",
     "UPDATE_USER": "/{id}",
     "DELETE_USER": "/{id}", 
 }
