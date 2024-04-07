@@ -24,9 +24,7 @@ class ProductCRUD:
 
         db_product = Product(
             id=uuid,
-            **product.model_dump(
-                exclude={"thumbnail_type", "tags", "series_id", "category_id"}
-            ),
+            **product.model_dump(exclude={"thumbnail_type", "tags"}),
         )
         db.add(db_product)
         await db.commit()
