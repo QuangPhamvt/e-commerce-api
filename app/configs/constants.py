@@ -104,6 +104,14 @@ EXCHANGE_PATH: dict = {
 }
 # ===========================
 
+# ********** Cart **********
+CART: str = "Cart"
+CART_PREFIX: str = "/carts"
+CART_PATH: dict = {
+    "GET_CART_BY_USER": "",
+    "CREATE_CART": "",
+    "DELETE_CART": "/{id}",
+}
 DB_PORT: int = 3306
 
 

@@ -1,7 +1,7 @@
 import logging
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -72,19 +72,6 @@ async def read_root():
         "auth_docs": "https://dev.api.customafk.com/api/v1/auth/docs",
         "def_docs": "https://dev.api.customafk.com/api/v1/def/docs",
     }
-
-
-@app.get("/pay")
-def get_pay(request: Request):
-    logging.warning("===========GET===========")
-    logging.warning(request.headers)
-    return {"msg": "succeed!"}
-
-
-@app.post("/pay")
-def post_pay(body: dict):
-    logging.warning(f"========POST========={body}")
-    return {"msg": "succeed!"}
 
 
 app.mount(f"{ROOT_PATH}/web", web_api)
