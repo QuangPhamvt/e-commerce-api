@@ -198,6 +198,7 @@ USERNAME = "ABC@@"
 
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
+AWS_BUCKET_NAME = config["AWS_BUCKET_NAME"] or "customafk-ecommerce-web"
 
 
 # ********** Product Status **********
@@ -209,3 +210,6 @@ class ProductStatus(str, Enum):
 
 # ********** Base URL **********
 BASE_URL = "http://customafk.image/"
+
+# ********** Domain **********
+WEB_DOMAIN_URL = config["WEB_DOMAIN_URL"]

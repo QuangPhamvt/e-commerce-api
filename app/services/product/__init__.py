@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
+from app.configs.constants import AWS_BUCKET_NAME
 from app.database.crud.category_crud import CategoryCRUD
 from app.database.crud.series_crud import SeriesCRUD
 from app.database.crud.tag_crud import TagCRUD
@@ -106,7 +107,7 @@ class ProductService:
             category_id = category_id.id
             product_id = await self.product_crud.create(new_product)
             await self.product_tag_crud.create_many_by_product_id(product_id, body.tags)
-            data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
+            data = self.__create_presigned_url(AWS_BUCKET_NAME, slug, type)
 
             if data is None:
                 raise HTTPException(
@@ -207,5 +208,5 @@ class ProductService:
 
     @staticmethod
     def __delete_image_S3(thumbnail: str):
-        res = delete_object_s3("customafk-ecommerce-web", thumbnail)
+        res = delete_object_s3(AWS_BUCKET_NAME, thumbnail)
         return res
