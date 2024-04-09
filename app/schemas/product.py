@@ -64,6 +64,31 @@ class ProductBase(BaseModel):
 
 
 class ProductCreateCRUD(ProductBase):
+    preorder_start_date: str | None = Field(
+        title="Preorder Start Date",
+        description="Preorder Start Date of product",
+        examples=[None],
+    )
+    preorder_end_date: str | None = Field(
+        title="Preorder End Date",
+        description="Preorder End Date of product",
+        examples=[None],
+    )
+    tags: list[UUID] = Field(
+        title="Tags",
+        description="Tags of product",
+        examples=[["123e4567-e89b-12d3-a456-426614174000"]],
+    )
+    series_id: UUID = Field(
+        title="Series ID",
+        description="ID of series",
+        examples=["194bd139-7448-47ba-8c15-1e55e93a6a5c"],
+    )
+    category_id: UUID = Field(
+        title="Category ID",
+        description="ID of category",
+        examples=["123e4567-e89b-12d3-a456-426614174000"],
+    )
     thumbnail: str = Field(
         title="Thumbnail",
         description="Images of product",
@@ -73,6 +98,31 @@ class ProductCreateCRUD(ProductBase):
 
 
 class BodyCreateProduct(ProductBase):
+    preorder_start_date: str | None = Field(
+        title="Preorder Start Date",
+        description="Preorder Start Date of product",
+        examples=[None],
+    )
+    preorder_end_date: str | None = Field(
+        title="Preorder End Date",
+        description="Preorder End Date of product",
+        examples=[None],
+    )
+    tags: list[UUID] = Field(
+        title="Tags",
+        description="Tags of product",
+        examples=[["123e4567-e89b-12d3-a456-426614174000"]],
+    )
+    series_id: UUID = Field(
+        title="Series ID",
+        description="ID of series",
+        examples=["194bd139-7448-47ba-8c15-1e55e93a6a5c"],
+    )
+    category_id: UUID = Field(
+        title="Category ID",
+        description="ID of category",
+        examples=["123e4567-e89b-12d3-a456-426614174000"],
+    )
     thumbnail_type: str = Field(
         title="Thumbnail Type",
         description="Type of thumbnail",
@@ -166,12 +216,6 @@ class BodyUpdateProduct(BaseModel):
         examples=[ProductStatus.IN_STOCK],
         default=None,
     )
-    thumbnail: str | None = Field(
-        title="Thumbnail",
-        description="Thumbnail of product",
-        examples=["example.com/thumbnail.jpg"],
-        default=None,
-    )
     variant: str | None = Field(
         title="Variant",
         description="Variant of product",
@@ -187,13 +231,6 @@ class BodyUpdateProduct(BaseModel):
     preorder_end_date: str | None = Field(
         title="Preorder End Date",
         description="Preorder End Date of product",
-        examples=[datetime.datetime.now()],
-        default=None,
-    )
-
-    deleted_at: str | None = Field(
-        title="Deleted At",
-        description="Product is out of stock",
         examples=[datetime.datetime.now()],
         default=None,
     )

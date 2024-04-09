@@ -26,7 +26,24 @@ class CreateCategoryParam(CategoryBase):
 
 
 class UpdateCategoryParam(CreateCategoryParam):
-    pass
+    sub_id: list[UUID] | None = Field(
+        title="Sub ID",
+        description="Sub ID of category",
+        examples=[
+            "123e4567e89b12d3a456426614174000",
+            "123e4567e89b12d3a456426614174001",
+        ],
+        default=None,
+    )
+
+
+class UpdateCategoryData(CategoryBase):
+    parent_id: UUID | None = Field(
+        title="Parent ID",
+        description="Parent ID of category",
+        examples=["123e4567e89b12d3a456426614174000"],
+        default=None,
+    )
 
 
 class UpdateProductCategoryParam(BaseModel):

@@ -15,6 +15,19 @@ class ProductTagCRUD:
         )
         await self.db.commit()
 
+    async def create_many_by_product_id(self, product_id: UUID, tags: list[UUID]):
+        values = [{"product_id": product_id, "tag_id": tag_id} for tag_id in tags]
+        for value in values:
+            IS_EXIST = await self.is_exist(value["product_id"], value["tag_id"])
+            if IS_EXIST:
+                continue
+            await self.db.execute(
+                product_tag.insert().values(
+                    product_id=value["product_id"], tag_id=value["tag_id"]
+                )
+            )
+        await self.db.commit()
+
     async def is_exist(self, product_id: UUID, tag_id: UUID):
         return (
             (

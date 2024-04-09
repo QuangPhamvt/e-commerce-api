@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.configs.constants import PRODUCT, PRODUCT_PREFIX
@@ -49,7 +49,19 @@ router = APIRouter(
     },
 )
 async def get_list_products(db: AsyncSession = Depends(get_db)):
-    return await ProductService(db).get_all()
+    try:
+        data = await ProductService(db).get_all()
+        new_data = []
+        for item in data:
+            item.__dict__.pop("original_price") if item.__dict__.get(
+                "original_price"
+            ) else None
+            new_data.append(item)
+        return new_data
+    except Exception as e:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, f"Get List Products Failed! {e}"
+        )
 
 
 # ********** GET PRODUCT BY ID **********
