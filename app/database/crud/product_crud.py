@@ -54,11 +54,6 @@ class ProductCRUD:
                 select(Product)
                 .where(Product.id == id)
                 .where(Product.deleted_at.is_(None))
-                .options(
-                    defer(Product.created_at),
-                    defer(Product.updated_at),
-                    defer(Product.deleted_at),
-                )
             )
             return product.scalars().first()
         except Exception as e:
