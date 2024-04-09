@@ -53,7 +53,6 @@ class ProductCRUD:
         try:
             product = await self.db.execute(
                 select(Product)
-                .options(defer(Product.series_id))
                 .where(Product.id == id)
                 .where(Product.deleted_at.is_(None))
             )
@@ -109,4 +108,11 @@ class ProductCRUD:
             )
             .scalars()
             .all()
+        )
+
+    async def get_product_slug(self, id: UUID):
+        return (
+            (await self.db.execute(select(Product.slug).where(Product.id == id)))
+            .scalars()
+            .first()
         )

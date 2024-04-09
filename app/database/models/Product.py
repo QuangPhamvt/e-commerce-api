@@ -246,3 +246,33 @@ class Series(Base):
 
     def __repr__(self):
         return f"<Series {self.name}>"
+
+
+# PRODUCTS_IMAGE TABLE
+class ProductsImage(Base):
+    """
+    ProductsImage Model
+    """
+
+    __tablename__ = "ProductsImage"
+    id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
+    slug: Mapped[str] = mapped_column("slug", String(255), unique=True)
+    image_url: Mapped[str] = mapped_column("image_url", String(255), nullable=True)
+    product_id: Mapped[UUID] = mapped_column(
+        "product_id", Uuid, ForeignKey("Product.id"), nullable=False
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        "created_at", DateTime, default=datetime.today()
+    )
+    updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
+    deleted_at: Mapped[datetime] = mapped_column("deleted_at", DateTime, nullable=True)
+
+    def __init__(self, id: UUID, slug: str, image_url: str, product_id: UUID):
+        self.id = id
+        self.slug = slug
+        self.image_url = image_url
+        self.product_id = product_id
+        self.created_at = datetime.today()
+
+    def __repr__(self):
+        return f"<ProductsImage {self.id}>"
