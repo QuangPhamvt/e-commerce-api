@@ -3,6 +3,15 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 import datetime
 from app.configs.constants import ProductStatus
+from enum import Enum
+
+
+class OrderNumber(str, Enum):
+    ONE = "one"
+    TWO = "two"
+    THREE = "three"
+    FOUR = "four"
+    FIVE = "five"
 
 
 class ProductBase(BaseModel):
@@ -276,4 +285,35 @@ class GetProductById(ProductBase):
         title="Preorder End Date",
         description="Preorder End Date of product",
         examples=[datetime.datetime.now()],
+    )
+
+
+class ImageType(BaseModel):
+    type: str = Field(
+        title="Image Type",
+        description="type of image",
+        examples=["png"],
+    )
+    order: OrderNumber = Field(
+        title="Image Order Number",
+        description="order of image",
+        examples=["one"],
+    )
+
+
+class CreateProductsImageBody(BaseModel):
+    slug: str = Field(
+        title="Slug",
+        description="Slug of product",
+        examples=["iphone-13"],
+    )
+    image_url: str = Field(
+        title="Image URL",
+        description="URL of image",
+        examples=["products/abc-one.jpg"],
+    )
+    product_id: UUID = Field(
+        title="Product ID",
+        description="ID of product",
+        examples=["adf6377b-1151-4206-951f-1301f926078a"],
     )

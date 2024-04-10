@@ -17,15 +17,23 @@ class ProductTagCRUD:
 
     async def create_many_by_product_id(self, product_id: UUID, tags: list[UUID]):
         values = [{"product_id": product_id, "tag_id": tag_id} for tag_id in tags]
-        for value in values:
-            IS_EXIST = await self.is_exist(value["product_id"], value["tag_id"])
-            if IS_EXIST:
-                continue
-            await self.db.execute(
-                product_tag.insert().values(
-                    product_id=value["product_id"], tag_id=value["tag_id"]
+        exist_tags = (
+            (
+                await self.db.execute(
+                    select(product_tag)
+                    .where(product_tag.c.product_id == product_id)
+                    .where(product_tag.c.tag_id.in_([tag_id for tag_id in tags]))
                 )
             )
+            .scalars()
+            .all()
+        )
+        values = [
+            value
+            for value in values
+            if not any([value["tag_id"] == exist.tag_id for exist in exist_tags])
+        ]
+        await self.db.execute(product_tag.insert().values(values))
         await self.db.commit()
 
     async def is_exist(self, product_id: UUID, tag_id: UUID):

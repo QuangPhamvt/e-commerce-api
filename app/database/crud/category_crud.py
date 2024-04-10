@@ -67,6 +67,47 @@ class CategoryCRUD:
             .first()
         )
 
+    async def read_sub_with_parent_by_id(self, sub_id: UUID):
+        sub_category = (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .options(
+                        defer(Category.created_at),
+                        defer(Category.updated_at),
+                        defer(Category.deleted_at),
+                    )
+                    .where(Category.id == sub_id)
+                )
+            )
+            .scalars()
+            .first()
+        )
+        if sub_category is None:
+            return None
+        parent_category = (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .options(
+                        defer(Category.parent_id),
+                        defer(Category.created_at),
+                        defer(Category.updated_at),
+                        defer(Category.deleted_at),
+                    )
+                    .where(Category.id == sub_category.parent_id)
+                )
+            )
+            .scalars()
+            .first()
+        )
+        sub_category.__dict__.pop("parent_id")
+        category = {
+            **parent_category.__dict__,
+            "sub": sub_category,
+        }
+        return category
+
     async def read_by_id_and_parent_id(self, id: UUID, parent_id: UUID):
         return (
             (
