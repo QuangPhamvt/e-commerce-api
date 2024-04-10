@@ -27,9 +27,7 @@ class ProductsImageCRUD:
         return (
             (
                 await self.db.execute(
-                    select(
-                        ProductsImage.id, ProductsImage.slug, ProductsImage.image_url
-                    ).where(ProductsImage.product_id.__eq__(id))
+                    select(ProductsImage).where(ProductsImage.product_id.__eq__(id))
                 )
             )
             .scalars()

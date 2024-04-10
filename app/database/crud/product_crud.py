@@ -4,10 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.database.crud.product_tag_crud import ProductTagCRUD
-from app.database.models import (
-    Product,
-)
+from app.database.models import Product, product_tag
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
@@ -16,7 +13,6 @@ from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
 class ProductCRUD:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.product_tag_crud = ProductTagCRUD(db)
 
     async def create(self, product: ProductCreateCRUD) -> UUID:
         db = self.db
@@ -81,7 +77,9 @@ class ProductCRUD:
         await self.db.commit()
 
     async def delete_by_id(self, id: UUID) -> None:
-        await self.product_tag_crud.delete_by_product_id(id)
+        await self.db.execute(
+            product_tag.delete().where(product_tag.c.product_id == id)
+        )
         await self.db.execute(delete(Product).where(Product.id == id))
         await self.db.commit()
 

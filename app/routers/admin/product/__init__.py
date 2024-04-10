@@ -277,8 +277,9 @@ async def create_images_for_product(
     return await ProductService(db).create_product_images(id, body)
 
 
+# ********** DELETE IMAGES FOR PRODUCT **********
 @router.delete(
-    "/{id}/images/{slug}",
+    "/{id}/images",
     response_description="This endpoint is used to delete images for product.",
     status_code=201,
     responses={
@@ -286,18 +287,17 @@ async def create_images_for_product(
             "description": "Delete images for product succeed!",
             "model": Res201Resquest,
         },
-        404: {
+        400: {
             "description": "Failed to delete product images!",
             "model": ResBadRequest,
         },
     },
 )
-async def delete_image_for_product(
-    id: UUID, slug: str, db: AsyncSession = Depends(get_db)
-):
-    return await ProductService(db).delete_product_image(id, slug)
+async def delete_image_for_product(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await ProductService(db).delete_product_image(id)
 
 
+# ********** UPDATE IMAGES FOR PRODUCT **********
 @router.put(
     "/{id}/images/{slug}",
     response_description="This endpoint is used to update images for product.",

@@ -49,6 +49,8 @@ class ProductService:
 
     async def get_product_by_id(self, id: UUID):
         try:
+            category = None
+            series = None
             product = await self.product_crud.read_by_id(id)
             if not product:
                 raise HTTPException(
@@ -56,11 +58,11 @@ class ProductService:
                     "Id not found!",
                 )
             tags = await self.product_tag_crud.read_list_tags_by_product(product.id)
-            category = None
-            series = None
 
             if product.category_id:
-                category = await self.category_crud.read_by_id(product.category_id)
+                category = await self.category_crud.read_sub_with_parent_by_id(
+                    product.category_id
+                )
             if product.series_id:
                 series = await self.series_crud.get_by_id(product.series_id)
                 series.__dict__.pop("created_at")
@@ -70,6 +72,7 @@ class ProductService:
                     series.image = helper.convert_image_to_url(series.image)
 
             images = await self.products_image_crud.get_list_image_urls(id)
+            images = [get_image_from_url(image) for image in images]
 
             product.__dict__.pop("category_id")
             product.thumbnail = self.__convert_image_to_url(product)
@@ -249,17 +252,17 @@ class ProductService:
             product_images = (
                 await self.products_image_crud.read_product_image_by_product_id(id)
             )
-            if len(product_images).__eq__(0):
+
+            if len(product_images) == 0:
                 raise HTTPException(
                     status.HTTP_400_BAD_REQUEST, "Product Image not found!"
                 )
 
             await self.products_image_crud.delete_by_product_id(id)
-            for product_image in product_images:
-                self.__delete_image_S3(product_image.image_url)
+            [self.__delete_image_S3(image.image_url) for image in product_images]
             return {"detail": "Product Image deleted successfully"}
         except Exception as e:
-            HTTPException(
+            raise HTTPException(
                 status.HTTP_400_BAD_REQUEST, f"Failed to delete product images : {e}"
             )
 
@@ -268,6 +271,7 @@ class ProductService:
             is_valid_product = await self.product_crud.read_by_id(id)
             if not is_valid_product:
                 raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+
             is_valid_id = (
                 await self.products_image_crud.read_product_image_by_product_id(id)
             )
