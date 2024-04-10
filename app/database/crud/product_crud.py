@@ -119,7 +119,7 @@ class ProductCRUD:
             .all()
         )
 
-    async def get_product_slug(self, id: UUID):
+    async def read_product_slug(self, id: UUID):
         return (
             (await self.db.execute(select(Product.slug).where(Product.id == id)))
             .scalars()

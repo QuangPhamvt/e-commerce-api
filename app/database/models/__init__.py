@@ -5,7 +5,15 @@ from .History import History
 from .Cart import Cart
 from .CustomAddress import CustomerAddress
 from .Authorization import Role, Permission
-from .Product import Product, Category, Tag, DepositType, Series, ProductsImage, product_tag
+from .Product import (
+    Product,
+    Category,
+    Tag,
+    DepositType,
+    Series,
+    ProductsImage,
+    product_tag,
+)
 from .Voucher import Voucher
 from .ExchangeRate import ExchangeRate
 from .Bill import Bill, BillDetail

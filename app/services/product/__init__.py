@@ -1,6 +1,5 @@
-import logging
-from uuid import UUID
 from typing import Sequence
+from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
@@ -143,10 +142,16 @@ class ProductService:
             product = await self.product_crud.read_by_id(id)
 
             if not product:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, "Product not found")
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found")
 
-            self.__delete_image_S3(product.thumbnail)
+            product_images = (
+                await self.products_image_crud.read_product_image_by_product_id(id)
+            )
+            if len(product_images) > 0:
+                await self.delete_product_image(id)
+
             await self.product_crud.delete_by_id(id)
+            self.__delete_image_S3(product.thumbnail)
 
             return {"detail": "Product deleted"}
         except Exception as e:
@@ -190,6 +195,129 @@ class ProductService:
             product.thumbnail = helper.convert_image_to_url(product.thumbnail)
         return products
 
+    async def create_product_images(self, id: UUID, images: list[ImageType]):
+        try:
+            is_valid_product = await self.product_crud.read_by_id(id)
+            if not is_valid_product:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+            slug = await self.product_crud.read_product_slug(id)
+
+            exist_images_quantity = await self.products_image_crud.read_images_quantity(
+                id
+            )
+
+            if exist_images_quantity is None:
+                exist_images_quantity = 0
+
+            is_exceed = self.__check_image_quantity(len(images), exist_images_quantity)
+            if is_exceed:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST,
+                    "Image quantity exceed! Each product has only 5 images!",
+                )
+
+            presigned_urls = []
+            for image in images:
+                image_slug = f"{slug}-{image.order.value}"
+                image_url = f"products/{image_slug}.{image.type}"
+                new_product_image = CreateProductsImageBody(
+                    slug=image_slug, image_url=image_url, product_id=id
+                )
+                await self.products_image_crud.create(new_product_image)
+                data = self.__create_presigned_url(
+                    "customafk-ecommerce-web", image_slug, image.type
+                )
+                if data is None:
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
+                    )
+                presigned_urls.append(data)
+            return {
+                "detail": "Product Image created successfully",
+                "presigned_urls": presigned_urls,
+            }
+        except Exception as e:
+            HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to create product images : {e}"
+            )
+
+    async def delete_product_image(self, id: UUID):
+        try:
+            is_valid_product = await self.product_crud.read_by_id(id)
+            if not is_valid_product:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+            product_images = (
+                await self.products_image_crud.read_product_image_by_product_id(id)
+            )
+            if len(product_images).__eq__(0):
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Product Image not found!"
+                )
+
+            await self.products_image_crud.delete_by_product_id(id)
+            for product_image in product_images:
+                self.__delete_image_S3(product_image.image_url)
+            return {"detail": "Product Image deleted successfully"}
+        except Exception as e:
+            HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to delete product images : {e}"
+            )
+
+    async def update_product_image(self, id: UUID, slug: str, body: ImageType):
+        try:
+            is_valid_product = await self.product_crud.read_by_id(id)
+            if not is_valid_product:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
+            is_valid_id = (
+                await self.products_image_crud.read_product_image_by_product_id(id)
+            )
+            if not is_valid_id:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Product Image slug not found!"
+                )
+
+            slug = await self.product_crud.read_product_slug(id) or ""
+
+            image_slug = f"{slug}-{body.order.value}"
+            image_url = f"products/{image_slug}.{body.type}"
+            for product_image in is_valid_id:
+                if product_image.slug == slug:
+                    await self.products_image_crud.update(
+                        product_image.id, image_slug, image_url
+                    )
+                    data = self.__create_presigned_url(
+                        "customafk-ecommerce-web", image_slug, body.type
+                    )
+                    if data is None:
+                        raise HTTPException(
+                            status.HTTP_400_BAD_REQUEST,
+                            "Failed to create presigned URL",
+                        )
+                    return {
+                        "detail": "Product Image updated successfully",
+                        "presigned_url": data,
+                    }
+        except Exception as e:
+            HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to update product images : {e}"
+            )
+
+    async def check_product_image_creation(self, id: UUID, result: int):
+        images = await self.products_image_crud.read_product_images(id)
+        if result == 0:
+            [self.__delete_image_S3(image.image_url) for image in images]
+            await self.products_image_crud.delete_by_product_id(id)
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, "Failed to create product images"
+            )
+        return {
+            "detail": {"Product Image created successfully"},
+        }
+
+    @staticmethod
+    def __check_image_quantity(new_images_quantity: int, exist_images_quatity: int):
+        return new_images_quantity > 5 - exist_images_quatity
+
     async def __check_product_exist(self, slug: str):
         product = await self.product_crud.read_by_slug(slug)
         if product:
@@ -220,99 +348,3 @@ class ProductService:
     def __delete_image_S3(thumbnail: str):
         res = delete_object_s3("customafk-ecommerce-web", thumbnail)
         return res
-
-    async def create_product_images(self, id: UUID, images: list[ImageType]):
-        try:
-            is_valid_product = await self.product_crud.read_by_id(id)
-            if not is_valid_product:
-                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
-            slug = await self.product_crud.get_product_slug(id)
-
-            exist_images_quantity = await self.products_image_crud.images_quantity(id)
-            is_exceed = self.__check_image_quantity(len(images), exist_images_quantity)
-            if is_exceed:
-                raise HTTPException(
-                    status.HTTP_400_BAD_REQUEST,
-                    "Image quantity exceed! Each product has only 5 images!",
-                )
-
-            presigned_urls = []
-            for image in images:
-                image_slug = f"{slug}-{image.order.value}"
-                image_url = f"products/{image_slug}.{image.type}"
-                new_product_image = CreateProductsImageBody(
-                    slug=image_slug, image_url=image_url, product_id=id
-                )
-                await self.products_image_crud.create(new_product_image)
-                data = self.__create_presigned_url(
-                    "customafk-ecommerce-web", image_slug, image.type
-                )
-                if data is None:
-                    raise HTTPException(
-                        status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
-                    )
-                presigned_urls.append(data)
-            return {
-                "detail": "Product Image created successfully",
-                "result_url": "http://127.0.0.1:8000/api/v1/admin/products/{id}/images/1",
-            }
-        except Exception:
-            return {
-                "detail": "Product Image creation failed",
-                "result_url": "http://127.0.0.1:8000/api/v1/admin/products/{id}/images/0",
-            }
-
-    async def delete_product_image(self, id: UUID, slug: str):
-        is_valid_product = await self.product_crud.read_by_id(id)
-        if not is_valid_product:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
-        is_valid_id = await self.products_image_crud.get_product_image_id_by_slug(slug)
-        if not is_valid_id:
-            raise HTTPException(
-                status.HTTP_400_BAD_REQUEST, "Product Image slug not found!"
-            )
-        await self.products_image_crud.delete(is_valid_id)
-        return {"detail": "Product Image deleted successfully"}
-
-    async def update_product_image(self, id: UUID, slug: str, body: ImageType):
-        is_valid_product = await self.product_crud.read_by_id(id)
-        if not is_valid_product:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found!")
-        is_valid_id = await self.products_image_crud.get_product_image_id_by_slug(slug)
-        if not is_valid_id:
-            raise HTTPException(
-                status.HTTP_400_BAD_REQUEST, "Product Image slug not found!"
-            )
-
-        slug = await self.product_crud.get_product_slug(id)
-        image_slug = f"{slug}-{body.order.value}"
-        image_url = f"products/{image_slug}.{body.type}"
-        await self.products_image_crud.update(is_valid_id, image_slug, image_url)
-        return {"detail": "Product Image updated successfully"}
-
-    @staticmethod
-    def __check_image_quantity(new_images_quantity: int, exist_images_quatity: int):
-        return new_images_quantity > 5 - exist_images_quatity
-
-    async def check_product_image_creation(self, id: UUID, result: int):
-        images = await self.products_image_crud.get_product_images(id)
-        if result == 0:
-            [self.__delete_image_S3(image.image_url) for image in images]
-            await self.products_image_crud.delete_by_product_id(id)
-            raise HTTPException(
-                status.HTTP_400_BAD_REQUEST, "Failed to create product images"
-            )
-        presigned_urls = []
-        for image in images:
-            url = self.__create_presigned_url(
-                "customafk-ecommerce-web", image.slug, image.image_url[-3:]
-            )
-            if url is None:
-                raise HTTPException(
-                    status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
-                )
-            presigned_urls.append(url)
-        return {
-            "detail": {"Product Image created successfully"},
-            "presigned_urls": presigned_urls,
-        }

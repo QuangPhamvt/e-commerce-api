@@ -23,15 +23,17 @@ class ProductsImageCRUD:
         await self.db.execute(delete(ProductsImage).where(ProductsImage.id == id))
         await self.db.commit()
 
-    async def get_product_image_id_by_slug(self, slug: str):
+    async def read_product_image_by_product_id(self, id: UUID):
         return (
             (
                 await self.db.execute(
-                    select(ProductsImage.id).where(ProductsImage.slug == slug)
+                    select(
+                        ProductsImage.id, ProductsImage.slug, ProductsImage.image_url
+                    ).where(ProductsImage.product_id.__eq__(id))
                 )
             )
             .scalars()
-            .first()
+            .all()
         )
 
     async def update(self, id: UUID, image_slug: str, image_url: str):
@@ -42,7 +44,7 @@ class ProductsImageCRUD:
         )
         await self.db.commit()
 
-    async def images_quantity(self, id: UUID):
+    async def read_images_quantity(self, id: UUID):
         return (
             (
                 await self.db.execute(
@@ -66,7 +68,7 @@ class ProductsImageCRUD:
             .all()
         )
 
-    async def get_product_images(self, id: UUID):
+    async def read_product_images(self, id: UUID):
         return (
             (
                 await self.db.execute(

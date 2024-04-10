@@ -248,11 +248,22 @@ async def get_products_by_series(id: UUID, db: AsyncSession = Depends(get_db)):
 @router.post(
     "/{id}/images",
     response_description="This endpoint is used to create images for product.",
-    status_code=201,
+    status_code=200,
     responses={
-        201: {
+        200: {
             "description": "Create images for product succeed!",
-            "model": Res201Resquest,
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "detail": "Image created successfully!",
+                            "presigned_url": [
+                                "https://dev.customafk.com/products/iphone-13.jpeg"
+                            ],
+                        }
+                    ]
+                }
+            },
         },
         404: {
             "description": "Failed to create product images!",
