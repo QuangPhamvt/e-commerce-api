@@ -47,6 +47,50 @@ class ProductService:
         products = await self.product_tag_crud.read_by_tag(id)
         return products
 
+    async def get_product_by_slug(self, slug: str):
+        try:
+            category = None
+            series = None
+            product = await self.product_crud.read_by_slug(slug)
+            if not product:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST,
+                    "Id not found!",
+                )
+            tags = await self.product_tag_crud.read_list_tags_by_product(product.id)
+
+            if product.category_id:
+                category = await self.category_crud.read_sub_with_parent_by_id(
+                    product.category_id
+                )
+            if product.series_id:
+                series = await self.series_crud.get_by_id(product.series_id)
+                series.__dict__.pop("created_at")
+                series.__dict__.pop("updated_at")
+                series.__dict__.pop("deleted_at")
+                if series is not None and series.image is not None:
+                    series.image = helper.convert_image_to_url(series.image)
+
+            images = await self.products_image_crud.get_list_image_urls(product.id)
+            images = [get_image_from_url(image) for image in images]
+
+            product.__dict__.pop("category_id")
+            product.thumbnail = self.__convert_image_to_url(product)
+            new_product = {
+                "tags": tags,
+                "category": category if category else None,
+                "series": series if series else None,
+                "images": images,
+                **product.__dict__,
+            }
+            return new_product
+        except Exception as e:
+            logging.warning(e)
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                f"Failed to get product {e}",
+            )
+
     async def get_product_by_id(self, id: UUID):
         try:
             category = None

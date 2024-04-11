@@ -1,6 +1,4 @@
-import logging
 from uuid import UUID
-from fastapi import HTTPException, status
 from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,16 +43,17 @@ class ProductCRUD:
         )
 
     async def read_by_id(self, id: UUID) -> Product | None:
-        try:
-            product = await self.db.execute(
-                select(Product)
-                .where(Product.id == id)
-                .where(Product.deleted_at.is_(None))
+        return (
+            (
+                await self.db.execute(
+                    select(Product)
+                    .where(Product.id == id)
+                    .where(Product.deleted_at.is_(None))
+                )
             )
-            return product.scalars().first()
-        except Exception as e:
-            logging.warning(f"Error getting product by id : {e}")
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to get product")
+            .scalars()
+            .first()
+        )
 
     async def read_by_slug(self, slug: str) -> Product | None:
         return (
