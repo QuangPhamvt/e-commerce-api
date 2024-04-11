@@ -12,6 +12,12 @@ class UserBase(BaseModel):
     email: str = Field(
         title="Email", description="Email of user", examples=["21522517@gm.uit.edu.vn"]
     )
+    password: str = Field(
+        title="Password", description="Password of user", examples=["12345678"]
+    )
+    role_id: str = Field(
+        title="Role id", description="Role id of user", examples=["3a963e31-84ca-4eca-9fb4-f4b06f282ff5"],
+    )
 
 
 class GetUserByEmailParam(UserBase):
@@ -19,11 +25,10 @@ class GetUserByEmailParam(UserBase):
 
 
 class CreateUserParam(UserBase):
-    id: UUID
-    email: str
-    password: str
-    role_id: UUID
+    pass
 
+class UpdateUserParam(UserBase):
+    pass
 
 class UserResponse(UserBase):
     id: UUID
@@ -57,6 +62,12 @@ class CreateDemoUserParam(UserBase):
         examples=["User"],
     )
 
+
+
+class CreateUserData(BaseModel):
+    pass
+class UpdateUserData(BaseModel):
+    pass 
 
 class ResGetListUsers(BaseModel):
     id: UUID

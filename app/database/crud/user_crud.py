@@ -1,13 +1,14 @@
 from datetime import datetime
+import logging
 from uuid import UUID
 from sqlalchemy.orm import defer
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from app.database.models import User, Bio, Role
 from app.database.models.User import ResetPassword
 from app.schemas.user import CreateUserParam
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.helper import helper
-from app.utils.uuid import generate_uuid
+from app.utils.uuid import convert_str_to_uuid, generate_uuid
 from app.database.crud import customer_address_crud
 
 
@@ -15,18 +16,14 @@ class UserCRUD:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def read_user_by_email(self, email: str) -> User | None:
-        data_user = await self.db.execute(select(User).where(User.email == email))
-        return data_user.scalars().first()
-
     async def create_user(self, user: CreateUserParam) -> User:
         user_id = generate_uuid()
         hash_password = helper.hash_password(password=user.password)
         db_user = User(
             id=user_id,
             email=user.email,
-            hash_password=hash_password,
-            role_id=user.role_id,
+            hash_password=hash_password,    
+            role_id=convert_str_to_uuid(user.role_id),
             is_active=False,
         )
         self.db.add(db_user)
@@ -46,6 +43,15 @@ class UserCRUD:
         )
         await self.db.commit()
 
+    async def get_all(self):
+        try:
+            list_user = await self.db.execute(select(User))
+            logging.warn(f"{list_user}")
+            return list_user.scalars().all()
+        except Exception as e:
+            logging.warning(e)
+            
+
     async def read_user_by_id(self, id: UUID):
         data_user = await self.db.execute(select(User).where(User.id == id))
         return data_user.scalars().first()
@@ -53,6 +59,8 @@ class UserCRUD:
     async def read_user_by_email(self, email: str):
         data_user = await self.db.execute(select(User).where(User.email == email))
         return data_user.scalars().first()
+
+    
 
     async def update_verify_code(self, id: UUID, verify_code: str, expire: datetime):
         data_user = await self.db.execute(
@@ -112,3 +120,7 @@ class UserCRUD:
         ]
 
         return results
+    
+    async def delete_user_by_id(self, id: UUID):
+        await self.db.execute(delete(User).where(User.id.__eq__(id)))
+        await self.db.commit()
