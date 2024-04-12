@@ -9,6 +9,7 @@ from app.schemas.product import (
     CreateProductResponse,
     ResCreateProduct,
     BodyUpdateProduct,
+    ImageType,
 )
 from app.schemas.responses import Res201Resquest, ResBadRequest
 from app.services.product import ProductService
@@ -115,6 +116,7 @@ async def create_product(body: BodyCreateProduct, db: AsyncSession = Depends(get
             "status": "IN STOCK",
             "quantity": 100,
             "description": "This is a new product from Apple",
+            "images": ["products/iphone-13-one.png", "products/iphone-13-two.png"],
         },
     },
 )
@@ -240,3 +242,96 @@ async def set_category_to_product(
 )
 async def get_products_by_series(id: UUID, db: AsyncSession = Depends(get_db)):
     return await ProductService(db).get_products_by_series(id)
+
+
+# ********** CREATE IMAGES FOR PRODUCT **********
+@router.post(
+    "/{id}/images",
+    response_description="This endpoint is used to create images for product.",
+    status_code=200,
+    responses={
+        200: {
+            "description": "Create images for product succeed!",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "detail": "Image created successfully!",
+                            "presigned_url": [
+                                "https://dev.customafk.com/products/iphone-13.jpeg"
+                            ],
+                        }
+                    ]
+                }
+            },
+        },
+        404: {
+            "description": "Failed to create product images!",
+            "model": ResBadRequest,
+        },
+    },
+)
+async def create_images_for_product(
+    id: UUID, body: list[ImageType], db: AsyncSession = Depends(get_db)
+):
+    return await ProductService(db).create_product_images(id, body)
+
+
+# ********** DELETE IMAGES FOR PRODUCT **********
+@router.delete(
+    "/{id}/images",
+    response_description="This endpoint is used to delete images for product.",
+    status_code=201,
+    responses={
+        201: {
+            "description": "Delete images for product succeed!",
+            "model": Res201Resquest,
+        },
+        400: {
+            "description": "Failed to delete product images!",
+            "model": ResBadRequest,
+        },
+    },
+)
+async def delete_image_for_product(id: UUID, db: AsyncSession = Depends(get_db)):
+    return await ProductService(db).delete_product_image(id)
+
+
+# ********** UPDATE IMAGES FOR PRODUCT **********
+@router.put(
+    "/{id}/images/{slug}",
+    response_description="This endpoint is used to update images for product.",
+    status_code=201,
+    responses={
+        201: {
+            "description": "Update images for product succeed!",
+            "model": Res201Resquest,
+        },
+        404: {"description": "Product images not found!", "model": ResBadRequest},
+    },
+)
+async def update_image_for_product(
+    id: UUID, slug: str, body: ImageType, db: AsyncSession = Depends(get_db)
+):
+    return await ProductService(db).update_product_image(id, slug, body)
+
+
+@router.get(
+    "/{id}/images/{result}",
+    response_description="This endpoint is used to check whether images created successfully or not.",
+    status_code=201,
+    responses={
+        201: {
+            "description": "Product images created successfully!",
+            "model": Res201Resquest,
+        },
+        404: {
+            "description": "Failed to create product images!",
+            "model": ResBadRequest,
+        },
+    },
+)
+async def check_images_created_for_product(
+    id: UUID, result: int, db: AsyncSession = Depends(get_db)
+):
+    return await ProductService(db).check_product_image_creation(id, result)

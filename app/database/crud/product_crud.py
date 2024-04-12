@@ -1,13 +1,8 @@
-import logging
 from uuid import UUID
-from fastapi import HTTPException, status
 from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.database.crud.product_tag_crud import ProductTagCRUD
-from app.database.models import (
-    Product,
-)
+from app.database.models import Product, product_tag
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
@@ -16,7 +11,6 @@ from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
 class ProductCRUD:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.product_tag_crud = ProductTagCRUD(db)
 
     async def create(self, product: ProductCreateCRUD) -> UUID:
         db = self.db
@@ -49,16 +43,17 @@ class ProductCRUD:
         )
 
     async def read_by_id(self, id: UUID) -> Product | None:
-        try:
-            product = await self.db.execute(
-                select(Product)
-                .where(Product.id == id)
-                .where(Product.deleted_at.is_(None))
+        return (
+            (
+                await self.db.execute(
+                    select(Product)
+                    .where(Product.id == id)
+                    .where(Product.deleted_at.is_(None))
+                )
             )
-            return product.scalars().first()
-        except Exception as e:
-            logging.warning(f"Error getting product by id : {e}")
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Failed to get product")
+            .scalars()
+            .first()
+        )
 
     async def read_by_slug(self, slug: str) -> Product | None:
         return (
@@ -81,7 +76,9 @@ class ProductCRUD:
         await self.db.commit()
 
     async def delete_by_id(self, id: UUID) -> None:
-        await self.product_tag_crud.delete_by_product_id(id)
+        await self.db.execute(
+            product_tag.delete().where(product_tag.c.product_id == id)
+        )
         await self.db.execute(delete(Product).where(Product.id == id))
         await self.db.commit()
 
@@ -117,4 +114,11 @@ class ProductCRUD:
             )
             .scalars()
             .all()
+        )
+
+    async def read_product_slug(self, id: UUID):
+        return (
+            (await self.db.execute(select(Product.slug).where(Product.id == id)))
+            .scalars()
+            .first()
         )
