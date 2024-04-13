@@ -74,6 +74,10 @@ async def get_product_by_category(
     data = await ProductService(db).get_products_by_category(
         parent_category, sub_category
     )
+    if not data:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "Get Product By Category Failed!"
+        )
     new_data = []
     for item in data:
         item.__dict__.pop("original_price") if item.__dict__.get(

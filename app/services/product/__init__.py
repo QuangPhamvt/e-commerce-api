@@ -50,22 +50,31 @@ class ProductService:
     async def get_products_by_category(
         self, parent_category: str | None, sub_category: str | None
     ):
-        products = []
-        if parent_category:
-            category = await self.category_crud.read_by_slug(parent_category)
-            if not category:
-                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
-            products = await self.product_crud.read_by_parent_category(category.id)
-            return products
-        if sub_category:
-            category = await self.category_crud.read_by_slug(sub_category)
-            if not category:
-                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
-            products = await self.product_crud.read_by_sub_category(category.id)
+        try:
+            products = []
+            if parent_category:
+                category = await self.category_crud.read_by_slug(parent_category)
+                if not category:
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST, "Category not found!"
+                    )
+                products = await self.product_crud.read_by_parent_category(category.id)
+                return products
+            if sub_category:
+                category = await self.category_crud.read_by_slug(sub_category)
+                if not category:
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST, "Category not found!"
+                    )
+                products = await self.product_crud.read_by_sub_category(category.id)
 
-        for product in products:
-            product.thumbnail = helper.convert_image_to_url(product.thumbnail)
-        return products
+            for product in products:
+                product.thumbnail = helper.convert_image_to_url(product.thumbnail)
+            return products
+        except Exception as e:
+            HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to get product by category : {e}"
+            )
 
     async def get_product_by_slug(self, slug: str):
         try:
