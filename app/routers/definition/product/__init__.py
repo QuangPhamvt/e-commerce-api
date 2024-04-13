@@ -64,6 +64,25 @@ async def get_list_products(db: AsyncSession = Depends(get_db)):
         )
 
 
+# ********** GET PRODUCT BY CATEGORY **********
+@router.get("/category/")
+async def get_product_by_category(
+    parent_category: str | None = None,
+    sub_category: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    data = await ProductService(db).get_products_by_category(
+        parent_category, sub_category
+    )
+    new_data = []
+    for item in data:
+        item.__dict__.pop("original_price") if item.__dict__.get(
+            "original_price"
+        ) else None
+        new_data.append(item)
+    return new_data
+
+
 # ********** GET PRODUCT BY ID **********
 @router.get(
     "/{id}",

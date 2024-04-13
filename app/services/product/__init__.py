@@ -47,6 +47,26 @@ class ProductService:
         products = await self.product_tag_crud.read_by_tag(id)
         return products
 
+    async def get_products_by_category(
+        self, parent_category: str | None, sub_category: str | None
+    ):
+        products = []
+        if parent_category:
+            category = await self.category_crud.read_by_slug(parent_category)
+            if not category:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
+            products = await self.product_crud.read_by_parent_category(category.id)
+            return products
+        if sub_category:
+            category = await self.category_crud.read_by_slug(sub_category)
+            if not category:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Category not found!")
+            products = await self.product_crud.read_by_sub_category(category.id)
+
+        for product in products:
+            product.thumbnail = helper.convert_image_to_url(product.thumbnail)
+        return products
+
     async def get_product_by_slug(self, slug: str):
         try:
             category = None
