@@ -77,7 +77,7 @@ class CategoryCRUD:
                         defer(Category.updated_at),
                         defer(Category.deleted_at),
                     )
-                    .where(Category.slug == slug)
+                    .where(Category.slug.like(slug))
                     .where(Category.deleted_at.is_(None))
                 )
             )
