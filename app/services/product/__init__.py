@@ -52,7 +52,7 @@ class ProductService:
     ):
         try:
             products = []
-            if parent_category:
+            if parent_category is not None:
                 category = await self.category_crud.read_by_slug(parent_category)
                 if not category:
                     raise HTTPException(
@@ -60,7 +60,7 @@ class ProductService:
                     )
                 products = await self.product_crud.read_by_parent_category(category.id)
                 return products
-            if sub_category:
+            if sub_category is not None:
                 category = await self.category_crud.read_by_slug(sub_category)
                 if not category:
                     raise HTTPException(
