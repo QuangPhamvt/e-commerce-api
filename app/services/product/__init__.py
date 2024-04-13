@@ -59,7 +59,6 @@ class ProductService:
                         status.HTTP_400_BAD_REQUEST, "Category not found!"
                     )
                 products = await self.product_crud.read_by_parent_category(category.id)
-                return products
             if sub_category is not None:
                 category = await self.category_crud.read_by_slug(sub_category)
                 if not category:
