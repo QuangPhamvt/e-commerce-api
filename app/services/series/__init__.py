@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
+from app.configs.constants import BUCKET_NAME
 from app.database.crud.series_crud import SeriesCRUD
 from app.database.models.Product import Series
 
@@ -23,6 +24,9 @@ class SeriesService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.series_crud = SeriesCRUD(db)
+        if BUCKET_NAME is None:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Bucket name is not set!")
+        self.BUCKET_NAME = BUCKET_NAME
 
     async def create(self, body: CreateSeriesBody):
         name = body.name
@@ -39,9 +43,7 @@ class SeriesService:
         data = CreateSeriesCRUD(slug=slug, image=image, **body.model_dump())
         await self.series_crud.create(data)
 
-        new_series = self.__create_presigned_url(
-            "customafk-ecommerce-web", slug, image_type
-        )
+        new_series = self.__create_presigned_url(self.BUCKET_NAME, slug, image_type)
 
         if new_series is None:
             raise HTTPException(
@@ -113,7 +115,6 @@ class SeriesService:
 
         return data
 
-    @staticmethod
-    def __delete_image_S3(image: str):
-        delete_object_s3("customafk-ecommerce-web", image)
+    def __delete_image_S3(self, image: str):
+        delete_object_s3(self.BUCKET_NAME, image)
         pass

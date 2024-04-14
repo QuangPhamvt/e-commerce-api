@@ -60,7 +60,7 @@ class SignIn:
             604800,
             secure=True,
             httponly=True,
-            domain="customafk.com",
+            domain="lunas.vn",
         )
         response.set_cookie(
             "refresh_token",
@@ -68,6 +68,6 @@ class SignIn:
             rt_seconds,
             secure=True,
             httponly=True,
-            domain="customafk.com",
+            domain="lunas.vn",
         )
         await update_refresh_token(user_data.id, refresh_token)

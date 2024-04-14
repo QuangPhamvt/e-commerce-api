@@ -187,7 +187,7 @@ PHONE_NUMBER = "1234"
 USERNAME = "ABC@@"
 
 # ********** S3 **********
-
+BUCKET_NAME = config["BUCKET_NAME"]
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
 
@@ -201,3 +201,5 @@ class ProductStatus(str, Enum):
 
 # ********** Base URL **********
 BASE_URL = "http://customafk.image/"
+CLOUNDFRONT_URL = config["CLOUNDFRONT_URL"]
+DOMAIN_API = config["DOMAIN_API"]
