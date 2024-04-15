@@ -46,12 +46,12 @@ origins = [
     "http://localhost:3000",
     "http://lunas-local.com:3000",
     "http://admin.lunas-local.com:3000",
-    "https://dev.store.lunas.com",
-    "https://dev.admin.lunas.com",
-    "https://dev.api.lunas.com",
-    "https://store.lunas.com",
-    "https://admin.lunas.com",
-    "https://api.lunas.com",
+    "https://dev.store.lunas.vn",
+    "https://dev.admin.lunas.vn",
+    "https://dev.api.lunas.vn",
+    "https://store.lunas.vn",
+    "https://admin.lunas.vn",
+    "https://api.lunas.vn",
 ]
 
 
