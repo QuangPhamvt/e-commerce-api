@@ -10,10 +10,10 @@ class Logout:
     async def logout(request: Request, response: Response, db: AsyncSession):
         refresh_token = request.cookies.get("refresh_token")
         response.delete_cookie(
-            key="access_token", domain="customafk.com", secure=True, httponly=True
+            key="access_token", domain="lunas.vn", secure=True, httponly=True
         )
         response.delete_cookie(
-            key="refresh_token", domain="customafk.com", secure=True, httponly=True
+            key="refresh_token", domain="lunas.vn", secure=True, httponly=True
         )
         if refresh_token:
             payload = helper.verify_refresh_token(refresh_token)

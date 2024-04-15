@@ -1,6 +1,7 @@
 import logging
 import boto3
 from botocore.exceptions import ClientError
+from fastapi import HTTPException, status
 from app.configs.constants import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 
 
@@ -30,7 +31,9 @@ def get_object(bucket_name, object_name, expiration=3600) -> str | None:
         )
     except ClientError as e:
         logging.error(e)
-        return None
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "Failed to create presigned URL"
+        )
 
     # The response contains the presigned URL
     return response

@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
+from app.configs.constants import BUCKET_NAME
 from app.database.crud.category_crud import CategoryCRUD
 from app.database.crud.series_crud import SeriesCRUD
 from app.database.crud.tag_crud import TagCRUD
@@ -25,6 +26,11 @@ import logging
 
 class ProductService:
     def __init__(self, db: AsyncSession):
+        if BUCKET_NAME is None:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, "Bucket name is not set in environment"
+            )
+
         self.db = db
         self.tag_crud = TagCRUD(db)
         self.product_crud = ProductCRUD(db)
@@ -32,6 +38,7 @@ class ProductService:
         self.product_tag_crud = ProductTagCRUD(db)
         self.series_crud = SeriesCRUD(db)
         self.products_image_crud = ProductsImageCRUD(db)
+        self.BUCKET_NAME = BUCKET_NAME
 
     async def get_all(self):
         """
@@ -191,7 +198,7 @@ class ProductService:
             category_id = category_id.id
             product_id = await self.product_crud.create(new_product)
             await self.product_tag_crud.create_many_by_product_id(product_id, body.tags)
-            data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
+            data = self.__create_presigned_url(self.BUCKET_NAME, slug, type)
 
             if data is None:
                 raise HTTPException(
@@ -300,7 +307,7 @@ class ProductService:
                 )
                 await self.products_image_crud.create(new_product_image)
                 data = self.__create_presigned_url(
-                    "customafk-ecommerce-web", image_slug, image.type
+                    self.BUCKET_NAME, image_slug, image.type
                 )
                 if data is None:
                     raise HTTPException(
@@ -362,7 +369,7 @@ class ProductService:
                         product_image.id, image_slug, image_url
                     )
                     data = self.__create_presigned_url(
-                        "customafk-ecommerce-web", image_slug, body.type
+                        self.BUCKET_NAME, image_slug, body.type
                     )
                     if data is None:
                         raise HTTPException(
@@ -420,7 +427,6 @@ class ProductService:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Tag not found!")
         return tag_id
 
-    @staticmethod
-    def __delete_image_S3(thumbnail: str):
-        res = delete_object_s3("customafk-ecommerce-web", thumbnail)
+    def __delete_image_S3(self, thumbnail: str):
+        res = delete_object_s3(self.BUCKET_NAME, thumbnail)
         return res
