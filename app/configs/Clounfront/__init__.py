@@ -1,5 +1,5 @@
-from app.configs.constants import CLOUNDFRONT_URL
+from app.configs.constants import CLOUDFRONT_URL
 
 
 def get_image_from_url(path: str) -> str:
-    return f"{CLOUNDFRONT_URL}/{path}"
+    return f"{CLOUDFRONT_URL}/{path}"

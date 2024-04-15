@@ -201,5 +201,5 @@ class ProductStatus(str, Enum):
 
 # ********** Base URL **********
 BASE_URL = "http://customafk.image/"
-CLOUNDFRONT_URL = config["CLOUNDFRONT_URL"]
+CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
 DOMAIN_API = config["DOMAIN_API"]

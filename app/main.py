@@ -46,12 +46,12 @@ origins = [
     "http://localhost:3000",
     "http://lunas-local.com:3000",
     "http://admin.lunas-local.com:3000",
-    "https://dev.customafk.com",
-    "https://dev.admin.customafk.com",
-    "https://dev.api.customafk.com",
+    "https://dev.store.lunas.com",
+    "https://dev.admin.lunas.com",
+    "https://dev.api.lunas.com",
     "https://store.lunas.com",
-    "https://admin.store.lunas.com",
-    "https://api.store.lunas.com",
+    "https://admin.lunas.com",
+    "https://api.lunas.com",
 ]
 
 
