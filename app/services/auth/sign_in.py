@@ -1,6 +1,5 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.configs.constants import WEB_DOMAIN_URL
 from app.database.crud import user_crud
 from app.database.models import User
 from app.schemas.auth import TokenPayload, UserSignInParam
@@ -61,7 +60,7 @@ class SignIn:
             604800,
             secure=True,
             httponly=True,
-            domain=WEB_DOMAIN_URL,
+            domain="lunas.vn",
         )
         response.set_cookie(
             "refresh_token",
@@ -69,6 +68,6 @@ class SignIn:
             rt_seconds,
             secure=True,
             httponly=True,
-            domain=WEB_DOMAIN_URL,
+            domain="lunas.vn",
         )
         await update_refresh_token(user_data.id, refresh_token)

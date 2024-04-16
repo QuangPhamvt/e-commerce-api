@@ -195,7 +195,7 @@ PHONE_NUMBER = "1234"
 USERNAME = "ABC@@"
 
 # ********** S3 **********
-
+BUCKET_NAME = config["BUCKET_NAME"]
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
 AWS_BUCKET_NAME = config.get("AWS_BUCKET_NAME") or "customafk-ecommerce-web"
@@ -210,6 +210,5 @@ class ProductStatus(str, Enum):
 
 # ********** Base URL **********
 BASE_URL = "http://customafk.image/"
-
-# ********** Domain **********
-WEB_DOMAIN_URL = config.get("WEB_DOMAIN_URL") or ""
+CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
+DOMAIN_API = config["DOMAIN_API"]

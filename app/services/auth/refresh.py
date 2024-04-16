@@ -26,7 +26,7 @@ class Refresh:
                 604800,
                 secure=True,
                 httponly=True,
-                domain="customafk.com",
+                domain="lunas.vn",
             )
             response.set_cookie(
                 "refresh_token",
@@ -34,7 +34,7 @@ class Refresh:
                 rt_seconds,
                 secure=True,
                 httponly=True,
-                domain="customafk.com",
+                domain="lunas.vn",
             )
             user_id = payload.id
             await user_crud.UserCRUD(db).update_refresh_token(

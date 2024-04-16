@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -109,6 +110,40 @@ async def get_product(id: UUID, db: AsyncSession = Depends(get_db)):
     data.pop("updated_at")
     data.pop("deleted_at")
     return data
+
+
+# ********** GET PRODUCT BY CATEGORY **********
+@router.get(
+    "/category/",
+    description="This endpoint is used to get a product by category.",
+    status_code=200,
+)
+async def get_product_by_category(
+    parent_category: str | None = None,
+    sub_category: str | None = None,
+    db: AsyncSession = Depends(get_db),
+):
+    if not parent_category and not sub_category:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Get Product By Parent Category Failed or Sub Category Failed!",
+        )
+    data = await ProductService(db).get_products_by_category(
+        parent_category, sub_category
+    )
+    if not data:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "Get Product By Category Failed!"
+        )
+    logging.warning(parent_category)
+    logging.warning(sub_category)
+    new_data = []
+    for item in data:
+        item.__dict__.pop("original_price") if item.__dict__.get(
+            "original_price"
+        ) else None
+        new_data.append(item)
+    return new_data
 
 
 # ********** GET PRODUCT BY SLUG **********

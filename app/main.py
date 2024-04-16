@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from app.configs.constants import ROOT_PATH
+from app.configs.constants import DOMAIN_API, ROOT_PATH
 
 from app.database import Base, engine_local
 from app.middlewares import db_session_middleware, log_middleware
@@ -46,8 +46,12 @@ origins = [
     "http://localhost:3000",
     "http://lunas-local.com:3000",
     "http://admin.lunas-local.com:3000",
-    "https://dev.customafk.com",
-    "https://dev.admin.customafk.com",
+    "https://dev.store.lunas.vn",
+    "https://dev.admin.lunas.vn",
+    "https://dev.api.lunas.vn",
+    "https://store.lunas.vn",
+    "https://admin.lunas.vn",
+    "https://api.lunas.vn",
 ]
 
 
@@ -67,10 +71,10 @@ app.add_middleware(
 async def read_root():
     return {
         "msg": "Hello World",
-        "website_docs": "https://dev.api.customafk.com/api/v1/web/docs",
-        "admin_docs": "https://dev.api.customafk.com/api/v1/admin/docs",
-        "auth_docs": "https://dev.api.customafk.com/api/v1/auth/docs",
-        "def_docs": "https://dev.api.customafk.com/api/v1/def/docs",
+        "website_docs": f"{DOMAIN_API}/web/docs",
+        "admin_docs": f"{DOMAIN_API}/admin/docs",
+        "auth_docs": f"{DOMAIN_API}/auth/docs",
+        "def_docs": f"{DOMAIN_API}/def/docs",
     }
 
 

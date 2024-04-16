@@ -67,6 +67,24 @@ class CategoryCRUD:
             .first()
         )
 
+    async def read_by_slug(self, slug: str):
+        return (
+            (
+                await self.db.execute(
+                    select(Category)
+                    .options(
+                        defer(Category.created_at),
+                        defer(Category.updated_at),
+                        defer(Category.deleted_at),
+                    )
+                    .where(Category.slug.like(slug))
+                    .where(Category.deleted_at.is_(None))
+                )
+            )
+            .scalars()
+            .first()
+        )
+
     async def read_sub_with_parent_by_id(self, sub_id: UUID):
         sub_category = (
             (

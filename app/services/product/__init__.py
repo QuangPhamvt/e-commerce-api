@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.configs.Clounfront import get_image_from_url
 from app.configs.S3.delete_object import delete_object_s3
 from app.configs.S3.put_object import put_object
-from app.configs.constants import AWS_BUCKET_NAME
+from app.configs.constants import BUCKET_NAME
 from app.database.crud.category_crud import CategoryCRUD
 from app.database.crud.series_crud import SeriesCRUD
 from app.database.crud.tag_crud import TagCRUD
@@ -26,6 +26,11 @@ import logging
 
 class ProductService:
     def __init__(self, db: AsyncSession):
+        if BUCKET_NAME is None:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, "Bucket name is not set in environment"
+            )
+
         self.db = db
         self.tag_crud = TagCRUD(db)
         self.product_crud = ProductCRUD(db)
@@ -33,6 +38,7 @@ class ProductService:
         self.product_tag_crud = ProductTagCRUD(db)
         self.series_crud = SeriesCRUD(db)
         self.products_image_crud = ProductsImageCRUD(db)
+        self.BUCKET_NAME = BUCKET_NAME
 
     async def get_all(self):
         """
@@ -47,6 +53,34 @@ class ProductService:
     async def get_products_by_tag(self, id: UUID):
         products = await self.product_tag_crud.read_by_tag(id)
         return products
+
+    async def get_products_by_category(
+        self, parent_category: str | None, sub_category: str | None
+    ):
+        try:
+            products = []
+            if parent_category is not None:
+                category = await self.category_crud.read_by_slug(parent_category)
+                if not category:
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST, "Category not found!"
+                    )
+                products = await self.product_crud.read_by_parent_category(category.id)
+            if sub_category is not None:
+                category = await self.category_crud.read_by_slug(sub_category)
+                if not category:
+                    raise HTTPException(
+                        status.HTTP_400_BAD_REQUEST, "Category not found!"
+                    )
+                products = await self.product_crud.read_by_sub_category(category.id)
+
+            for product in products:
+                product.thumbnail = helper.convert_image_to_url(product.thumbnail)
+            return products
+        except Exception as e:
+            HTTPException(
+                status.HTTP_400_BAD_REQUEST, f"Failed to get product by category : {e}"
+            )
 
     async def get_product_by_slug(self, slug: str):
         try:
@@ -164,7 +198,7 @@ class ProductService:
             category_id = category_id.id
             product_id = await self.product_crud.create(new_product)
             await self.product_tag_crud.create_many_by_product_id(product_id, body.tags)
-            data = self.__create_presigned_url(AWS_BUCKET_NAME, slug, type)
+            data = self.__create_presigned_url("customafk-ecommerce-web", slug, type)
 
             if data is None:
                 raise HTTPException(
@@ -273,7 +307,7 @@ class ProductService:
                 )
                 await self.products_image_crud.create(new_product_image)
                 data = self.__create_presigned_url(
-                    "customafk-ecommerce-web", image_slug, image.type
+                    self.BUCKET_NAME, image_slug, image.type
                 )
                 if data is None:
                     raise HTTPException(
@@ -335,7 +369,7 @@ class ProductService:
                         product_image.id, image_slug, image_url
                     )
                     data = self.__create_presigned_url(
-                        "customafk-ecommerce-web", image_slug, body.type
+                        self.BUCKET_NAME, image_slug, body.type
                     )
                     if data is None:
                         raise HTTPException(
@@ -395,5 +429,5 @@ class ProductService:
 
     @staticmethod
     def __delete_image_S3(thumbnail: str):
-        res = delete_object_s3(AWS_BUCKET_NAME, thumbnail)
+        res = delete_object_s3("customafk-ecommerce-web", thumbnail)
         return res
