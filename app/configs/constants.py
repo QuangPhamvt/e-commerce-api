@@ -212,3 +212,5 @@ class ProductStatus(str, Enum):
 BASE_URL = "http://customafk.image/"
 CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
 DOMAIN_API = config["DOMAIN_API"]
+
+WEB_DOMAIN_URL = config.get("WEB_DOMAIN_URL") or ""

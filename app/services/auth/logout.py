@@ -1,6 +1,7 @@
 from uuid import UUID
 from fastapi import Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.configs.constants import WEB_DOMAIN_URL
 from app.database.crud import user_crud
 from app.utils.helper import helper
 
@@ -10,10 +11,10 @@ class Logout:
     async def logout(request: Request, response: Response, db: AsyncSession):
         refresh_token = request.cookies.get("refresh_token")
         response.delete_cookie(
-            key="access_token", domain="lunas.vn", secure=True, httponly=True
+            key="access_token", domain=WEB_DOMAIN_URL, secure=True, httponly=True
         )
         response.delete_cookie(
-            key="refresh_token", domain="lunas.vn", secure=True, httponly=True
+            key="refresh_token", domain=WEB_DOMAIN_URL, secure=True, httponly=True
         )
         if refresh_token:
             payload = helper.verify_refresh_token(refresh_token)
