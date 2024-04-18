@@ -48,10 +48,12 @@ class CartService:
             for cart in carts:
                 product = await self.product_crud.read_by_id(cart.product_id)
                 if product:
+                    product.__dict__.pop("original_price")
                     product.__dict__.pop("created_at")
                     product.__dict__.pop("updated_at")
                     product.__dict__.pop("deleted_at")
                 cart.__dict__.pop("product_id")
+                cart.__dict__.pop("user_id")
                 result.append({**cart.__dict__, "product": product.__dict__})
             return result
         except Exception as e:
