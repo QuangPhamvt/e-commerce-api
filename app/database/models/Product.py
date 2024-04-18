@@ -34,7 +34,7 @@ class Product(Base):
     __tablename__ = "Product"
 
     id: Mapped[UUID] = mapped_column("id", Uuid, primary_key=True)
-    name: Mapped[str] = mapped_column("name", String(50), unique=True)
+    name: Mapped[str] = mapped_column("name", String(255), unique=True)
     description: Mapped[str] = mapped_column("description", Text(), nullable=True)
     original_price: Mapped[float] = mapped_column(
         "original_price", Float, nullable=True
