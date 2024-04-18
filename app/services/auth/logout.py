@@ -10,11 +10,9 @@ class Logout:
     @staticmethod
     async def logout(request: Request, response: Response, db: AsyncSession):
         refresh_token = request.cookies.get("refresh_token")
+        response.delete_cookie(key="access_token", domain=WEB_DOMAIN_URL, httponly=True)
         response.delete_cookie(
-            key="access_token", domain=WEB_DOMAIN_URL, secure=True, httponly=True
-        )
-        response.delete_cookie(
-            key="refresh_token", domain=WEB_DOMAIN_URL, secure=True, httponly=True
+            key="refresh_token", domain=WEB_DOMAIN_URL, httponly=True
         )
         if refresh_token:
             payload = helper.verify_refresh_token(refresh_token)

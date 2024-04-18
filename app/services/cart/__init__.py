@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.configs.Clounfront import get_image_from_url
 
 
 from app.database.crud.cart_crud import CartCRUD
@@ -52,6 +53,7 @@ class CartService:
                     product.__dict__.pop("created_at")
                     product.__dict__.pop("updated_at")
                     product.__dict__.pop("deleted_at")
+                    product.thumbnail = get_image_from_url(product.thumbnail)
                 cart.__dict__.pop("product_id")
                 cart.__dict__.pop("user_id")
                 result.append({**cart.__dict__, "product": product.__dict__})

@@ -59,7 +59,6 @@ class SignIn:
             "access_token",
             access_token,
             604800,
-            secure=True,
             httponly=True,
             domain=WEB_DOMAIN_URL,
         )
@@ -67,7 +66,6 @@ class SignIn:
             "refresh_token",
             refresh_token,
             rt_seconds,
-            secure=True,
             httponly=True,
             domain=WEB_DOMAIN_URL,
         )

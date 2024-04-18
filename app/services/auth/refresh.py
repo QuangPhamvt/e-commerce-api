@@ -25,7 +25,6 @@ class Refresh:
                 "access_token",
                 new_access_token,
                 604800,
-                secure=True,
                 httponly=True,
                 domain=WEB_DOMAIN_URL,
             )
@@ -33,7 +32,6 @@ class Refresh:
                 "refresh_token",
                 new_refresh_token,
                 rt_seconds,
-                secure=True,
                 httponly=True,
                 domain=WEB_DOMAIN_URL,
             )
