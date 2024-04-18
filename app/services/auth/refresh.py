@@ -1,6 +1,7 @@
 from uuid import UUID
 from fastapi import HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.configs.constants import WEB_DOMAIN_URL
 from app.database.crud import user_crud
 from app.schemas.auth import TokenPayload
 from app.utils.helper import helper
@@ -24,17 +25,15 @@ class Refresh:
                 "access_token",
                 new_access_token,
                 604800,
-                secure=True,
                 httponly=True,
-                domain="lunas.vn",
+                domain=WEB_DOMAIN_URL,
             )
             response.set_cookie(
                 "refresh_token",
                 new_refresh_token,
                 rt_seconds,
-                secure=True,
                 httponly=True,
-                domain="lunas.vn",
+                domain=WEB_DOMAIN_URL,
             )
             user_id = payload.id
             await user_crud.UserCRUD(db).update_refresh_token(

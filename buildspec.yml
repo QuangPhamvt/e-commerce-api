@@ -36,6 +36,7 @@ phases:
           echo "BUCKET_NAME=$BUCKET_NAME" >> .env
           echo "AWS_BUCKET_NAME=$AWS_BUCKET_NAME" >> .env
           echo "DOMAIN_API=$DOMAIN_API" >> .env
+          echo "WEB_DOMAIN_URL=$WEB_DOMAIN_URL" >> .env
           else
           echo "Have exist file environments"
         fi
