@@ -104,6 +104,14 @@ EXCHANGE_PATH: dict = {
 }
 # ===========================
 
+# ********** Cart **********
+CART: str = "Cart"
+CART_PREFIX: str = "/carts"
+CART_PATH: dict = {
+    "GET_CART_BY_USER": "",
+    "CREATE_CART": "",
+    "DELETE_CART": "/{id}",
+}
 DB_PORT: int = 3306
 
 
@@ -187,9 +195,10 @@ PHONE_NUMBER = "1234"
 USERNAME = "ABC@@"
 
 # ********** S3 **********
-BUCKET_NAME = config["BUCKET_NAME"]
+BUCKET_NAME = config.get("BUCKET_NAME") or "customafk-ecommerce-web-dev"
 AWS_ACCESS_KEY_ID = config["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = config["AWS_SECRET_ACCESS_KEY"]
+AWS_BUCKET_NAME = config.get("AWS_BUCKET_NAME") or "customafk-ecommerce-web"
 
 
 # ********** Product Status **********
@@ -203,3 +212,5 @@ class ProductStatus(str, Enum):
 BASE_URL = "http://customafk.image/"
 CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
 DOMAIN_API = config["DOMAIN_API"]
+
+WEB_DOMAIN_URL = config.get("WEB_DOMAIN_URL") or ""

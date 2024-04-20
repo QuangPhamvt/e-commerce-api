@@ -233,7 +233,7 @@ class ProductService:
                 await self.delete_product_image(id)
 
             await self.product_crud.delete_by_id(id)
-            self.__delete_image_S3(product.thumbnail)
+            self.__delete_image_S3(self.BUCKET_NAME, product.thumbnail)
 
             return {"detail": "Product deleted"}
         except Exception as e:
@@ -338,7 +338,10 @@ class ProductService:
                 )
 
             await self.products_image_crud.delete_by_product_id(id)
-            [self.__delete_image_S3(image.image_url) for image in product_images]
+            [
+                self.__delete_image_S3(self.BUCKET_NAME, image.image_url)
+                for image in product_images
+            ]
             return {"detail": "Product Image deleted successfully"}
         except Exception as e:
             raise HTTPException(
@@ -388,7 +391,10 @@ class ProductService:
     async def check_product_image_creation(self, id: UUID, result: int):
         images = await self.products_image_crud.read_product_images(id)
         if result == 0:
-            [self.__delete_image_S3(image.image_url) for image in images]
+            [
+                self.__delete_image_S3(self.BUCKET_NAME, image.image_url)
+                for image in images
+            ]
             await self.products_image_crud.delete_by_product_id(id)
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST, "Failed to create product images"
@@ -427,6 +433,7 @@ class ProductService:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Tag not found!")
         return tag_id
 
-    def __delete_image_S3(self, thumbnail: str):
-        res = delete_object_s3(self.BUCKET_NAME, thumbnail)
+    @staticmethod
+    def __delete_image_S3(bucket_name: str, thumbnail: str):
+        res = delete_object_s3(bucket_name, thumbnail)
         return res

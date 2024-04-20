@@ -28,7 +28,8 @@ class Cart(Base):
     )
     updated_at: Mapped[datetime] = mapped_column("updated_at", DateTime, nullable=True)
 
-    def __init__(self, user_id: UUID, product_id: UUID, quantity: int):
+    def __init__(self, id: UUID, user_id: UUID, product_id: UUID, quantity: int):
+        self.id = id
         self.user_id = user_id
         self.product_id = product_id
         self.quantity = quantity
@@ -36,3 +37,10 @@ class Cart(Base):
 
     def __repr__(self):
         return f"<Cart {self.id}>"
+
+    def asdict(self):
+        return {
+            "id": self.id,
+            "quantity": self.quantity,
+            "user_id": self.user_id,
+        }
