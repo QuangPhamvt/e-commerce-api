@@ -48,8 +48,11 @@ class Helper:
             "subject": "Verify your account",
             "html": f'<a href="{url}">Click here to verify your account</a>',
         }
-        email = resend.Emails.send(params=params)
-        return email
+        try:
+            email = resend.Emails.send(params=params)
+            return email
+        except Exception as e:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
 
     @staticmethod
     def forgot_email(send_from: str, send_to: str, code: str):

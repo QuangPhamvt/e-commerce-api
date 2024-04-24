@@ -114,6 +114,15 @@ CART_PATH: dict = {
 }
 DB_PORT: int = 3306
 
+# ********** Payment **********
+PAYMENT: str = "Payment"
+PAYMENT_PREFIX: str = "/payments"
+PAYMENT_PATH: dict = {
+    "CHECKOUT": "",
+    "PAYMENT_SUCCESS": "/success",
+    "PAYMENT_FAIL": "/fail",
+    "GET_BILL_DETAIL": "/{bill_id}",
+}
 
 # ********** DOCUMENTATIONS **********
 TITLE: str = "E-Commerce API"
@@ -214,3 +223,17 @@ CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
 DOMAIN_API = config["DOMAIN_API"]
 
 WEB_DOMAIN_URL = config.get("WEB_DOMAIN_URL") or ""
+
+# ********** Payos **********
+PAYOS_CLIENT_ID = config.get("PAYOS_CLIENT_ID") or ""
+PAYOS_API_KEY = config.get("PAYOS_API_KEY") or ""
+PAYOS_CHECKSUM_KEY = config.get("PAYOS_CHECKSUM_KEY") or ""
+PAYOS_EXPIRE = int(config.get("PAYOS_EXPIRE") or 600)
+PAYOS_BASE_URL = "https://api-merchant.payos.vn"
+PAYOS_CANCEL_URL = (
+    config.get("PAYOS_CANCEL_URL") or "http://127.0.0.1:8000/api/v1/web/payments/fail"
+)
+PAYOS_RETURN_URL = (
+    config.get("PAYOS_RETURN_URL")
+    or "http://127.0.0.1:8000/api/v1/web/payments/success"
+)
