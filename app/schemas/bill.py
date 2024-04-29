@@ -30,6 +30,13 @@ class CreateBillDetailBody(BaseModel):
         ],
         default=None,
     )
+    product_id: UUID = Field(
+        title="Product id",
+        description="Product id",
+        examples=[
+            "123e4567e89b12d3a456426614174000",
+        ],
+    )
 
 
 class CreateBillBody(BaseModel):
@@ -40,13 +47,6 @@ class CreateBillBody(BaseModel):
             "123e4567e89b12d3a456426614174000",
         ],
         default=None,
-    )
-    cart_id: UUID = Field(
-        title="Cart id",
-        description="Cart id",
-        examples=[
-            "123e4567e89b12d3a456426614174000",
-        ],
     )
     deposit_type_id: UUID | None = Field(
         title="Deposit type id",
@@ -113,7 +113,7 @@ class CreateBillBody(BaseModel):
         ],
         default=None,
     )
-    detail: CreateBillDetailBody
+    details: list[CreateBillDetailBody]
 
 
 class CreateBillData(BaseModel):
@@ -132,4 +132,9 @@ class CreateBillData(BaseModel):
 
 class CreateBillDetailData(CreateBillDetailBody):
     bill_id: UUID
-    product_id: UUID
+
+
+class ProductBillInfo(BaseModel):
+    id: UUID
+    name: str
+    quantity: int

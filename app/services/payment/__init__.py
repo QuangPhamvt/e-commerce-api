@@ -10,7 +10,9 @@ from app.database.crud.product_crud import ProductCRUD
 from app.schemas.bill import (
     CreateBillBody,
     CreateBillData,
+    CreateBillDetailBody,
     CreateBillDetailData,
+    ProductBillInfo,
     StatusEnum,
 )
 from app.schemas.payos import BillData, ProductData
@@ -26,22 +28,25 @@ class PaymentService:
         self.cart_crud = CartCRUD(db)
 
     async def checkout(self, body: CreateBillBody, user_id: UUID):
-        cart = await self.cart_crud.read_by_id(body.cart_id, user_id)
-
-        if not cart:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cart not found")
-        product_id = cart.product_id
+        details = body.details
+        list_product_id = [detail.product_id for detail in details]
+        list_product = await self.product_crud.read_by_list_id(list_product_id)
+        list_product_info = [
+            ProductBillInfo(id=product.id, name=product.name, quantity=product.quantity)
+            for product in list_product
+        ]
+        if len(list_product) != len(list_product_id):
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Some product not found")
+        # check quantity and decrease quantity in product
+        await self.__decrease_product_quantity(list_product_info, details)
+        # Delete cart
+        await self.cart_crud.delete_cart(user_id, list_product_id)
+        if not body.deposit_type_id:
+            return await self.__handle_ship_cod(body, user_id)
         try:
-            detail = body.detail
             # Create bill
-            payos_id = await self.__create_bill(body, user_id, product_id)
-            # Delete cart
-            await self.cart_crud.delete_cart(body.cart_id)
+            payos_id = await self.__create_bill(body, user_id)
             # Create payment link
-            product = await self.product_crud.read_by_id(product_id)
-
-            if not product:
-                raise HTTPException(status.HTTP_400_BAD_REQUEST, "Product not found")
             (
                 product_price,
                 customer_address,
@@ -62,18 +67,17 @@ class PaymentService:
             full_address = ", ".join(
                 [customer_address, customer_ward, customer_district, customer_province]
             )
-            if body.deposit_type_id:
-                deposit_type = await deposit_crud.get_deposit_type_by_id(
-                    body.deposit_type_id, self.db
+
+            deposit_type = await deposit_crud.get_deposit_type_by_id(
+                body.deposit_type_id, self.db
+            )
+            if not deposit_type:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST, "Deposit type not found"
                 )
-                if not deposit_type:
-                    raise HTTPException(
-                        status.HTTP_400_BAD_REQUEST, "Deposit type not found"
-                    )
-                product_price = (
-                    product_price * deposit_type.value
-                    + product_price * deposit_type.fee
-                )
+            product_price = (
+                product_price * deposit_type.value + product_price * deposit_type.fee
+            )
             payment_bill_data = BillData(
                 orderCode=payos_id,
                 amount=int(product_price),
@@ -83,16 +87,28 @@ class PaymentService:
                 buyerName=customer_fullname,
                 buyerPhone=customer_phone_number,
             )
-            payment_product_data = ProductData(
-                name=product.name,
-                quantity=detail.quantity,
-                price=int(detail.price),
-            )
+            payment_product_data: list[ProductData] = []
+            for detail in details:
+                name = ""
+                for product in list_product_info:
+                    if product.id == detail.product_id:
+                        name = product.name
+                product_data = ProductData(
+                    quantity=detail.quantity, price=int(detail.price), name=name
+                )
+                payment_product_data.append(product_data)
             payment_link_data = await PayOSApi.create_payment_link(
                 payment_product_data, payment_bill_data
             )
             return {"detail": "Checkout Succeed!", "data": payment_link_data}
 
+        except Exception as e:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+
+    async def __handle_ship_cod(self, body: CreateBillBody, user_id: UUID):
+        try:
+            await self.__create_bill(body, user_id)
+            return {"detail": "Checkout Succeed!"}
         except Exception as e:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
 
@@ -115,18 +131,34 @@ class PaymentService:
         if not bill:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Bill not found!")
 
-    async def __create_bill(
-        self, body: CreateBillBody, user_id: UUID, product_id: UUID
-    ):
-        detail = body.detail
+    async def __create_bill(self, body: CreateBillBody, user_id: UUID):
+        details = body.details
         data_bill = CreateBillData(
             **body.model_dump(), user_id=user_id, status=StatusEnum.PENDING
         )
         bill_id = generate_uuid()
         payos_id = generate_current_timestamp()
+        bill_details_data: list[CreateBillDetailData] = []
+        for detail in details:
+            bill_details_data.append(
+                CreateBillDetailData(**detail.model_dump(), bill_id=bill_id)
+            )
         await self.bill_crud.create_bill(data_bill, bill_id, payos_id)
-        data_bill_detail = CreateBillDetailData(
-            **detail.model_dump(), bill_id=bill_id, product_id=product_id
-        )
-        await self.bill_crud.create_bill_detail(data_bill_detail)
+        await self.bill_crud.create_bill_detail(bill_details_data)
         return payos_id
+
+    async def __decrease_product_quantity(
+        self,
+        list_product_info: list[ProductBillInfo],
+        details: list[CreateBillDetailBody],
+    ):
+        for detail in details:
+            for product in list_product_info:
+                if product.id == detail.product_id:
+                    if product.quantity < detail.quantity:
+                        raise HTTPException(
+                            status.HTTP_400_BAD_REQUEST,
+                            f"Product {product.name} is out of stock. Please select lower quantity",
+                        )
+                    product.quantity -= detail.quantity
+        await self.product_crud.update_quantity(list_product_info)

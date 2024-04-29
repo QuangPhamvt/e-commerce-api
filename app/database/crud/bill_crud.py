@@ -17,10 +17,13 @@ class BillCRUD:
         await self.db.commit()
         return
 
-    async def create_bill_detail(self, data: CreateBillDetailData):
-        id = generate_uuid()
-        db_bill_detail = BillDetail(id=id, **data.model_dump())
-        self.db.add(db_bill_detail)
+    async def create_bill_detail(self, data: list[CreateBillDetailData]):
+        bill_details: list[BillDetail] = []
+        for detail in data:
+            bill_detail_id = generate_uuid()
+            bill_detail = BillDetail(id=bill_detail_id, **detail.model_dump())
+            bill_details.append(bill_detail)
+        self.db.add_all(bill_details)
         await self.db.commit()
         return
 

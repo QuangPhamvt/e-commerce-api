@@ -28,11 +28,11 @@ class PayOSConfig:
         }
         self.base_url = base_url
 
-    async def create_payment_link(self, product: ProductData, bill: BillData):
+    async def create_payment_link(self, products: list[ProductData], bill: BillData):
         expire = (datetime.now() + timedelta(seconds=PAYOS_EXPIRE)).timestamp()
         payload = PayloadData(
             **bill.model_dump(),
-            items=[product],
+            items=products,
             cancelUrl=PAYOS_CANCEL_URL,
             returnUrl=PAYOS_RETURN_URL,
         )
