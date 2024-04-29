@@ -100,7 +100,12 @@ class PaymentService:
             payment_link_data = await PayOSApi.create_payment_link(
                 payment_product_data, payment_bill_data
             )
-            return {"detail": "Checkout Succeed!", "data": payment_link_data}
+            return {
+                "detail": "Checkout Succeed!",
+                "checkout_url": payment_link_data.get("checkoutUrl")
+                if payment_link_data
+                else None,
+            }
 
         except Exception as e:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
