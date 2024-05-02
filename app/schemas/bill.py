@@ -48,14 +48,6 @@ class CreateBillBody(BaseModel):
         ],
         default=None,
     )
-    deposit_type_id: UUID | None = Field(
-        title="Deposit type id",
-        description="Deposit type id",
-        examples=[
-            "123e4567e89b12d3a456426614174000",
-        ],
-        default=None,
-    )
     customer_province: str = Field(
         title="Province",
         description="Province of customer",
