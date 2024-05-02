@@ -16,7 +16,7 @@ from .Product import (
 )
 from .Voucher import Voucher
 from .ExchangeRate import ExchangeRate
-from .Bill import Bill, BillDetail
+from .Bill import Bill, BillDetail, AdditionalFee
 from .Promotion import Promotion
 from .DeliveryDetail import DeliveryDetail
 from .Notification import Notification, UserNotification
@@ -54,4 +54,5 @@ __all__ = [
     "Bill",
     "BillDetail",
     "DeliveryDetail",
+    "AdditionalFee",
 ]

@@ -14,6 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
+from app.database.models import Bill
 
 
 # PRODUCT TAG TABLE
@@ -204,6 +205,7 @@ class DepositType(Base):
     name: Mapped[str] = mapped_column("name", String(50), unique=True)
     value: Mapped[float] = mapped_column("value", Float)
     fee: Mapped[float] = mapped_column("fee", Float)
+    bills: Mapped[List["Bill"]] = relationship("Bill", back_populates="deposit_type")
     created_at: Mapped[datetime] = mapped_column(
         "created_at", DateTime, default=datetime.today()
     )
