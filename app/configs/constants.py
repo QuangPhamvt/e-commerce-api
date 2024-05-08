@@ -21,7 +21,6 @@ AUTH_PATH: dict = {
     "GOOGLE_LOGOUT": "/google/logout",
     "FACEBOOK_LOGIN": "/facebook/login",
     "FACEBOOK_CALLBACK": "/facebook/callback",
-    "PROTECTED": "/protected",
 }
 # ===========================
 

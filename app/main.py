@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from app.configs.constants import DOMAIN_API, GOOGLE_ID, GOOGLE_SECRET, ROOT_PATH
+from app.configs.constants import DOMAIN_API, ROOT_PATH
 
 from app.database import Base, engine_local
 from app.middlewares import db_session_middleware, log_middleware
