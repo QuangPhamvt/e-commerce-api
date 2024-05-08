@@ -3,16 +3,17 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from jose import jwt
 from app.database.crud.user_crud import UserCRUD
 from app.dependencies import get_db, get_current_username, verify_access_token
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.services.auth import AuthService
+
+from app.services.oauth import OauthService
+from app.services.oauth.oauth2 import FacebookSSO, GoogleSSO
 from app.utils.helper import helper
-from app.configs.constants import AUTH, AUTH_PATH, GOOGLE_ID, GOOGLE_SECRET
+from app.configs.constants import AUTH, AUTH_PATH, FACEBOOK_ID, FACEBOOK_SECRET, GOOGLE_ID, GOOGLE_SECRET
 from app.schemas.responses import ResBadRequest
 from app.configs.documentations import AUTH_DOCUMENTATIONS
-from fastapi_sso.sso.google import GoogleSSO
 
 SIGN_UP = AUTH_PATH["SIGN_UP"]
 VERIFY = AUTH_PATH["VERIFY"]
@@ -37,8 +38,6 @@ router = APIRouter(
         },
     },
 )
-
-
 # ********** SIGN UP **********
 @router.post(
     SIGN_UP,
@@ -145,34 +144,22 @@ async def reset(
 
 
 # ********** OAUTH **********
-google_sso = GoogleSSO(GOOGLE_ID, GOOGLE_SECRET, "http://localhost:8000/api/v1/auth/google/callback", allow_insecure_http=True)
 
 @router.get(GOOGLE_LOGIN)
-async def google_login():
-    return await google_sso.get_login_redirect()
+async def google_login(request: Request):
+    return await OauthService().google_login(request)
 
 @router.get(GOOGLE_CALLBACK)
 async def google_callback(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
-    """Get google data"""
-    with google_sso:
-        openid = await google_sso.verify_and_process(request)
-        if not openid:
-            raise HTTPException(status_code=401, detail="Authentication failed")
-    user = await UserCRUD(db).read_user_by_email(openid.email)
+    return await OauthService().google_callback(request, response, db)
 
-    if not user:
-        """User not exists, sign up for them, after that get user info to login them in"""
-        user_signup = UserSignUpParam(
-            email=openid.email,
-            password=openid.id, # Use the id get from google as default password
-            fullname=openid.display_name
-        )
-        await AuthService().sign_up_instant_active(user_signup, db)
-    
-    """Now user exist, log them in"""
-    response = RedirectResponse(url="/api/v1/auth/docs")
-    await AuthService().sign_in_without_password(openid.email, response, db)
-    return response
+@router.get(FACEBOOK_LOGIN)
+async def google_login():
+    return await OauthService().facebook_login()
+
+@router.get(FACEBOOK_CALLBACK)
+async def google_callback(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    return await OauthService().facebook_callback(request, response, db)
 
 
 # Auth Api
