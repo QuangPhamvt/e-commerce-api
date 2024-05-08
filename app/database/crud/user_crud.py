@@ -18,7 +18,11 @@ class UserCRUD:
     async def read_user_by_email(self, email: str) -> User | None:
         data_user = await self.db.execute(select(User).where(User.email == email))
         return data_user.scalars().first()
-
+    
+    async def get_password_by_email(self, email: str) -> User | None:
+        data_user = await self.db.execute(select(User.hash_password).where(User.email == email))
+        return data_user.scalars().first()
+    
     async def create_user(self, user: CreateUserParam) -> User:
         user_id = generate_uuid()
         hash_password = helper.hash_password(password=user.password)
@@ -34,6 +38,12 @@ class UserCRUD:
         await self.db.refresh(db_user)
         return db_user
 
+    async def update_verify_with_email(self, email: str):
+        await self.db.execute(
+            update(User).where(User.email == email).values(is_active=True)
+        )
+        await self.db.commit()
+        
     async def update_verify(self, user_id: UUID):
         await self.db.execute(
             update(User).where(User.id == user_id).values(is_active=True)
@@ -75,6 +85,7 @@ class UserCRUD:
             select(ResetPassword).where(ResetPassword.user_id == id)
         )
         return user_reset_password.scalars().first()
+
 
     async def update_password(self, id: UUID, hash_password: bytes):
         await self.db.execute(

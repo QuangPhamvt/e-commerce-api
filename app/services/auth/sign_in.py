@@ -29,6 +29,18 @@ class SignIn:
         payload = TokenPayload(id=user_data.id, role_id=user_data.role_id)
         await self.__gen_token(payload, response, user_data, db)
 
+    async def sign_in_without_password(self, email: str, response: Response, db: AsyncSession):
+        user_data = await user_crud.UserCRUD(db).read_user_by_email(email)
+        if not user_data:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "Incorrect Email or Password",
+            )
+        if not user_data.is_active:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "User is not active")
+        payload = TokenPayload(id=user_data.id, role_id=user_data.role_id)
+        await self.__gen_token(payload, response, user_data, db)
+
     @staticmethod
     async def __authenticate_user(
         email: str, password: str, db: AsyncSession

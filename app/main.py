@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from alembic.config import Config, command
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from app.configs.constants import DOMAIN_API, ROOT_PATH
+from app.configs.constants import DOMAIN_API, GOOGLE_ID, GOOGLE_SECRET, ROOT_PATH
 
 from app.database import Base, engine_local
 from app.middlewares import db_session_middleware, log_middleware
@@ -15,6 +15,7 @@ from .routers.auth import auth_api
 from .routers.admin import admin_api
 from .routers.website import web_api
 from .routers.definition import definition_api
+
 
 log = logging.getLogger("uvicorn")
 
@@ -41,6 +42,8 @@ async def lifespan(__app__: FastAPI):
 
 # app = FastAPI()
 app = FastAPI(lifespan=lifespan)
+
+
 
 origins = [
     "http://localhost:3000",

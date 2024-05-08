@@ -16,6 +16,12 @@ AUTH_PATH: dict = {
     "GET_ME": "/me",
     "FORGOT": "/forgot",
     "RESET": "/reset",
+    "GOOGLE_LOGIN": "/google/login",
+    "GOOGLE_CALLBACK": "/google/callback",
+    "GOOGLE_LOGOUT": "/google/logout",
+    "FACEBOOK_LOGIN": "/facebook/login",
+    "FACEBOOK_CALLBACK": "/facebook/callback",
+    "PROTECTED": "/protected",
 }
 # ===========================
 
@@ -214,3 +220,12 @@ CLOUDFRONT_URL = config["CLOUDFRONT_URL"]
 DOMAIN_API = config["DOMAIN_API"]
 
 WEB_DOMAIN_URL = config.get("WEB_DOMAIN_URL") or ""
+
+# ********** Oauth **********
+
+#Google
+GOOGLE_ID = config["GOOGLE_ID"]
+GOOGLE_SECRET = config["GOOGLE_SECRET"]
+#Facebook
+FACEBOOK_ID = config["FACEBOOK_ID"]
+FACEBOOK_SECRET = config["FACEBOOK_SECRET"]

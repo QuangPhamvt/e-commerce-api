@@ -1,15 +1,21 @@
-from fastapi import APIRouter, Depends, FastAPI, Request, Response, status
+import datetime
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response, Security, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import RedirectResponse
+from fastapi.security import APIKeyCookie
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from jose import jwt
+from app.database.crud.user_crud import UserCRUD
 from app.dependencies import get_db, get_current_username, verify_access_token
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.services.auth import AuthService
 from app.utils.helper import helper
-from app.configs.constants import AUTH, AUTH_PATH
+from app.configs.constants import AUTH, AUTH_PATH, GOOGLE_ID, GOOGLE_SECRET
 from app.schemas.responses import ResBadRequest
 from app.configs.documentations import AUTH_DOCUMENTATIONS
+from fastapi_sso.sso.base import OpenID
+from fastapi_sso.sso.google import GoogleSSO
 
 SIGN_UP = AUTH_PATH["SIGN_UP"]
 VERIFY = AUTH_PATH["VERIFY"]
@@ -19,6 +25,12 @@ REFRESH = AUTH_PATH["REFRESH"]
 GET_ME = AUTH_PATH["GET_ME"]
 FORGOT = AUTH_PATH["FORGOT"]
 RESET = AUTH_PATH["RESET"]
+GOOGLE_LOGIN = AUTH_PATH["GOOGLE_LOGIN"]
+GOOGLE_CALLBACK = AUTH_PATH["GOOGLE_CALLBACK"]
+GOOGLE_LOGOUT = AUTH_PATH["GOOGLE_LOGOUT"]
+FACEBOOK_LOGIN = AUTH_PATH["FACEBOOK_LOGIN"]
+FACEBOOK_CALLBACK = AUTH_PATH["FACEBOOK_CALLBACK"]
+PROTECTED = AUTH_PATH["PROTECTED"]
 
 
 router = APIRouter(
@@ -136,6 +148,65 @@ async def reset(
 ):
     return await AuthService().reset_password(email, verify_code, new_password, db)
 
+
+# ********** OAUTH **********
+google_sso = GoogleSSO(GOOGLE_ID, GOOGLE_SECRET, "http://localhost:8000/api/v1/auth/google/callback", allow_insecure_http=True)
+
+async def get_logged_user(cookie: str = Security(APIKeyCookie(name="token"))) -> OpenID:
+    """Get user's JWT stored in cookie 'token', parse it and return the user's OpenID."""
+    try:
+        claims = jwt.decode(cookie, key=GOOGLE_SECRET, algorithms=["HS256"])
+        return OpenID(**claims["pld"])
+    except Exception as error:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials") from error
+    
+@router.get(PROTECTED)
+async def protected_endpoint(user: OpenID = Depends(get_logged_user)):
+    """This endpoint will say hello to the logged user.
+    If the user is not logged, it will return a 401 error from `get_logged_user`."""
+    return {
+        "message": f"You are very welcome, {user.email}!",
+        "name": {"first": user.first_name, "last": user.last_name},
+        "email": user.email,
+        "picture": user.picture,
+    }
+
+@router.get(GOOGLE_LOGIN)
+async def google_login():
+    return await google_sso.get_login_redirect()
+
+@router.get(GOOGLE_CALLBACK)
+async def google_callback(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    """Get google data"""
+    with google_sso:
+        openid = await google_sso.verify_and_process(request)
+        if not openid:
+            raise HTTPException(status_code=401, detail="Authentication failed")
+    user = await UserCRUD(db).read_user_by_email(openid.email)
+    
+    if not user:
+        """User not exists, sign up for them, after that get user info to login them in"""
+        user_signup = UserSignUpParam(
+            email=openid.email,
+            password=openid.id, # Use the id get from google as password
+            fullname=openid.display_name
+        )
+        await AuthService().sign_up_instant_active(user_signup, db)
+    
+    """Now user exist, log them in"""
+    response = RedirectResponse(url="/api/v1/auth/docs")
+    await AuthService().sign_in_without_password(openid.email, response, db)
+    return response
+
+        
+    # Create a JWT with the user's OpenID
+    # expiration = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)
+    # token = jwt.encode({"pld": openid.model_dump(), "exp": expiration, "sub": openid.id}, key=GOOGLE_SECRET, algorithm="HS256")
+    # response = RedirectResponse(url="/api/v1/auth/protected")
+    # response.set_cookie(
+    #     key="token", value=token, expires=expiration
+    # )  # This cookie will make sure /protected knows the user
+    # return response
 
 # Auth Api
 auth_api = FastAPI(docs_url=None, **AUTH_DOCUMENTATIONS)
