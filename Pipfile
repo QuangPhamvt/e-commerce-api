@@ -22,11 +22,8 @@ pyjwt = "*"
 greenlet = "*"
 boto3 = "*"
 alembic = "*"
-<<<<<<< HEAD
 fastapi-sso = "*"
-=======
 payos = "*"
->>>>>>> 510942eda1a7552464afef7a6e5736d774bbbff0
 
 [dev-packages]
 ruff = "*"

@@ -1,17 +1,14 @@
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Response, Security, status
+from fastapi import APIRouter, Depends, FastAPI, Request, Response, Security, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.database.crud.user_crud import UserCRUD
 from app.dependencies import get_db, get_current_username, verify_access_token
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.services.auth import AuthService
 
 from app.services.oauth import OauthService
-from app.services.oauth.oauth2 import FacebookSSO, GoogleSSO
 from app.utils.helper import helper
-from app.configs.constants import AUTH, AUTH_PATH, FACEBOOK_ID, FACEBOOK_SECRET, GOOGLE_ID, GOOGLE_SECRET
+from app.configs.constants import AUTH, AUTH_PATH
 from app.schemas.responses import ResBadRequest
 from app.configs.documentations import AUTH_DOCUMENTATIONS
 
