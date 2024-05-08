@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, FastAPI, Request, Response, status
+from fastapi import APIRouter, Depends, FastAPI, Request, Response, Security, status
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.dependencies import get_db, get_current_username, verify_access_token
 from app.schemas.auth import ResGetMe, UserSignInParam, UserSignUpParam, VerifyParam
 from app.services.auth import AuthService
+
+from app.services.oauth import OauthService
 from app.utils.helper import helper
 from app.configs.constants import AUTH, AUTH_PATH
 from app.schemas.responses import ResBadRequest
@@ -19,7 +20,11 @@ REFRESH = AUTH_PATH["REFRESH"]
 GET_ME = AUTH_PATH["GET_ME"]
 FORGOT = AUTH_PATH["FORGOT"]
 RESET = AUTH_PATH["RESET"]
-
+GOOGLE_LOGIN = AUTH_PATH["GOOGLE_LOGIN"]
+GOOGLE_CALLBACK = AUTH_PATH["GOOGLE_CALLBACK"]
+GOOGLE_LOGOUT = AUTH_PATH["GOOGLE_LOGOUT"]
+FACEBOOK_LOGIN = AUTH_PATH["FACEBOOK_LOGIN"]
+FACEBOOK_CALLBACK = AUTH_PATH["FACEBOOK_CALLBACK"]
 
 router = APIRouter(
     tags=[AUTH],
@@ -30,8 +35,6 @@ router = APIRouter(
         },
     },
 )
-
-
 # ********** SIGN UP **********
 @router.post(
     SIGN_UP,
@@ -135,6 +138,25 @@ async def reset(
     email: str, verify_code: str, new_password: str, db: AsyncSession = Depends(get_db)
 ):
     return await AuthService().reset_password(email, verify_code, new_password, db)
+
+
+# ********** OAUTH **********
+
+@router.get(GOOGLE_LOGIN)
+async def google_login(request: Request):
+    return await OauthService().google_login(request)
+
+@router.get(GOOGLE_CALLBACK)
+async def google_callback(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    return await OauthService().google_callback(request, response, db)
+
+@router.get(FACEBOOK_LOGIN)
+async def google_login():
+    return await OauthService().facebook_login()
+
+@router.get(FACEBOOK_CALLBACK)
+async def google_callback(request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    return await OauthService().facebook_callback(request, response, db)
 
 
 # Auth Api

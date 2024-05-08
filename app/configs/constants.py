@@ -16,6 +16,11 @@ AUTH_PATH: dict = {
     "GET_ME": "/me",
     "FORGOT": "/forgot",
     "RESET": "/reset",
+    "GOOGLE_LOGIN": "/google/login",
+    "GOOGLE_CALLBACK": "/google/callback",
+    "GOOGLE_LOGOUT": "/google/logout",
+    "FACEBOOK_LOGIN": "/facebook/login",
+    "FACEBOOK_CALLBACK": "/facebook/callback",
 }
 # ===========================
 
@@ -237,3 +242,12 @@ PAYOS_RETURN_URL = (
     config.get("PAYOS_RETURN_URL")
     or "http://127.0.0.1:8000/api/v1/web/payments/success"
 )
+
+# ********** Oauth **********
+
+#Google
+GOOGLE_ID = config["GOOGLE_ID"]
+GOOGLE_SECRET = config["GOOGLE_SECRET"]
+#Facebook
+FACEBOOK_ID = config["FACEBOOK_ID"]
+FACEBOOK_SECRET = config["FACEBOOK_SECRET"]

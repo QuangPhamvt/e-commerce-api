@@ -7,7 +7,6 @@ from .get_me import GetMe
 from .forgot import Forgot
 from .reset_password import ResetPassword
 
-
 class AuthService(
     SignUp, Verify, SignIn, Logout, Refresh, GetMe, Forgot, ResetPassword
 ):

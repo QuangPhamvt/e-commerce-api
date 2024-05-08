@@ -22,6 +22,7 @@ pyjwt = "*"
 greenlet = "*"
 boto3 = "*"
 alembic = "*"
+fastapi-sso = "*"
 payos = "*"
 
 [dev-packages]

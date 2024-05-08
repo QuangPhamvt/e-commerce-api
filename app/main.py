@@ -16,6 +16,7 @@ from .routers.admin import admin_api
 from .routers.website import web_api
 from .routers.definition import definition_api
 
+
 log = logging.getLogger("uvicorn")
 
 
@@ -41,6 +42,8 @@ async def lifespan(__app__: FastAPI):
 
 # app = FastAPI()
 app = FastAPI(lifespan=lifespan)
+
+
 
 origins = [
     "http://localhost:3000",

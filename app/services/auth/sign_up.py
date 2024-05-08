@@ -37,7 +37,27 @@ class SignUp:
         return {
             "detail": "User has been created successfully!",
         }
+    
+    async def sign_up_instant_active(self, user: UserSignUpParam, db: AsyncSession):
+        email = user.email
+        password = user.password
+        fullname = user.fullname
+        await self.__check_user_exist(email=user.email, db=db)
 
+        user_role = await self.__get_default_role(db=db)
+
+        new_user = await self.__create_user(email, password, user_role.id, db)
+
+        username = new_user.email.split("@")[0]
+
+        await self.__create_bio(new_user.id, username, fullname, db)
+
+        await user_crud.UserCRUD(db).update_verify_with_email(email)
+        
+        return {
+            "detail": "User has been created successfully!",
+        }
+     
     # Get resend sender
     @staticmethod
     def __get_resend_sender():
