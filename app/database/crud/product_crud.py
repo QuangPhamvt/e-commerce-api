@@ -3,6 +3,7 @@ from sqlalchemy.orm import defer
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models import Product, Category, product_tag
+from app.schemas.bill import ProductBillInfo
 from app.utils.helper import helper
 from app.utils.uuid import generate_uuid
 from app.schemas.product import BodyUpdateProduct, ProductCreateCRUD
@@ -54,6 +55,33 @@ class ProductCRUD:
             .scalars()
             .first()
         )
+
+    async def read_by_list_id(self, list_id: list[UUID]):
+        return (
+            (
+                await self.db.execute(
+                    select(Product)
+                    .where(Product.id.in_(list_id))
+                    .where(Product.deleted_at.is_(None))
+                    .options(
+                        defer(Product.created_at),
+                        defer(Product.updated_at),
+                        defer(Product.deleted_at),
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+    async def update_quantity(self, products: list[ProductBillInfo]):
+        for product in products:
+            await self.db.execute(
+                update(Product)
+                .where(Product.id == product.id)
+                .values(quantity=product.quantity)
+            )
+        await self.db.commit()
 
     async def read_by_parent_category(self, category_id: UUID):
         return (

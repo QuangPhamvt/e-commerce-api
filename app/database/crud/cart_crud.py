@@ -56,8 +56,12 @@ class CartCRUD:
             .all()
         )
 
-    async def delete_cart(self, cart_id: UUID):
-        await self.db.execute(delete(Cart).where(Cart.id == cart_id))
+    async def delete_cart(self, user_id: UUID, list_product_id: list[UUID]):
+        await self.db.execute(
+            delete(Cart)
+            .where(Cart.user_id == user_id)
+            .where(Cart.product_id.in_(list_product_id))
+        )
         await self.db.commit()
 
     async def read_by_id(self, cart_id: UUID, user_id: UUID):

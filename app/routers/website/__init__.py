@@ -4,10 +4,12 @@ from fastapi.openapi.utils import get_openapi
 from app.dependencies import get_current_username
 from app.configs.documentations import USER_DOCUMENTATIONS
 from .cart import router as cart_router
+from .payment import router as payment_router
 
 # Website Api
 web_api = FastAPI(docs_url=None, **USER_DOCUMENTATIONS)
 web_api.include_router(cart_router)
+web_api.include_router(payment_router)
 
 
 @web_api.get("")

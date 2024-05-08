@@ -37,6 +37,12 @@ phases:
           echo "AWS_BUCKET_NAME=$AWS_BUCKET_NAME" >> .env
           echo "DOMAIN_API=$DOMAIN_API" >> .env
           echo "WEB_DOMAIN_URL=$WEB_DOMAIN_URL" >> .env
+          echo "PAYOS_CLIENT_ID=$PAYOS_CLIENT_ID" >> .env
+          echo "PAYOS_API_KEY=$PAYOS_API_KEY" >> .env
+          echo "PAYOS_CHECKSUM_KEY=$PAYOS_CHECKSUM_KEY" >> .env
+          echo "PAYOS_EXPIRE=$PAYOS_EXPIRE" >> .env
+          echo "PAYOS_CANCEL_URL=$PAYOS_CANCEL_URL" >> .env
+          echo "PAYOS_RETURN_URL=$PAYOS_RETURN_URL" >> .env
           else
           echo "Have exist file environments"
         fi
