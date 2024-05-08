@@ -26,7 +26,6 @@ admin_api.include_router(deposit_router)
 admin_api.include_router(exchange_router)
 admin_api.include_router(user_router)
 
-
 @admin_api.get("/")
 def read_admin():
     return {"message": "Hello World from admin api"}
